@@ -6,21 +6,22 @@
 <title>Music Vault</title>
 <style>
 :root{
-  --bg:#09090f;--panel:rgba(255,255,255,.075);--panel-strong:rgba(255,255,255,.12);
-  --border:rgba(255,255,255,.14);--text:#f6f4ff;--muted:#aaa4bd;
-  --accent:#a855f7;--accent2:#22d3ee;--gold:#facc15;--danger:#fb7185;--success:#34d399;
+  --bg:#09090f;--border:rgba(255,255,255,.14);--text:#f6f4ff;--muted:#aaa4bd;
+  --accent:#a855f7;--accent2:#22d3ee;--gold:#facc15;--danger:#fb7185;
   --shadow:0 24px 80px rgba(0,0,0,.45);--radius:24px;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,sans-serif;
   background:radial-gradient(circle at 15% 10%,rgba(168,85,247,.28),transparent 32%),
              radial-gradient(circle at 85% 15%,rgba(34,211,238,.18),transparent 30%),
-             radial-gradient(circle at 45% 95%,rgba(250,204,21,.12),transparent 36%),var(--bg);
+             radial-gradient(circle at 45% 95%,rgba(250,204,21,.12),transparent 36%),#09090f;
   color:var(--text);min-height:100vh}
 button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
 .app{width:min(1440px,calc(100% - 32px));margin:0 auto;padding:32px 0 56px}
-.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:24px;align-items:stretch;margin-bottom:24px}
 .glass{background:linear-gradient(135deg,rgba(255,255,255,.11),rgba(255,255,255,.055));border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(18px)}
+
+/* HERO */
+.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:24px;align-items:stretch;margin-bottom:24px}
 .hero-main{padding:32px;position:relative;overflow:hidden}
 .hero-main::after{content:"";position:absolute;inset:auto -80px -140px auto;width:300px;height:300px;background:radial-gradient(circle,rgba(168,85,247,.28),transparent 65%);pointer-events:none}
 .eyebrow{color:var(--accent2);text-transform:uppercase;letter-spacing:.16em;font-size:12px;font-weight:800;margin-bottom:12px}
@@ -31,11 +32,15 @@ h1{margin:0;font-size:clamp(36px,6vw,72px);line-height:.94;letter-spacing:-.07em
 .stat{padding:18px;border-radius:18px;background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.1)}
 .stat strong{display:block;font-size:28px;letter-spacing:-.04em}
 .stat span{color:var(--muted);font-size:13px}
+
+/* TABS */
 .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
 .tab-btn,.primary-btn,.ghost-btn,.small-btn{border:1px solid var(--border);background:rgba(255,255,255,.075);color:var(--text);border-radius:999px;padding:11px 16px;transition:.18s ease}
 .tab-btn:hover,.ghost-btn:hover,.small-btn:hover{background:rgba(255,255,255,.13);transform:translateY(-1px)}
 .tab-btn.active,.primary-btn{background:linear-gradient(135deg,var(--accent),#7c3aed);border-color:rgba(255,255,255,.24);box-shadow:0 14px 34px rgba(124,58,237,.32)}
 .primary-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+
+/* LAYOUT */
 .layout{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
 .sidebar,.content-panel{padding:18px}
 .section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
@@ -44,122 +49,153 @@ h1{margin:0;font-size:clamp(36px,6vw,72px);line-height:.94;letter-spacing:-.07em
 .input-group{display:grid;gap:8px;margin-bottom:12px}
 label{color:var(--muted);font-size:13px;font-weight:700}
 input,textarea,select{width:100%;border:1px solid rgba(255,255,255,.14);color:var(--text);background:rgba(0,0,0,.24);border-radius:16px;padding:12px 14px;outline:none}
-input[type=color]{height:46px;padding:5px}
 input:focus,textarea:focus,select:focus{border-color:rgba(168,85,247,.75);box-shadow:0 0 0 4px rgba(168,85,247,.16)}
-textarea{resize:vertical;min-height:130px;line-height:1.55}
+textarea{resize:vertical;line-height:1.55}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
 .search{flex:1 1 260px}
-.beat-list,.version-list,.pipeline-board,.ab-grid,.release-grid{display:grid;gap:12px}
-.beat-item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:14px;border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.06);border-radius:18px;transition:.18s ease}
-.beat-item:hover,.beat-item.active{background:rgba(255,255,255,.11);border-color:rgba(168,85,247,.45)}
-.icon-pill{width:44px;height:44px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(135deg,rgba(168,85,247,.42),rgba(34,211,238,.22))}
+.small-btn{padding:8px 11px;font-size:13px}
+.danger{color:#fecdd3;border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.12)}
+.card-actions{display:flex;gap:8px;flex-wrap:wrap}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.empty{padding:36px;text-align:center;color:var(--muted);border:1px dashed rgba(255,255,255,.2);border-radius:20px;background:rgba(255,255,255,.045)}
+.hidden{display:none!important}
+
+/* BEATS — inline expand */
+.beat-list{display:grid;gap:8px}
+.beat-item{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.06);border-radius:18px;overflow:hidden;transition:border-color .18s}
+.beat-item.expanded{border-color:rgba(168,85,247,.45)}
+.beat-row{display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;align-items:center;padding:14px;cursor:pointer}
+.beat-row:hover{background:rgba(255,255,255,.04)}
+.icon-pill{width:44px;height:44px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(135deg,rgba(168,85,247,.42),rgba(34,211,238,.22));flex-shrink:0}
 .beat-meta strong{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .beat-meta span{color:var(--muted);font-size:12px}
-.star-btn{background:transparent;border:0;color:rgba(255,255,255,.35);font-size:25px;padding:4px}
+.star-btn{background:transparent;border:0;color:rgba(255,255,255,.35);font-size:25px;padding:4px;line-height:1}
 .star-btn.active{color:var(--gold);text-shadow:0 0 20px rgba(250,204,21,.36)}
-.player-card{display:grid;gap:14px}
-audio{width:100%;filter:saturate(1.1)}
-.empty{padding:36px;text-align:center;color:var(--muted);border:1px dashed rgba(255,255,255,.2);border-radius:20px;background:rgba(255,255,255,.045)}
+.expand-arrow{background:transparent;border:0;color:var(--muted);font-size:16px;padding:4px;line-height:1;transition:transform .2s;display:flex;align-items:center}
+.beat-item.expanded .expand-arrow{transform:rotate(180deg)}
+.beat-expand{display:none;padding:0 16px 16px;border-top:1px solid rgba(255,255,255,.07);padding-top:14px}
+.beat-item.expanded .beat-expand{display:block}
+.beat-expand audio{width:100%;margin-bottom:14px;filter:saturate(1.1)}
+.beat-expand textarea{min-height:260px;width:100%;margin-bottom:12px;font-size:14px}
+.beat-expand-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* DEMOS */
 .demo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.demo-card,.idea-card,.mood-card,.version-card,.release-card,.ab-card,.prompt-card,.settings-card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:22px;overflow:hidden;transition:.18s ease}
-.demo-card:hover,.mood-card:hover,.release-card:hover,.ab-card:hover{transform:translateY(-2px);border-color:rgba(34,211,238,.35)}
-.demo-cover,.mood-cover{aspect-ratio:16/11;width:100%;object-fit:cover;background:linear-gradient(135deg,rgba(168,85,247,.32),rgba(34,211,238,.2))}
-.demo-body,.mood-body,.version-card,.release-card,.ab-card,.prompt-card,.settings-card,.idea-card{padding:15px;display:grid;gap:12px}
-.demo-body h3,.mood-body h3,.idea-card h3,.release-card h3,.ab-card h3,.prompt-card h2{margin:0;letter-spacing:-.03em}
-.stars{display:flex;gap:2px;flex-wrap:wrap}
+.demo-card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:22px;overflow:hidden;transition:.18s ease}
+.demo-card:hover{transform:translateY(-2px);border-color:rgba(34,211,238,.35)}
+.demo-cover{aspect-ratio:16/11;width:100%;object-fit:cover;background:linear-gradient(135deg,rgba(168,85,247,.32),rgba(34,211,238,.2))}
+.demo-body{padding:15px;display:grid;gap:12px}
+.demo-body h3{margin:0;letter-spacing:-.03em}
+.stars{display:flex;gap:2px}
 .stars button{border:0;background:transparent;color:rgba(255,255,255,.28);font-size:20px;padding:0 1px}
 .stars button.active{color:var(--gold)}
-.progress-wrap{display:grid;gap:8px}
+.progress-wrap{display:grid;gap:6px}
 .progress-label{display:flex;justify-content:space-between;color:var(--muted);font-size:13px}
 .progress-bar{height:10px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
 .progress-bar div{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2))}
-.card-actions{display:flex;gap:8px;flex-wrap:wrap}
-.small-btn{padding:8px 11px;font-size:13px}
-.danger{color:#fecdd3;border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.12)}
-.success{color:#d1fae5;border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.12)}
-.ideas-grid,.mood-grid,.release-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
-.tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
-.tag{font-size:12px;color:#ddd6fe;border:1px solid rgba(221,214,254,.18);background:rgba(168,85,247,.12);padding:5px 9px;border-radius:999px;display:inline-flex;align-items:center;gap:5px}
-.tag-x{cursor:pointer;opacity:.5;transition:opacity .15s}
-.tag-x:hover{opacity:1}
-.pipeline-board{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:start}
+.release-score{width:76px;height:76px;display:grid;place-items:center;border-radius:50%;font-size:22px;font-weight:900;background:conic-gradient(var(--accent2) calc(var(--score)*1%),rgba(255,255,255,.12) 0);position:relative;flex-shrink:0}
+.release-score::after{content:"";position:absolute;inset:7px;background:#12121b;border-radius:inherit}
+.release-score span{position:relative;z-index:1}
+
+/* ALBUMS */
+.album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:18px}
+.album-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:18px;overflow:hidden;cursor:pointer;transition:.18s ease}
+.album-card:hover{transform:translateY(-3px);border-color:rgba(168,85,247,.5);box-shadow:0 16px 40px rgba(168,85,247,.15)}
+.album-cover{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.album-cover-ph{width:100%;aspect-ratio:1;background:linear-gradient(135deg,rgba(168,85,247,.3),rgba(34,211,238,.2));display:grid;place-items:center;font-size:42px}
+.album-info{padding:12px 14px}
+.album-info strong{display:block;font-size:14px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px}
+.album-info span{color:var(--muted);font-size:12px}
+.album-new-btn{background:rgba(255,255,255,.04);border:2px dashed rgba(255,255,255,.18);border-radius:18px;display:grid;place-items:center;cursor:pointer;transition:.18s ease;text-align:center;padding:28px 20px;gap:8px}
+.album-new-btn:hover{border-color:rgba(168,85,247,.6);background:rgba(168,85,247,.07)}
+.album-new-btn .plus{font-size:28px;opacity:.5;display:block}
+.album-new-btn span{font-size:13px;color:var(--muted)}
+.album-detail-hd{display:flex;align-items:center;gap:18px;margin-bottom:24px;padding:20px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:18px}
+.album-detail-cover{width:90px;height:90px;border-radius:12px;object-fit:cover;flex-shrink:0}
+.album-detail-cover-ph{width:90px;height:90px;border-radius:12px;background:linear-gradient(135deg,rgba(168,85,247,.4),rgba(34,211,238,.25));flex-shrink:0;display:grid;place-items:center;font-size:32px}
+.album-detail-info h2{margin:0 0 4px;font-size:24px;letter-spacing:-.05em}
+.album-detail-info span{color:var(--muted);font-size:13px}
+
+/* PIPELINE */
+.pipeline-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:start;gap:12px}
 .pipeline-col{padding:12px;border-radius:18px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.11);min-height:150px}
 .pipeline-col h3{margin:0 0 10px;font-size:15px}
 .pipeline-item{padding:10px;border-radius:14px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.09);margin-bottom:8px}
 .pipeline-item strong{display:block;font-size:13px}
 .pipeline-item span{color:var(--muted);font-size:12px}
-.release-score{width:76px;height:76px;display:grid;place-items:center;border-radius:50%;font-size:22px;font-weight:900;background:conic-gradient(var(--accent2) calc(var(--score)*1%),rgba(255,255,255,.12) 0);position:relative}
-.release-score::after{content:"";position:absolute;inset:7px;background:#12121b;border-radius:inherit}
-.release-score span{position:relative;z-index:1}
-.ab-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-.ab-card.winner{border-color:rgba(250,204,21,.55);box-shadow:0 18px 50px rgba(250,204,21,.12)}
-.swatches{display:flex;gap:8px;flex-wrap:wrap}
-.swatch{width:30px;height:30px;border-radius:999px;border:2px solid rgba(255,255,255,.35)}
 
-/* ── MODAL ─────────────────────────────────────────────────── */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(12px);display:none;place-items:center;padding:18px;z-index:20}
-.modal.open{display:grid}
-.modal-card{width:min(800px,100%);max-height:92vh;overflow-y:auto;border-radius:22px}
-/* Modal header */
-.modal-hd{padding:22px 28px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
-.modal-hd-left h2{margin:0;font-size:20px;letter-spacing:-.04em}
-.modal-hd-left .hint{margin-top:2px}
-.modal-hd-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
-.modal-score-wrap{text-align:right}
-.modal-score-num{font-size:28px;font-weight:900;line-height:1;letter-spacing:-.04em;color:var(--gold)}
-.modal-score-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:2px}
-.close-btn{border:0;width:40px;height:40px;border-radius:999px;color:var(--text);background:rgba(255,255,255,.1);font-size:20px;flex-shrink:0}
-/* Modal inner tabs */
-.modal-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 28px;margin-top:16px}
-.mtab{padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;border-top:none;border-left:none;border-right:none;background:none;font-family:inherit;transition:all .15s;margin-bottom:-1px;letter-spacing:.2px}
-.mtab.active{color:var(--text);border-bottom-color:var(--gold)}
-.mtab-content{display:none;padding:22px 28px 28px}
-.mtab-content.active{display:block}
-/* Pipeline buttons */
-.pipeline-sel{display:flex;gap:7px;flex-wrap:wrap}
-.p-btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--muted);transition:all .15s;font-family:inherit}
-.p-btn:hover{border-color:rgba(255,255,255,.3);color:var(--text)}
-.p-btn.active{background:linear-gradient(135deg,rgba(168,85,247,.5),rgba(124,58,237,.4));border-color:rgba(168,85,247,.6);color:#fff}
-/* Interactive star rating in modal */
-.rating-stars{display:flex;gap:3px}
-.rstar{font-size:26px;cursor:pointer;color:rgba(255,255,255,.2);transition:all .1s;line-height:1;background:none;border:none;padding:0}
-.rstar.on{color:var(--gold);text-shadow:0 0 14px rgba(250,204,21,.35)}
-/* Version list in modal */
+/* VERSIONS */
+.version-list{display:grid;gap:12px}
+.version-card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:18px;padding:15px;display:grid;gap:10px}
+.version-card h3{margin:0;letter-spacing:-.03em}
 .ver-item{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;margin-bottom:8px}
-.ver-date{font-size:10px;color:var(--muted);white-space:nowrap;padding-top:2px;font-variant-numeric:tabular-nums}
+.ver-date{font-size:10px;color:var(--muted);white-space:nowrap;padding-top:2px;min-width:90px}
 .ver-text{flex:1;font-size:13px;line-height:1.5}
 .ver-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;opacity:.4;transition:opacity .15s;padding:0}
 .ver-del:hover{opacity:1;color:var(--danger)}
-/* A/B in modal */
-.ab-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.ab-modal-item{background:rgba(255,255,255,.06);border:2px solid var(--border);border-radius:16px;padding:14px;cursor:pointer;transition:all .2s;text-align:center}
-.ab-modal-item.winner{border-color:rgba(250,204,21,.55);background:rgba(250,204,21,.07)}
-.ab-modal-lbl{font-size:24px;font-weight:900;color:var(--muted)}
-.ab-modal-item.winner .ab-modal-lbl{color:var(--gold)}
-/* Tag input row */
-.tag-input-row{display:flex;gap:8px;margin-top:8px}
-.tag-input-row input{flex:1}
-/* Color row */
-.color-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.three-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 
+/* RELEASE SCORE PAGE */
+.release-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.release-card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:22px;padding:15px;display:grid;gap:10px;transition:.18s ease}
+.release-card:hover{transform:translateY(-2px);border-color:rgba(34,211,238,.35)}
+.release-card h3{margin:0;letter-spacing:-.03em}
+.score-explain{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:18px;padding:22px 26px;margin-bottom:24px}
+.score-explain h2{margin:0 0 10px;letter-spacing:-.04em}
+.score-explain p{color:var(--muted);font-size:14px;line-height:1.65;margin:0 0 18px}
+.score-factor{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.score-factor:last-child{border-bottom:none;padding-bottom:0}
+.score-pts{font-size:20px;font-weight:900;min-width:52px;text-align:center;background:rgba(34,211,238,.1);border-radius:10px;padding:5px 0;color:var(--accent2);flex-shrink:0}
+.score-info strong{display:block;font-size:14px;margin-bottom:3px}
+.score-info span{color:var(--muted);font-size:13px}
+.tag-row{display:flex;gap:8px;flex-wrap:wrap}
+.tag{font-size:12px;color:#ddd6fe;border:1px solid rgba(221,214,254,.18);background:rgba(168,85,247,.12);padding:5px 9px;border-radius:999px}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(12px);display:none;place-items:center;padding:18px;z-index:20}
+.modal.open{display:grid}
+.modal-card{background:linear-gradient(135deg,rgba(255,255,255,.11),rgba(255,255,255,.055));border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);backdrop-filter:blur(18px);width:min(800px,100%);max-height:92vh;overflow-y:auto}
+.modal-sm{max-width:460px}
+.modal-hd{padding:22px 28px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.modal-hd-left h2{margin:0;font-size:20px;letter-spacing:-.04em}
+.modal-hd-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.modal-score-wrap{text-align:right}
+.modal-score-num{font-size:28px;font-weight:900;line-height:1;letter-spacing:-.04em}
+.modal-score-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.close-btn{border:0;width:40px;height:40px;border-radius:999px;color:var(--text);background:rgba(255,255,255,.1);font-size:20px;flex-shrink:0}
+.modal-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 28px;margin-top:16px}
+.mtab{padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;border-top:none;border-left:none;border-right:none;background:none;font-family:inherit;transition:all .15s;margin-bottom:-1px}
+.mtab.active{color:var(--text);border-bottom-color:var(--gold)}
+.mtab-content{display:none;padding:22px 28px 28px}
+.mtab-content.active{display:block}
+.pipeline-sel{display:flex;gap:7px;flex-wrap:wrap}
+.p-btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--muted);transition:all .15s;font-family:inherit}
+.p-btn.active{background:linear-gradient(135deg,rgba(168,85,247,.5),rgba(124,58,237,.4));border-color:rgba(168,85,247,.6);color:#fff}
+.rating-stars{display:flex;gap:3px}
+.rstar{font-size:26px;cursor:pointer;color:rgba(255,255,255,.2);line-height:1;background:none;border:none;padding:0;transition:color .1s}
+.rstar.on{color:var(--gold);text-shadow:0 0 14px rgba(250,204,21,.35)}
+
+/* Album beat checkbox list */
+.beat-check-list{display:grid;gap:6px;max-height:320px;overflow-y:auto}
+.beat-check-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.06);border-radius:12px;cursor:pointer;border:1px solid transparent;transition:.15s}
+.beat-check-item:hover{background:rgba(255,255,255,.1)}
+.beat-check-item input[type=checkbox]{width:16px;height:16px;flex-shrink:0;cursor:pointer;accent-color:var(--accent)}
+
+.settings-card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:22px;padding:20px;display:grid;gap:12px}
+.settings-card h2{margin:0;letter-spacing:-.04em}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--accent2);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.hidden{display:none!important}
-@media(max-width:920px){.hero,.layout,.ab-grid{grid-template-columns:1fr}}
-@media(max-width:560px){.app{width:calc(100% - 20px);padding-top:16px}.hero-main,.stats-card,.sidebar,.content-panel{padding:16px}.row,.three-row,.stat-grid{grid-template-columns:1fr}}
+@media(max-width:920px){.hero,.layout{grid-template-columns:1fr}}
+@media(max-width:560px){.app{width:calc(100% - 20px);padding-top:16px}.hero-main,.stats-card,.sidebar,.content-panel{padding:16px}.row,.stat-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <main class="app">
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-main glass">
     <div class="eyebrow">Music Vault</div>
-    <h1>Beats, demoer,&nbsp;moodboards og&nbsp;releases.</h1>
-    <p>Sorter beats, marker favoritter, skriv tekst, bygg moodboard per låt, følg demoer gjennom pipeline og se hvilke låter som bør ferdigstilles først.</p>
+    <h1>Beats, demoer og&nbsp;releases.</h1>
+    <p>Organiser beats i albumer, følg demoer gjennom pipeline, og se hvilke låter som bør ferdigstilles først.</p>
   </div>
   <aside class="stats-card glass">
     <div class="section-title"><h3>Status</h3><span class="hint">Lagres i nettleseren</span></div>
@@ -174,26 +210,23 @@ audio{width:100%;filter:saturate(1.1)}
   </aside>
 </section>
 
-<!-- TABS -->
 <nav class="tabs">
   <button class="tab-btn active" data-tab="beats">🎧 Beats</button>
   <button class="tab-btn" data-tab="demos">☁️ Demoer</button>
-  <button class="tab-btn" data-tab="moodboard">🎨 Moodboards</button>
+  <button class="tab-btn" data-tab="albums">📁 Albumer</button>
   <button class="tab-btn" data-tab="pipeline">🧱 Pipeline</button>
-  <button class="tab-btn" data-tab="prompts">✍️ Prompt</button>
   <button class="tab-btn" data-tab="versions">🗂️ Versjoner</button>
-  <button class="tab-btn" data-tab="compare">⚖️ A/B</button>
   <button class="tab-btn" data-tab="release">🚀 Release-score</button>
   <button class="tab-btn" data-tab="integrations">🔌 Integrasjoner</button>
 </nav>
 
-<!-- ── BEATS ──────────────────────────────────────────────── -->
+<!-- BEATS -->
 <section id="beatsTab" class="tab-view">
   <div class="layout">
     <aside class="sidebar glass">
-      <div class="section-title"><h2>Beat-bibliotek</h2></div>
-      <p class="hint">Last opp lokale filer eller legg inn Drive-lenke. Drive-lenker konverteres automatisk.</p>
-      <div class="input-group"><label>Lokale beat-filer</label><input id="beatFiles" type="file" accept="audio/*" multiple /></div>
+      <div class="section-title"><h2>Legg til beat</h2></div>
+      <p class="hint">Last opp lokale filer eller legg inn Drive-lenke.</p>
+      <div class="input-group"><label>Lokale filer</label><input id="beatFiles" type="file" accept="audio/*" multiple /></div>
       <div class="input-group">
         <label>URL / Google Drive-lenke</label>
         <input id="beatNameInput" placeholder="Beat-navn" />
@@ -201,7 +234,6 @@ audio{width:100%;filter:saturate(1.1)}
         <button class="primary-btn" id="addBeatUrlBtn">Legg til beat</button>
       </div>
       <div class="input-group">
-        <label>Filter</label>
         <input id="beatSearch" placeholder="Søk etter beat..." />
         <select id="beatFilter">
           <option value="all">Alle beats</option>
@@ -209,43 +241,28 @@ audio{width:100%;filter:saturate(1.1)}
           <option value="lyrics">Med tekst</option>
         </select>
       </div>
+      <button class="ghost-btn" id="clearBeatsBtn" style="margin-top:4px">Tøm alle beats</button>
     </aside>
     <section class="content-panel glass">
-      <div class="toolbar">
-        <div class="section-title" style="margin:0;flex:1"><h2>Beats</h2></div>
-        <button class="ghost-btn" id="clearBeatsBtn">Tøm alle</button>
-      </div>
+      <div class="section-title"><h2>Beats</h2></div>
       <div id="beatList" class="beat-list"></div>
-      <div id="playerPanel" class="player-card hidden" style="margin-top:18px">
-        <div class="section-title">
-          <div><h2 id="selectedBeatTitle">Velg et beat</h2><div id="selectedBeatInfo" class="hint"></div></div>
-          <button id="selectedFavBtn" class="star-btn" title="Favoritt">★</button>
-        </div>
-        <audio id="audioPlayer" controls></audio>
-        <div class="input-group"><label>Tekst til dette beatet</label><textarea id="lyricsBox" placeholder="Skriv hook, vers, punchlines, flows, idéer..."></textarea></div>
-        <div class="toolbar">
-          <button class="primary-btn" id="saveLyricsBtn">Lagre tekst</button>
-          <button class="ghost-btn" id="copyLyricsBtn">Kopier tekst</button>
-          <button class="small-btn danger" id="deleteBeatBtn">Slett beat</button>
-        </div>
-      </div>
     </section>
   </div>
 </section>
 
-<!-- ── DEMOER ─────────────────────────────────────────────── -->
+<!-- DEMOER -->
 <section id="demosTab" class="tab-view hidden">
   <div class="layout">
     <aside class="sidebar glass">
       <div class="section-title"><h2>Ny demo</h2></div>
-      <p class="hint">Lim inn SoundCloud-URL. Trykk "Hent" for automatisk tittel og artwork.</p>
+      <p class="hint">Lim inn SoundCloud-URL og trykk "Hent" for automatisk tittel og artwork.</p>
       <div class="input-group">
         <label>SoundCloud URL</label>
         <input id="demoUrl" placeholder="https://soundcloud.com/..." />
         <button class="ghost-btn" id="fetchSCBtn"><span id="fetchSCBtnTxt">Hent metadata</span></button>
       </div>
       <div class="input-group"><label>Sangtittel</label><input id="demoTitle" placeholder="Navn på sangen" /></div>
-      <div class="input-group"><label>Coverbilde URL</label><input id="demoCover" placeholder="Hentes automatisk fra SoundCloud" /></div>
+      <div class="input-group"><label>Coverbilde URL</label><input id="demoCover" placeholder="Hentes automatisk" /></div>
       <div class="row">
         <div class="input-group"><label>Rating</label><select id="demoRating"></select></div>
         <div class="input-group"><label>Ferdig %</label><input id="demoDone" type="number" min="0" max="100" value="20" /></div>
@@ -254,7 +271,7 @@ audio{width:100%;filter:saturate(1.1)}
         <div class="input-group"><label>Pipeline</label><select id="demoStage"></select></div>
         <div class="input-group"><label>Mix %</label><input id="demoMix" type="number" min="0" max="100" value="0" /></div>
       </div>
-      <div class="input-group"><label>Notater</label><textarea id="demoNotes" placeholder="Hva mangler? Mix, hook, vers 2, adlibs..."></textarea></div>
+      <div class="input-group"><label>Notater</label><textarea id="demoNotes" placeholder="Hva mangler?" style="min-height:80px"></textarea></div>
       <button class="primary-btn" id="addDemoBtn">Legg til demo</button>
     </aside>
     <section class="content-panel glass">
@@ -272,65 +289,47 @@ audio{width:100%;filter:saturate(1.1)}
   </div>
 </section>
 
-<!-- ── MOODBOARD ──────────────────────────────────────────── -->
-<section id="moodboardTab" class="tab-view hidden">
-  <div class="layout">
-    <aside class="sidebar glass">
-      <div class="section-title"><h2>Moodboard per låt</h2></div>
-      <p class="hint">Bilder, referanselåter, farger og én tydelig setning for følelsen låta skal ha.</p>
-      <div class="input-group"><label>Velg demo</label><select id="moodDemoSelect"></select></div>
-      <div class="input-group"><label>Følelse / retning</label><input id="moodFeeling" placeholder="F.eks. mørk, ærlig og melodisk nattkjøring" /></div>
-      <div class="input-group"><label>Bilde-URLer (én per linje)</label><textarea id="moodImages" placeholder="https://..." style="min-height:80px"></textarea></div>
-      <div class="input-group"><label>Referanselåter</label><textarea id="moodRefs" placeholder="Artist – Låt" style="min-height:80px"></textarea></div>
-      <div class="three-row">
-        <div class="input-group"><label>Farge 1</label><input id="moodColor1" type="color" value="#a855f7" /></div>
-        <div class="input-group"><label>Farge 2</label><input id="moodColor2" type="color" value="#22d3ee" /></div>
-        <div class="input-group"><label>Farge 3</label><input id="moodColor3" type="color" value="#facc15" /></div>
+<!-- ALBUMER -->
+<section id="albumsTab" class="tab-view hidden">
+  <div class="content-panel glass">
+    <div id="albumsListView">
+      <div class="section-title">
+        <h2>Albumer</h2>
+        <button class="primary-btn" id="newAlbumBtn">+ Nytt album</button>
       </div>
-      <button class="primary-btn" id="saveMoodBtn">Lagre moodboard</button>
-    </aside>
-    <section class="content-panel glass">
-      <div class="section-title"><h2>Alle moodboards</h2></div>
-      <div id="moodGrid" class="mood-grid"></div>
-    </section>
+      <p class="hint" style="margin-bottom:20px">Organiser beats i mapper. Klikk på et album for å åpne det og se innholdet.</p>
+      <div id="albumGrid" class="album-grid"></div>
+    </div>
+    <div id="albumDetailView" class="hidden">
+      <div style="margin-bottom:18px"><button class="ghost-btn" id="backToAlbumsBtn">← Tilbake til albumer</button></div>
+      <div class="album-detail-hd" id="albumDetailHd"></div>
+      <div class="toolbar" style="margin-bottom:18px">
+        <button class="primary-btn" id="addBeatsToAlbumBtn">+ Legg til beats</button>
+        <button class="small-btn danger" id="deleteAlbumBtn">Slett album</button>
+      </div>
+      <div id="albumBeatList" class="beat-list"></div>
+    </div>
   </div>
 </section>
 
-<!-- ── PIPELINE ───────────────────────────────────────────── -->
+<!-- PIPELINE -->
 <section id="pipelineTab" class="tab-view hidden">
   <section class="content-panel glass">
-    <div class="section-title"><h2>Status-pipeline</h2><span class="hint">Endre stage direkte fra demo-kortet.</span></div>
+    <div class="section-title"><h2>Status-pipeline</h2><span class="hint">Endre stage fra demo-kortet.</span></div>
     <div id="pipelineBoard" class="pipeline-board"></div>
   </section>
 </section>
 
-<!-- ── PROMPTS ────────────────────────────────────────────── -->
-<section id="promptsTab" class="tab-view hidden">
-  <div class="layout">
-    <aside class="sidebar glass">
-      <div class="section-title"><h2>Daglig skriveprompt</h2></div>
-      <p class="hint">Appen velger én prompt per dag basert på dato. Legg til egne prompts nedenfor.</p>
-      <div class="input-group"><label>Ny prompt</label><textarea id="newPromptText" placeholder="Skriv en prompt som kan starte en tekst..."></textarea></div>
-      <button class="primary-btn" id="addPromptBtn">Legg til prompt</button>
-    </aside>
-    <section class="content-panel glass">
-      <div id="dailyPromptCard" class="prompt-card"></div>
-      <div class="section-title" style="margin-top:18px"><h2>Prompt-bank</h2></div>
-      <div id="promptList" class="beat-list"></div>
-    </section>
-  </div>
-</section>
-
-<!-- ── VERSIONS ───────────────────────────────────────────── -->
+<!-- VERSJONER -->
 <section id="versionsTab" class="tab-view hidden">
   <div class="layout">
     <aside class="sidebar glass">
       <div class="section-title"><h2>Versjonslogg</h2></div>
-      <p class="hint">Lagre v1 rough, v2 ny hook, v3 mix osv. for hver demo. Tilgjengelig fra demo-modal også.</p>
+      <p class="hint">Logg v1 rough, v2 ny hook, v3 mix osv. for hver demo.</p>
       <div class="input-group"><label>Velg demo</label><select id="versionDemoSelect"></select></div>
       <div class="input-group"><label>Versjonsnavn</label><input id="versionName" placeholder="v1 rough / v2 hook / v3 mix" /></div>
       <div class="input-group"><label>URL (valgfritt)</label><input id="versionUrl" placeholder="SoundCloud eller Drive-lenke" /></div>
-      <div class="input-group"><label>Notater</label><textarea id="versionNotes" placeholder="Hva endret seg i denne versjonen?"></textarea></div>
+      <div class="input-group"><label>Notater</label><textarea id="versionNotes" placeholder="Hva endret seg?" style="min-height:80px"></textarea></div>
       <button class="primary-btn" id="addVersionBtn">Lagre versjon</button>
     </aside>
     <section class="content-panel glass">
@@ -340,57 +339,63 @@ audio{width:100%;filter:saturate(1.1)}
   </div>
 </section>
 
-<!-- ── A/B GLOBAL ─────────────────────────────────────────── -->
-<section id="compareTab" class="tab-view hidden">
-  <div class="layout">
-    <aside class="sidebar glass">
-      <div class="section-title"><h2>A/B-rating</h2></div>
-      <p class="hint">Sammenlign to demoer eller beats og velg den som treffer best akkurat nå.</p>
-      <div class="input-group"><label>Type</label><select id="abType"><option value="demos">Demoer</option><option value="beats">Beats</option></select></div>
-      <div class="input-group"><label>A</label><select id="abA"></select></div>
-      <div class="input-group"><label>B</label><select id="abB"></select></div>
-      <div class="row">
-        <button class="primary-btn" id="chooseABtn">A vinner</button>
-        <button class="primary-btn" id="chooseBBtn">B vinner</button>
-      </div>
-    </aside>
-    <section class="content-panel glass">
-      <div id="abCompare" class="ab-grid"></div>
-      <div class="section-title" style="margin-top:18px"><h2>Siste valg</h2></div>
-      <div id="abHistory" class="beat-list"></div>
-    </section>
-  </div>
-</section>
-
-<!-- ── RELEASE SCORE ──────────────────────────────────────── -->
+<!-- RELEASE SCORE -->
 <section id="releaseTab" class="tab-view hidden">
   <section class="content-panel glass">
-    <div class="section-title"><h2>Release-score</h2><span class="hint">Kombinerer rating, ferdigprosent, mix, pipeline og metadata.</span></div>
+    <div class="section-title"><h2>Release-score</h2></div>
+
+    <div class="score-explain">
+      <h2>Hva er release-score?</h2>
+      <p>Release-score er et tall fra 0 til 100 som automatisk beregnes for hver demo. Det gir deg et raskt overblikk over hvilke låter som er nærmest ferdig og burde prioriteres. Du trenger ikke gjøre noe — scoren oppdateres hver gang du endrer en demo.</p>
+      <p>Slik regnes den ut:</p>
+      <div class="score-factor">
+        <div class="score-pts">30p</div>
+        <div class="score-info"><strong>Ferdigstillelse %</strong><span>Hva du selv angir som total ferdigstillelse for låten. 100% = 30 poeng.</span></div>
+      </div>
+      <div class="score-factor">
+        <div class="score-pts">25p</div>
+        <div class="score-info"><strong>Rangering (1–10 stjerner)</strong><span>Din subjektive vurdering av låten. 10 stjerner = 25 poeng, 1 stjerne = 2,5 poeng.</span></div>
+      </div>
+      <div class="score-factor">
+        <div class="score-pts">20p</div>
+        <div class="score-info"><strong>Mix-status %</strong><span>Separat sporbar fremgang for miksen. Lar deg skille mellom "låten er ferdig skrevet" og "miksen er ferdig".</span></div>
+      </div>
+      <div class="score-factor">
+        <div class="score-pts">15p</div>
+        <div class="score-info"><strong>Pipeline-stage</strong><span>Idé = 0p, Klar = 15p. Hvert steg fremover gir proporsjonalt mer poeng. Innspilt gir f.eks. ~8,75p.</span></div>
+      </div>
+      <div class="score-factor">
+        <div class="score-pts">+3p</div>
+        <div class="score-info"><strong>Versjon logget</strong><span>Bonuspoeng hvis du har lagret minst én versjon i versjonsloggen. Signaliserer aktiv utvikling.</span></div>
+      </div>
+      <div class="score-factor">
+        <div class="score-pts">+2p</div>
+        <div class="score-info"><strong>Notater / tekst skrevet</strong><span>Bonuspoeng hvis du har tekst eller notater lagret på demoen.</span></div>
+      </div>
+      <p style="margin-top:18px;margin-bottom:0;font-size:13px;color:var(--muted)">En låt med score over 70 er vanligvis klar for å vurdere release. Under 40 er det fortsatt mye arbeid igjen.</p>
+    </div>
+
     <div id="releaseGrid" class="release-grid"></div>
   </section>
 </section>
 
-<!-- ── INTEGRASJONER ──────────────────────────────────────── -->
+<!-- INTEGRASJONER -->
 <section id="integrationsTab" class="tab-view hidden">
   <div class="layout">
     <aside class="sidebar glass">
       <div class="section-title"><h2>Google Drive API</h2></div>
-      <p class="hint">Lagre innstillinger for Drive-integrasjon. Ekte sync krever backend eller Google OAuth.</p>
-      <div class="input-group"><label>Drive Mappe ID</label><input id="driveFolderId" placeholder="ID fra Google Drive-mappen" /></div>
-      <div class="input-group"><label>Google API Key</label><input id="driveApiKey" placeholder="AIza... – lagres lokalt" /></div>
-      <button class="primary-btn" id="saveDriveSettingsBtn">Lagre Drive-innstillinger</button>
-      <button class="ghost-btn" id="mockDriveImportBtn">Simuler Drive-import</button>
+      <p class="hint">Lagre innstillinger for Drive-integrasjon.</p>
+      <div class="input-group"><label>Drive Mappe ID</label><input id="driveFolderId" placeholder="ID fra Drive-mappen" /></div>
+      <div class="input-group"><label>Google API Key</label><input id="driveApiKey" placeholder="AIza..." /></div>
+      <button class="primary-btn" id="saveDriveSettingsBtn">Lagre</button>
+      <button class="ghost-btn" id="mockDriveImportBtn" style="margin-top:8px">Simuler Drive-import</button>
     </aside>
     <section class="content-panel glass">
       <div class="settings-card">
         <h2>SoundCloud oEmbed</h2>
-        <p class="hint">SoundCloud oEmbed kalles direkte fra nettleseren (fungerer uten proxy på de fleste tracks). Trykk "Hent metadata" i Demoer-fanen. Privat-lenker krever proxy.</p>
-        <div class="input-group"><label>Proxy URL (valgfritt for private tracks)</label><input id="soundcloudProxy" placeholder="https://din-server.no/oembed?url=" /></div>
+        <p class="hint">Hentes direkte uten proxy for offentlige tracks. Private tracks krever proxy.</p>
+        <div class="input-group"><label>Proxy URL (valgfritt)</label><input id="soundcloudProxy" placeholder="https://din-server.no/oembed?url=" /></div>
         <button class="primary-btn" id="saveSCSettingsBtn">Lagre</button>
-      </div>
-      <div class="settings-card" style="margin-top:14px">
-        <h2>Eksport / Import</h2>
-        <p class="hint">Sikkerhetskopier alt til en JSON-fil. Importer for å gjenopprette på en annen enhet.</p>
       </div>
     </section>
   </div>
@@ -398,17 +403,13 @@ audio{width:100%;filter:saturate(1.1)}
 
 </main>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     DEMO EDIT MODAL – tabbed
-═══════════════════════════════════════════════════════════════════ -->
+<!-- DEMO EDIT MODAL -->
 <div id="editDemoModal" class="modal">
-  <div class="modal-card glass" style="width:min(820px,100%)">
-
-    <!-- Header -->
+  <div class="modal-card">
     <div class="modal-hd">
       <div class="modal-hd-left">
         <h2 id="editModalTitle">Demo</h2>
-        <div class="hint" id="editModalArtist"></div>
+        <div class="hint" id="editModalSub"></div>
       </div>
       <div class="modal-hd-right">
         <div class="modal-score-wrap">
@@ -418,18 +419,13 @@ audio{width:100%;filter:saturate(1.1)}
         <button class="close-btn" id="closeModalBtn">×</button>
       </div>
     </div>
-
-    <!-- Inner tabs -->
     <div class="modal-tabs">
       <button class="mtab active" data-mtab="overview">Oversikt</button>
-      <button class="mtab" data-mtab="moodboard">Moodboard</button>
       <button class="mtab" data-mtab="versions">Versjonslogg</button>
-      <button class="mtab" data-mtab="ab">A/B</button>
       <button class="mtab" data-mtab="notes">Notater</button>
     </div>
     <input id="editDemoId" type="hidden" />
 
-    <!-- OVERSIKT -->
     <div id="mtab-overview" class="mtab-content active">
       <div id="editEmbedWrap" style="margin-bottom:18px"></div>
       <div class="input-group" style="margin-bottom:16px">
@@ -449,7 +445,7 @@ audio{width:100%;filter:saturate(1.1)}
       </div>
       <div class="input-group" style="margin-bottom:20px">
         <label>Notater</label>
-        <textarea id="editNotes" rows="4" style="min-height:90px" placeholder="Hva mangler? Mix, hook, vers 2..."></textarea>
+        <textarea id="editNotes" rows="4" style="min-height:90px" placeholder="Hva mangler?"></textarea>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="primary-btn" id="saveOverviewBtn">💾 Lagre endringer</button>
@@ -457,243 +453,160 @@ audio{width:100%;filter:saturate(1.1)}
       </div>
     </div>
 
-    <!-- MOODBOARD -->
-    <div id="mtab-moodboard" class="mtab-content">
-      <p class="hint" style="margin-bottom:18px">Stemningsord, referanselåter og fargepalett som definerer låtens identitet. Påvirker release score.</p>
-      <div class="input-group">
-        <label>Følelse / retning</label>
-        <input id="editMoodFeeling" placeholder="F.eks. mørk, ærlig og melodisk nattkjøring" />
-      </div>
-      <div class="input-group">
-        <label>Stemningsord / Vibes</label>
-        <div class="tag-row" id="editMoodTags"></div>
-        <div class="tag-input-row"><input id="editMoodTagIn" placeholder="Legg til stemning..." onkeydown="if(event.key==='Enter')addModalTag('tag')"><button class="small-btn" onclick="addModalTag('tag')">+</button></div>
-      </div>
-      <div class="input-group">
-        <label>Referanselåter</label>
-        <div class="tag-row" id="editMoodRefs"></div>
-        <div class="tag-input-row"><input id="editMoodRefIn" placeholder="Artist – Låt..." onkeydown="if(event.key==='Enter')addModalTag('ref')"><button class="small-btn" onclick="addModalTag('ref')">+</button></div>
-      </div>
-      <div class="input-group">
-        <label>Fargepalett</label>
-        <div class="tag-row" id="editMoodColors"></div>
-        <div class="tag-input-row"><input id="editMoodColorIn" placeholder="#ff6b35 eller fargenavn..." onkeydown="if(event.key==='Enter')addModalTag('color')"><button class="small-btn" onclick="addModalTag('color')">+</button></div>
-      </div>
-      <button class="primary-btn" id="saveMoodboardModalBtn">💾 Lagre moodboard</button>
-    </div>
-
-    <!-- VERSJONSLOGG -->
     <div id="mtab-versions" class="mtab-content">
       <div class="input-group">
         <label>Nytt versjonsnotat</label>
-        <textarea id="editVerInput" rows="3" placeholder="Beskriv endringen – f.eks. 'Ny hook-melodi, fjernet bridge, senket tempo'" style="min-height:80px"></textarea>
+        <textarea id="editVerInput" rows="3" placeholder="Beskriv endringen – f.eks. Ny hook-melodi, fjernet bridge" style="min-height:80px"></textarea>
         <div style="margin-top:8px"><button class="primary-btn" id="addModalVerBtn">+ Legg til</button></div>
       </div>
       <div id="editVerList"></div>
     </div>
 
-    <!-- A/B -->
-    <div id="mtab-ab" class="mtab-content">
-      <p class="hint" style="margin-bottom:18px">Sammenlign to mikser eller versjoner av denne låten. Klikk for å velge vinner.</p>
-      <div class="ab-modal-grid">
-        <div>
-          <div class="input-group"><label>Versjon A</label><input id="editAbALbl" placeholder="f.eks. Original mix" /></div>
-          <div class="input-group"><label>Notat A</label><textarea id="editAbANote" rows="4" placeholder="Hva er bra med denne?" style="min-height:80px"></textarea></div>
-        </div>
-        <div>
-          <div class="input-group"><label>Versjon B</label><input id="editAbBLbl" placeholder="f.eks. Ny beat-dropp" /></div>
-          <div class="input-group"><label>Notat B</label><textarea id="editAbBNote" rows="4" placeholder="Hva er bra med denne?" style="min-height:80px"></textarea></div>
-        </div>
-      </div>
-      <div class="input-group" style="margin-top:8px">
-        <label>Velg vinner</label>
-        <div class="ab-modal-grid" style="margin-top:8px">
-          <div class="ab-modal-item" id="editAbAWin" onclick="setModalABWin('A')"><div class="ab-modal-lbl">A</div><div class="hint" id="editAbAWinLbl" style="margin-top:4px">—</div></div>
-          <div class="ab-modal-item" id="editAbBWin" onclick="setModalABWin('B')"><div class="ab-modal-lbl">B</div><div class="hint" id="editAbBWinLbl" style="margin-top:4px">—</div></div>
-        </div>
-      </div>
-      <button class="primary-btn" id="saveABModalBtn">💾 Lagre A/B</button>
-    </div>
-
-    <!-- NOTATER -->
     <div id="mtab-notes" class="mtab-content">
       <div class="input-group">
         <label>Lyrics / Ideer / Tekst</label>
-        <textarea id="editDemoNotes" rows="14" placeholder="Skriv tekst, hooks, broer, punchlines, ideer..." style="min-height:320px"></textarea>
+        <textarea id="editDemoNotes" rows="14" placeholder="Skriv tekst, hooks, broer, punchlines..." style="min-height:340px"></textarea>
       </div>
       <button class="primary-btn" id="saveDemoNotesBtn">💾 Lagre notater</button>
     </div>
+  </div>
+</div>
 
+<!-- NEW ALBUM MODAL -->
+<div id="newAlbumModal" class="modal">
+  <div class="modal-card modal-sm">
+    <div class="modal-hd">
+      <div class="modal-hd-left"><h2>Nytt album</h2></div>
+      <div class="modal-hd-right"><button class="close-btn" onclick="closeModal('newAlbumModal')">×</button></div>
+    </div>
+    <div style="padding:22px 28px 28px;display:grid;gap:14px">
+      <div class="input-group"><label>Albumnavn</label><input id="newAlbumName" placeholder="F.eks. Noe som får deg opp om morran" /></div>
+      <div class="input-group">
+        <label>Forsidebilde (kvadratisk)</label>
+        <input id="newAlbumCoverInput" type="file" accept="image/*" />
+        <div id="albumCoverPreviewWrap" style="margin-top:8px;display:none;justify-content:center">
+          <img id="albumCoverPreview" style="width:120px;height:120px;border-radius:12px;object-fit:cover;border:1px solid var(--border)" />
+        </div>
+      </div>
+      <button class="primary-btn" id="saveNewAlbumBtn">Opprett album</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD BEATS TO ALBUM MODAL -->
+<div id="addBeatsModal" class="modal">
+  <div class="modal-card modal-sm">
+    <div class="modal-hd">
+      <div class="modal-hd-left"><h2>Legg til beats</h2></div>
+      <div class="modal-hd-right"><button class="close-btn" onclick="closeModal('addBeatsModal')">×</button></div>
+    </div>
+    <div style="padding:22px 28px 28px;display:grid;gap:14px">
+      <p class="hint">Velg beats du vil legge til i albumet.</p>
+      <div id="beatCheckList" class="beat-check-list"></div>
+      <button class="primary-btn" id="confirmAddBeatsBtn">Legg til valgte</button>
+    </div>
   </div>
 </div>
 
 <script>
 const STAGES=["Idé","Hook","Vers","Innspilt","Mix","Master","Klar"];
-const DEFAULT_PROMPTS=[
-  "Skriv fire linjer om noe du ikke tør å si høyt.",
-  "Skriv et hook om nattkjøring og en tanke du ikke blir ferdig med.",
-  "Skriv åtte linjer der hver linje starter med «Jeg husker».",
-  "Lag en punchline om ambisjon uten å bruke ordet suksess.",
-  "Skriv et vers fra perspektivet til telefonen din klokka 03:17.",
-  "Skriv en ærlig tekst om å ville bli bedre enn i går.",
-  "Skriv et refreng som føles som regn på ruta i Oslo.",
-  "Skriv fire barer der første og siste ord rimer.",
-  "Skriv om øyeblikket rett før noe endrer seg for alltid.",
-  "Beskriv en by klokka 03:00. Hvem er der? Hva hører du?",
-  "Hva skjer i stillheten mellom to lyder?",
-  "Skriv om noe du har mistet men ikke savner.",
-  "Skriv om venting – selve lyden av det.",
-  "Hva er den ærligste linjen du noen gang har skrevet?",
-  "Skriv om en beslutning du tok på 10 sekunder som endret alt.",
-  "Lyden av et rom etter et krangel.",
-  "Hva er du redd musikken din avslører om deg?",
-  "En person du ser på café. Hva er historien deres?",
-  "Skriv om slutten av noe. Ikke et klimaks, bare slutten.",
-  "Skriv et vers som aldri skal slippes. Kun for deg.",
-  "Hva betyr «hjem» for deg akkurat nå?",
-  "Skriv om nattkjøring og noe du aldri fikk sagt.",
-  "Beskriv en farge som en følelse, ikke visuelt.",
-  "Skriv om noe som alltid var der, men du aldri la merke til.",
-  "Det samarbeidet du ikke torde be om. Hva ville du sagt?"
-];
-
-const STORAGE_KEY="musicVault.v3";
+const SK="musicVault.v4";
 const state=loadState();
-let selectedBeatId=null;
-let modalABWin=null;
+let currentAlbumId=null;
 let modalRating=0;
+let newAlbumCoverBase64=null;
 
-function uid(){return crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`;}
-
-function defaultState(){
-  const id1=uid(),id2=uid(),id3=uid(),id4=uid(),id5=uid();
-  const now=Date.now();
-  const s={
-    beats:[
-      {id:uid(),name:"DarkTrap140",url:"",source:"demo",favorite:true,lyrics:"Hook-idé:\n«Jeg ser deg gjennom speilet\nalt vi hadde er forsvunnet»\n\nVers-idé: slow flow, staccato på 2. slag",createdAt:now-86400000*5},
-      {id:uid(),name:"AfroSwing_Am",url:"",source:"demo",favorite:true,lyrics:"Prøv en melodi på refrenget. Key: A minor\nBuild opp mot dropp.",createdAt:now-86400000*7},
-      {id:uid(),name:"LoFiSoul_Cmaj",url:"",source:"demo",favorite:false,lyrics:"",createdAt:now-86400000*3},
-      {id:uid(),name:"Drill_Gmin_v2",url:"",source:"demo",favorite:false,lyrics:"",createdAt:now-86400000*2},
-      {id:uid(),name:"NightDrive_Synth",url:"",source:"demo",favorite:true,lyrics:"",createdAt:now-86400000*1},
-      {id:uid(),name:"SummerVibes_Piano",url:"",source:"demo",favorite:false,lyrics:"Enkel piano-loop. Kan funke til noe lyst og enkelt.",createdAt:now-86400000*10},
-    ],
-    demos:[
-      {id:id3,title:"Ingen Vei Tilbake",url:"https://soundcloud.com/",cover:"https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&h=300&fit=crop",rating:9,done:100,mix:100,stage:"Klar",notes:"Ferdig. Klar for release.\n\nHusk: pitche til playlister – Release Radar, Fresh Finds, Nordic Pop.",lyricsNotes:"Ferdig låt. Alle deler innspilt og masterert.",ab:{aLabel:"Mix (tørr)",aNote:"Mer intim og rå",bLabel:"Mix (rom)",bNote:"Større, mer kommersielt",winner:"B"},createdAt:now-86400000*30},
-      {id:id1,title:"Midnatt",url:"https://soundcloud.com/",cover:"https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&h=300&fit=crop",rating:8,done:72,mix:65,stage:"Mix",notes:"Trenger bedre mix på vokal og mer energi i andre vers.",lyricsNotes:"Hook:\n«Midnatt og du er ikke her\nSoler seg i alt vi aldri fikk sagt»\n\nVers 1:\nKlokka stanser aldri, men jeg gjør det nå\nGamle bilder brenner, røyken slår meg på\n\n--- TODO: Skriv vers 2",ab:{aLabel:"Mix v2 – tørr vokal",aNote:"Mer rå, intimt",bLabel:"Mix v3 – reverb + delay",bNote:"Større sound, mer radio-klar",winner:"B"},createdAt:now-86400000*14},
-      {id:id5,title:"Gold Rush",url:"https://soundcloud.com/",cover:"https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=600&h=300&fit=crop",rating:8,done:55,mix:30,stage:"Innspilt",notes:"Trenger mix og master.\nSend til: Markus (mix) → Alexander (master)",lyricsNotes:"Trenger mix og master. Sett inn beats.\n\nHook: work in progress",ab:{aLabel:"Original tempo",aNote:"Mer chill",bLabel:"+4% speed up",bNote:"Mer energi, radio-klar",winner:"B"},createdAt:now-86400000*18},
-      {id:id2,title:"Kall Det Hva Du Vil",url:"https://soundcloud.com/",cover:"https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600&h=300&fit=crop",rating:7,done:40,mix:15,stage:"Vers",notes:"Hook ferdig. Starter på vers 1.",lyricsNotes:"Hook:\n«Kall det hva du vil\nJeg vet hva det er»\n\nVers 1: work in progress...",ab:{aLabel:"",aNote:"",bLabel:"",bNote:"",winner:null},createdAt:now-86400000*8},
-      {id:id4,title:"Nattevakt",url:"https://soundcloud.com/",cover:"https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&h=300&fit=crop",rating:6,done:20,mix:0,stage:"Hook",notes:"Tidlig idé. Hook-melodi notert i GarageBand.",lyricsNotes:"Tidlig fase. Trenger mer tid.",ab:{aLabel:"",aNote:"",bLabel:"",bNote:"",winner:null},createdAt:now-86400000*5},
-    ],
-    moodboards:{
-      [id1]:{feeling:"Mørk, cinematisk og melankolsk nattkjøring",images:"https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",refs:"Drake - Marvins Room\nThe Weeknd - After Hours\nAbel Tesfaye - Echoes of Silence",colors:["#0d1b2a","#6366f1","#c4b5fd"],updatedAt:now-86400000*3},
-      [id3]:{feeling:"Episk, emosjonell og triumferende – en anthm",images:"https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800",refs:"Post Malone - Circles\nJuice WRLD - Lucid Dreams\nMorgan Wallen - Sand in My Boots",colors:["#ff6b35","#f7c59f","#efefd0"],updatedAt:now-86400000*5},
-      [id5]:{feeling:"Energi, flex og sommer – radio-klar",images:"https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800",refs:"Travis Scott - SICKO MODE\nRoddy Ricch - The Box",colors:["#d4a017","#1a1a1a","#ffffff"],updatedAt:now-86400000*6},
-    },
-    versions:[
-      {id:uid(),demoId:id1,name:"v1 – Første utkast",url:"",notes:"Original beat og melodi på hook",createdAt:now-86400000*14},
-      {id:uid(),demoId:id1,name:"v2 – Ny tekst vers 1",url:"",notes:"Ny tekst på vers 1, fjernet bridge",createdAt:now-86400000*9},
-      {id:uid(),demoId:id1,name:"v3 – Nytt beat + synther",url:"",notes:"Byttet beat til mørkere variant",createdAt:now-86400000*4},
-      {id:uid(),demoId:id3,name:"v1 – Demo hjemme",url:"",notes:"Full demoinspilling hjemme",createdAt:now-86400000*22},
-      {id:uid(),demoId:id3,name:"v2 – Studiopplastning",url:"",notes:"Profesjonell innspilling studio",createdAt:now-86400000*15},
-      {id:uid(),demoId:id3,name:"v3 – Mix v2 godkjent",url:"",notes:"Master ferdig. Klar for release.",createdAt:now-86400000*2},
-      {id:uid(),demoId:id5,name:"v1 – Freestyle-idé",url:"",notes:"Idé fra freestyle-session",createdAt:now-86400000*18},
-    ],
-    prompts:DEFAULT_PROMPTS,
-    abHistory:[],
-    settings:{driveFolderId:"",driveApiKey:"",soundcloudProxy:""}
-  };
-  return s;
-}
-
-function migrate(saved){
-  const base=defaultState();
-  const next={...base,...saved};
-  next.beats=(next.beats||[]).map(b=>({...b,lyrics:b.lyrics||"",favorite:!!b.favorite}));
-  next.demos=(next.demos||[]).map(d=>({...d,stage:d.stage||"Idé",mix:Number(d.mix??0),rating:Number(d.rating||1),done:Number(d.done||0),ab:d.ab||{aLabel:"",aNote:"",bLabel:"",bNote:"",winner:null},lyricsNotes:d.lyricsNotes||""}));
-  next.moodboards=next.moodboards||{};
-  next.versions=next.versions||[];
-  next.prompts=next.prompts?.length?next.prompts:DEFAULT_PROMPTS;
-  next.abHistory=next.abHistory||[];
-  next.settings={...base.settings,...(next.settings||{})};
-  return next;
-}
-
-function loadState(){
-  try{
-    const raw=localStorage.getItem(STORAGE_KEY);
-    const saved=raw?JSON.parse(raw):null;
-    return saved?migrate(saved):defaultState();
-  }catch{return defaultState();}
-}
-
-function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));renderStats();}
-
-// ── HELPERS ──
-function uid2(){return uid();}
-function convertDriveUrl(url){const m=url.match(/\/d\/([^/]+)|id=([^&]+)/);const id=m?(m[1]||m[2]):null;return id?`https://drive.google.com/uc?export=download&id=${id}`:url;}
+function uid(){return crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`;}
 function clamp(v){return Math.max(0,Math.min(100,Number(v||0)));}
 function esc(v){return String(v||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
-function lines(v){return String(v||"").split("\n").map(x=>x.trim()).filter(Boolean);}
-function placeholderCover(title=""){
-  const svg=encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620"><rect width="900" height="620" fill="#11111a"/><circle cx="170" cy="120" r="210" fill="#a855f7" opacity=".3"/><circle cx="790" cy="520" r="260" fill="#22d3ee" opacity=".2"/><text x="60" y="345" fill="white" font-family="Arial" font-size="52" font-weight="800">${String(title).slice(0,22).replace(/[<>&"]/g,"")}</text><text x="64" y="405" fill="#ddd6fe" font-family="Arial" font-size="22">Music Vault</text></svg>`);
-  return `data:image/svg+xml,${svg}`;
+function convertDrive(url){const m=url.match(/\/d\/([^/?#]+)/);return m?`https://drive.google.com/uc?export=download&id=${m[1]}`:url;}
+function phCover(t){const s=encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="600" height="400" fill="#11111a"/><circle cx="100" cy="80" r="160" fill="#a855f7" opacity=".3"/><circle cx="530" cy="340" r="190" fill="#22d3ee" opacity=".2"/><text x="40" y="230" fill="white" font-family="Arial" font-size="38" font-weight="800">${String(t).slice(0,20).replace(/[<>&"]/g,"")}</text></svg>`);return`data:image/svg+xml,${s}`;}
+
+function defaultState(){
+  return{beats:[],demos:[],albums:[],versions:[],settings:{driveFolderId:"",driveApiKey:"",soundcloudProxy:""}};
 }
-function setupRatingSelect(el){el.innerHTML="";for(let i=1;i<=10;i++){const o=document.createElement("option");o.value=i;o.textContent=`${i} stjerne${i===1?"":"r"}`;el.appendChild(o);}}
-function setupStageSelect(el){el.innerHTML=STAGES.map(s=>`<option value="${s}">${s}</option>`).join("");}
+function migrate(s){
+  const base=defaultState();
+  const n={...base,...s};
+  n.beats=(n.beats||[]).map(b=>({...b,lyrics:b.lyrics||"",favorite:!!b.favorite}));
+  n.demos=(n.demos||[]).map(d=>({...d,stage:d.stage||"Idé",mix:Number(d.mix??0),rating:Number(d.rating||1),done:Number(d.done||0),lyricsNotes:d.lyricsNotes||""}));
+  n.albums=n.albums||[];n.versions=n.versions||[];n.settings={...base.settings,...(n.settings||{})};
+  return n;
+}
+function loadState(){try{const r=localStorage.getItem(SK);const s=r?JSON.parse(r):null;return s?migrate(s):defaultState();}catch{return defaultState();}}
+function saveState(){localStorage.setItem(SK,JSON.stringify(state));renderStats();}
 
-["demoRating"].forEach(id=>setupRatingSelect(document.getElementById(id)));
-["demoStage"].forEach(id=>setupStageSelect(document.getElementById(id)));
+function setupSel(el,opts){el.innerHTML=opts;}
+function setupRating(el){el.innerHTML=Array.from({length:10},(_,i)=>`<option value="${i+1}">${i+1} stjerne${i===0?"":"r"}`).join("");}
+function setupStage(el){el.innerHTML=STAGES.map(s=>`<option value="${s}">${s}`).join("");}
+setupRating(document.getElementById("demoRating"));
+setupStage(document.getElementById("demoStage"));
 
-// ── RELEASE SCORE ──
-function releaseScore(demo){
-  const r=(Number(demo.rating||0)/10)*25;
-  const d=(Number(demo.done||0)/100)*30;
-  const m=(Number(demo.mix||0)/100)*20;
-  const st=(STAGES.indexOf(demo.stage||"Idé")/(STAGES.length-1))*15;
-  const mood=state.moodboards[demo.id]?.feeling?5:0;
-  const ver=state.versions.some(v=>v.demoId===demo.id)?3:0;
-  const ab=demo.ab?.winner?2:0;
-  return Math.round(Math.min(100,r+d+m+st+mood+ver+ab));
+function releaseScore(d){
+  return Math.round(Math.min(100,
+    (Number(d.rating||0)/10)*25+
+    (Number(d.done||0)/100)*30+
+    (Number(d.mix||0)/100)*20+
+    (STAGES.indexOf(d.stage||"Idé")/(STAGES.length-1))*15+
+    (state.versions.some(v=>v.demoId===d.id)?3:0)+
+    ((d.lyricsNotes||"").trim()?2:0)
+  ));
 }
 
-// ── STATS ──
 function renderStats(){
   document.getElementById("beatCount").textContent=state.beats.length;
   document.getElementById("favCount").textContent=state.beats.filter(b=>b.favorite).length;
   document.getElementById("demoCount").textContent=state.demos.length;
-  const avg=state.demos.length?Math.round(state.demos.reduce((s,d)=>s+Number(d.done||0),0)/state.demos.length):0;
-  document.getElementById("avgDone").textContent=`${avg}%`;
+  const avg=state.demos.length?Math.round(state.demos.reduce((s,d)=>s+d.done,0)/state.demos.length):0;
+  document.getElementById("avgDone").textContent=avg+"%";
 }
 
 // ── BEATS ──
-function renderBeats(){
-  const list=document.getElementById("beatList");
-  const q=document.getElementById("beatSearch").value.toLowerCase();
-  const f=document.getElementById("beatFilter").value;
-  const beats=state.beats
-    .filter(b=>b.name.toLowerCase().includes(q))
-    .filter(b=>f==="fav"?b.favorite:f==="lyrics"?b.lyrics?.trim():true)
-    .sort((a,b)=>Number(b.favorite)-Number(a.favorite)||b.createdAt-a.createdAt);
-  if(!beats.length){list.innerHTML=`<div class="empty">Ingen beats. Legg til en lydfil eller URL til venstre.</div>`;return;}
-  list.innerHTML=beats.map(b=>`<article class="beat-item${b.id===selectedBeatId?" active":""}" data-beat-id="${b.id}">
-    <div class="icon-pill">🎵</div>
-    <div class="beat-meta"><strong>${esc(b.name)}</strong><span>${b.lyrics?.trim()?"Tekst lagret":"Ingen tekst"} · ${esc(b.source||"URL")}</span></div>
-    <button class="star-btn${b.favorite?" active":""}" data-star-id="${b.id}" title="Favoritt">★</button>
-  </article>`).join("");
+function renderBeats(container,beats,albumMode){
+  const el=container||document.getElementById("beatList");
+  if(!beats){
+    const q=(document.getElementById("beatSearch")||{}).value?.toLowerCase()||"";
+    const f=(document.getElementById("beatFilter")||{}).value||"all";
+    beats=state.beats
+      .filter(b=>b.name.toLowerCase().includes(q))
+      .filter(b=>f==="fav"?b.favorite:f==="lyrics"?b.lyrics?.trim():true)
+      .sort((a,b)=>Number(b.favorite)-Number(a.favorite)||b.createdAt-a.createdAt);
+  }
+  if(!beats.length){el.innerHTML=`<div class="empty">Ingen beats her ennå.</div>`;return;}
+  el.innerHTML=beats.map(b=>`
+    <div class="beat-item" id="bi-${b.id}">
+      <div class="beat-row" onclick="toggleBeat('${b.id}')">
+        <div class="icon-pill">🎵</div>
+        <div class="beat-meta">
+          <strong>${esc(b.name)}</strong>
+          <span>${b.lyrics?.trim()?"✏️ Tekst lagret":"Ingen tekst"} · ${esc(b.source||"URL")}</span>
+        </div>
+        <button class="star-btn${b.favorite?" active":""}" onclick="event.stopPropagation();toggleFav('${b.id}')" title="Favoritt">★</button>
+        <span class="expand-arrow">▾</span>
+      </div>
+      <div class="beat-expand">
+        ${b.url?`<audio controls src="${esc(b.url)}" preload="none"></audio>`:""}
+        <textarea placeholder="Skriv hook, vers, tekst, ideer, flows..." oninput="autosaveLyrics('${b.id}',this.value)">${esc(b.lyrics||"")}</textarea>
+        <div class="beat-expand-actions">
+          <button class="primary-btn" onclick="saveBeatLyrics('${b.id}')">Lagre tekst</button>
+          <button class="ghost-btn" onclick="copyBeatLyrics('${b.id}')">Kopier tekst</button>
+          ${albumMode?`<button class="small-btn danger" onclick="removeFromAlbum('${b.id}')">Fjern fra album</button>`:`<button class="small-btn danger" onclick="deleteBeat('${b.id}')">Slett beat</button>`}
+        </div>
+      </div>
+    </div>`).join("");
 }
 
-function selectBeat(id){
-  selectedBeatId=id;
-  const b=state.beats.find(x=>x.id===id);if(!b)return;
-  document.getElementById("playerPanel").classList.remove("hidden");
-  document.getElementById("selectedBeatTitle").textContent=b.name;
-  document.getElementById("selectedBeatInfo").textContent=b.source==="local"?"Lokal fil":"URL / Drive-lenke";
-  document.getElementById("lyricsBox").value=b.lyrics||"";
-  document.getElementById("selectedFavBtn").classList.toggle("active",b.favorite);
-  const pl=document.getElementById("audioPlayer");
-  if(b.url){pl.src=b.url;pl.classList.remove("hidden");}else{pl.removeAttribute("src");}
-  renderBeats();
+function toggleBeat(id){document.getElementById(`bi-${id}`)?.classList.toggle("expanded");}
+const _lt={};
+function autosaveLyrics(id,val){clearTimeout(_lt[id]);_lt[id]=setTimeout(()=>{const b=state.beats.find(x=>x.id===id);if(b){b.lyrics=val;saveState();}},800);}
+function saveBeatLyrics(id){
+  const ta=document.querySelector(`#bi-${id} .beat-expand textarea`);
+  const b=state.beats.find(x=>x.id===id);
+  if(b&&ta){b.lyrics=ta.value;saveState();renderBeats();document.getElementById(`bi-${id}`)?.classList.add("expanded");showToast("✓ Tekst lagret");}
 }
+function copyBeatLyrics(id){const b=state.beats.find(x=>x.id===id);if(b)navigator.clipboard.writeText(b.lyrics||"").then(()=>showToast("✓ Tekst kopiert"));}
+function toggleFav(id){const b=state.beats.find(x=>x.id===id);if(b){b.favorite=!b.favorite;saveState();renderBeats();}}
+function deleteBeat(id){if(!confirm("Slette dette beatet?"))return;state.beats=state.beats.filter(b=>b.id!==id);state.albums.forEach(a=>{a.beatIds=a.beatIds.filter(x=>x!==id);});saveState();renderAll();showToast("🗑 Beat slettet");}
 
 // ── DEMOS ──
 function renderDemos(){
@@ -701,122 +614,151 @@ function renderDemos(){
   const q=document.getElementById("demoSearch").value.toLowerCase();
   const sort=document.getElementById("demoSort").value;
   let demos=state.demos.filter(d=>d.title.toLowerCase().includes(q)||(d.notes||"").toLowerCase().includes(q));
-  demos.sort((a,b)=>{
-    if(sort==="score")return releaseScore(b)-releaseScore(a);
-    if(sort==="rating")return b.rating-a.rating;
-    if(sort==="done")return b.done-a.done;
-    return b.createdAt-a.createdAt;
-  });
+  demos.sort((a,b)=>sort==="score"?releaseScore(b)-releaseScore(a):sort==="rating"?b.rating-a.rating:sort==="done"?b.done-a.done:b.createdAt-a.createdAt);
   if(!demos.length){grid.innerHTML=`<div class="empty">Ingen demoer. Legg inn SoundCloud-lenke til venstre.</div>`;return;}
   grid.innerHTML=demos.map(d=>{
     const sc=releaseScore(d);
     return`<article class="demo-card">
-      <img class="demo-cover" src="${esc(d.cover||placeholderCover(d.title))}" alt="${esc(d.title)}" onerror="this.src='${placeholderCover(d.title)}'" />
+      <img class="demo-cover" src="${esc(d.cover||phCover(d.title))}" alt="${esc(d.title)}" onerror="this.src='${phCover(d.title)}'" />
       <div class="demo-body">
         <div class="section-title" style="margin:0"><h3>${esc(d.title)}</h3><div class="release-score" style="--score:${sc}"><span>${sc}</span></div></div>
-        <div class="stars">${Array.from({length:10},(_,i)=>`<button class="${i<d.rating?"active":""}" data-demo-rate="${d.id}" data-rate="${i+1}">★</button>`).join("")}</div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>Ferdig</span><strong>${clamp(d.done)}%</strong></div>
-          <div class="progress-bar"><div style="width:${clamp(d.done)}%"></div></div>
-          <input type="range" min="0" max="100" value="${clamp(d.done)}" data-demo-progress="${d.id}" />
-        </div>
-        <div class="row">
-          <select data-demo-stage="${d.id}">${STAGES.map(s=>`<option value="${s}"${s===d.stage?" selected":""}>${s}</option>`).join("")}</select>
-          <input type="number" min="0" max="100" value="${clamp(d.mix)}" data-demo-mix="${d.id}" title="Mix-status %" />
-        </div>
-        <p class="hint">${esc((d.notes||"").slice(0,100))}${(d.notes||"").length>100?"…":""}</p>
-        <div class="card-actions">
-          ${d.url&&d.url!=="https://soundcloud.com/"?`<a class="small-btn" href="${esc(d.url)}" target="_blank" rel="noopener">SoundCloud</a>`:""}
-          <button class="small-btn" data-edit-demo="${d.id}">Rediger</button>
-        </div>
-      </div>
-    </article>`;
+        <div class="stars">${Array.from({length:10},(_,i)=>`<button class="${i<d.rating?"active":""}" data-dr="${d.id}" data-rt="${i+1}">★</button>`).join("")}</div>
+        <div class="progress-wrap"><div class="progress-label"><span>Ferdig</span><strong>${clamp(d.done)}%</strong></div><div class="progress-bar"><div style="width:${clamp(d.done)}%"></div></div><input type="range" min="0" max="100" value="${clamp(d.done)}" data-dp="${d.id}" /></div>
+        <div class="row"><select data-ds="${d.id}">${STAGES.map(s=>`<option value="${s}"${s===d.stage?" selected":""}>${s}`).join("")}</select><input type="number" min="0" max="100" value="${clamp(d.mix)}" data-dm="${d.id}" title="Mix %" /></div>
+        <p class="hint">${esc((d.notes||"").slice(0,90))}${(d.notes||"").length>90?"…":""}</p>
+        <div class="card-actions">${d.url&&d.url!=="https://soundcloud.com/"?`<a class="small-btn" href="${esc(d.url)}" target="_blank" rel="noopener">SoundCloud</a>`:""}<button class="small-btn" data-ed="${d.id}">Rediger</button></div>
+      </div></article>`;
   }).join("");
 }
 
-// ── MOODBOARDS ──
-function renderMoodSelects(){
-  const opts=state.demos.map(d=>`<option value="${d.id}">${esc(d.title)}</option>`).join("");
-  ["moodDemoSelect","versionDemoSelect"].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts||`<option>Ingen demoer</option>`;});
-  renderABOptions();
+// ── ALBUMS ──
+function renderAlbums(){
+  if(currentAlbumId){renderAlbumDetail();return;}
+  document.getElementById("albumsListView").classList.remove("hidden");
+  document.getElementById("albumDetailView").classList.add("hidden");
+  const grid=document.getElementById("albumGrid");
+  const cards=state.albums.map(a=>{
+    const n=a.beatIds.length;
+    const img=a.cover?`<img class="album-cover" src="${esc(a.cover)}" alt="${esc(a.name)}">`:`<div class="album-cover-ph">🎵</div>`;
+    return`<div class="album-card" onclick="openAlbum('${a.id}')">${img}<div class="album-info"><strong>${esc(a.name)}</strong><span>${n} beat${n===1?"":"s"}</span></div></div>`;
+  });
+  cards.push(`<div class="album-new-btn" onclick="document.getElementById('newAlbumBtn').click()"><span class="plus">+</span><span>Nytt album</span></div>`);
+  grid.innerHTML=cards.join("");
 }
 
-function renderMoodboards(){
-  renderMoodSelects();
-  const grid=document.getElementById("moodGrid");
-  const withMood=state.demos.filter(d=>state.moodboards[d.id]);
-  if(!withMood.length){grid.innerHTML=`<div class="empty">Ingen moodboards ennå. Velg en demo og lagre retning, bilder og referanser.</div>`;return;}
-  grid.innerHTML=withMood.map(d=>{
-    const mb=state.moodboards[d.id];
-    const imgs=lines(typeof mb.images==="string"?mb.images:"");
-    const refs=typeof mb.refs==="string"?lines(mb.refs):(mb.refs||[]);
-    const cover=imgs[0]||d.cover||placeholderCover(d.title);
-    const colors=mb.colors||[];
-    return`<article class="mood-card">
-      <img class="mood-cover" src="${esc(cover)}" alt="${esc(d.title)}" />
-      <div class="mood-body">
-        <h3>${esc(d.title)}</h3>
-        <p class="hint">${esc(mb.feeling||"Ingen følelse skrevet.")}</p>
-        <div class="swatches">${colors.map(c=>`<span class="swatch" style="background:${esc(c)}"></span>`).join("")}</div>
-        <div class="tag-row">${refs.slice(0,4).map(r=>`<span class="tag">${esc(r)}</span>`).join("")}</div>
-        <button class="small-btn" data-load-mood="${d.id}">Rediger moodboard</button>
-      </div>
-    </article>`;
-  }).join("");
+function openAlbum(id){currentAlbumId=id;renderAlbumDetail();}
+
+function renderAlbumDetail(){
+  document.getElementById("albumsListView").classList.add("hidden");
+  document.getElementById("albumDetailView").classList.remove("hidden");
+  const album=state.albums.find(a=>a.id===currentAlbumId);
+  if(!album){currentAlbumId=null;renderAlbums();return;}
+  const hd=document.getElementById("albumDetailHd");
+  const img=album.cover?`<img class="album-detail-cover" src="${esc(album.cover)}" alt="${esc(album.name)}">`:`<div class="album-detail-cover-ph">🎵</div>`;
+  hd.innerHTML=`${img}<div class="album-detail-info"><h2>${esc(album.name)}</h2><span>${album.beatIds.length} beat${album.beatIds.length===1?"":"s"}</span></div>`;
+  const beats=state.beats.filter(b=>album.beatIds.includes(b.id));
+  renderBeats(document.getElementById("albumBeatList"),beats,true);
 }
+
+function removeFromAlbum(beatId){
+  const album=state.albums.find(a=>a.id===currentAlbumId);
+  if(!album)return;
+  album.beatIds=album.beatIds.filter(id=>id!==beatId);
+  saveState();renderAlbumDetail();showToast("✓ Beat fjernet fra album");
+}
+
+document.getElementById("newAlbumCoverInput").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const sz=400;const canvas=document.createElement("canvas");canvas.width=sz;canvas.height=sz;
+      const ctx=canvas.getContext("2d");
+      const ratio=Math.min(sz/img.width,sz/img.height);
+      const w=img.width*ratio,h=img.height*ratio;
+      ctx.drawImage(img,(sz-w)/2,(sz-h)/2,w,h);
+      newAlbumCoverBase64=canvas.toDataURL("image/jpeg",.85);
+      const prev=document.getElementById("albumCoverPreview");
+      prev.src=newAlbumCoverBase64;
+      document.getElementById("albumCoverPreviewWrap").style.display="flex";
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(f);
+});
+
+document.getElementById("newAlbumBtn").addEventListener("click",()=>{
+  document.getElementById("newAlbumName").value="";
+  document.getElementById("newAlbumCoverInput").value="";
+  document.getElementById("albumCoverPreviewWrap").style.display="none";
+  newAlbumCoverBase64=null;
+  document.getElementById("newAlbumModal").classList.add("open");
+});
+
+document.getElementById("saveNewAlbumBtn").addEventListener("click",()=>{
+  const name=document.getElementById("newAlbumName").value.trim();
+  if(!name){alert("Skriv inn et albumnavn.");return;}
+  state.albums.unshift({id:uid(),name,cover:newAlbumCoverBase64||null,beatIds:[],createdAt:Date.now()});
+  saveState();renderAlbums();closeModal("newAlbumModal");showToast(`✓ Album "${name}" opprettet`);
+});
+
+document.getElementById("backToAlbumsBtn").addEventListener("click",()=>{currentAlbumId=null;renderAlbums();});
+
+document.getElementById("addBeatsToAlbumBtn").addEventListener("click",()=>{
+  const album=state.albums.find(a=>a.id===currentAlbumId);if(!album)return;
+  const avail=state.beats.filter(b=>!album.beatIds.includes(b.id));
+  document.getElementById("beatCheckList").innerHTML=avail.length
+    ?avail.map(b=>`<label class="beat-check-item"><input type="checkbox" value="${b.id}"><span>${esc(b.name)}</span></label>`).join("")
+    :`<div class="hint">Alle beats er allerede i dette albumet.</div>`;
+  document.getElementById("addBeatsModal").classList.add("open");
+});
+
+document.getElementById("confirmAddBeatsBtn").addEventListener("click",()=>{
+  const album=state.albums.find(a=>a.id===currentAlbumId);if(!album)return;
+  const checked=[...document.querySelectorAll("#beatCheckList input:checked")];
+  checked.forEach(cb=>{if(!album.beatIds.includes(cb.value))album.beatIds.push(cb.value);});
+  saveState();renderAlbumDetail();closeModal("addBeatsModal");showToast(`✓ ${checked.length} beat${checked.length===1?"":"s"} lagt til`);
+});
+
+document.getElementById("deleteAlbumBtn").addEventListener("click",()=>{
+  const a=state.albums.find(x=>x.id===currentAlbumId);
+  if(!a||!confirm(`Slette albumet "${a.name}"? Beatsa slettes ikke.`))return;
+  state.albums=state.albums.filter(x=>x.id!==currentAlbumId);
+  currentAlbumId=null;saveState();renderAlbums();showToast("🗑 Album slettet");
+});
 
 // ── PIPELINE ──
 function renderPipeline(){
   document.getElementById("pipelineBoard").innerHTML=STAGES.map(stage=>{
     const demos=state.demos.filter(d=>d.stage===stage);
-    return`<section class="pipeline-col"><h3>${stage} <span class="hint">${demos.length}</span></h3>${demos.map(d=>`<div class="pipeline-item"><strong>${esc(d.title)}</strong><span>${d.done}% ferdig · score ${releaseScore(d)}</span></div>`).join("")||`<p class="hint">Ingen låter</p>`}</section>`;
+    return`<section class="pipeline-col"><h3>${stage} <span class="hint">${demos.length}</span></h3>${demos.map(d=>`<div class="pipeline-item"><strong>${esc(d.title)}</strong><span>${d.done}% ferdig · score ${releaseScore(d)}</span></div>`).join("")||`<p class="hint">Ingen</p>`}</section>`;
   }).join("");
-}
-
-// ── PROMPTS ──
-function dailyPrompt(){const d=new Date();const seed=Number(d.toISOString().slice(0,10).replaceAll("-",""))%state.prompts.length;return state.prompts[seed]||DEFAULT_PROMPTS[0];}
-function renderPrompts(){
-  document.getElementById("dailyPromptCard").innerHTML=`<div class="eyebrow">Dagens skriveprompt</div><h2>${esc(dailyPrompt())}</h2><p class="hint">Skriv direkte i tekstfeltet under et beat, eller ta den som utgangspunkt for en ny låt.</p>`;
-  document.getElementById("promptList").innerHTML=state.prompts.map((p,i)=>`<article class="beat-item"><div class="icon-pill">✍️</div><div class="beat-meta"><strong>${esc(p)}</strong><span>Prompt #${i+1}</span></div><button class="small-btn danger" data-delete-prompt="${i}">Slett</button></article>`).join("");
 }
 
 // ── VERSIONS ──
+function renderVersionSel(){
+  const opts=state.demos.map(d=>`<option value="${d.id}">${esc(d.title)}`).join("");
+  const el=document.getElementById("versionDemoSelect");if(el)el.innerHTML=opts||`<option>Ingen demoer`;
+}
 function renderVersions(){
-  renderMoodSelects();
+  renderVersionSel();
   const list=document.getElementById("versionList");
-  if(!state.versions.length){list.innerHTML=`<div class="empty">Ingen versjoner ennå. Lagre v1 rough eller ny mix.</div>`;return;}
+  if(!state.versions.length){list.innerHTML=`<div class="empty">Ingen versjoner ennå.</div>`;return;}
   list.innerHTML=state.versions.slice().sort((a,b)=>b.createdAt-a.createdAt).map(v=>{
     const d=state.demos.find(x=>x.id===v.demoId);
-    return`<article class="version-card"><div class="section-title" style="margin:0"><h3>${esc(v.name)}</h3><span class="hint">${new Date(v.createdAt).toLocaleDateString("no-NO")}</span></div><strong>${esc(d?.title||"Ukjent demo")}</strong><p class="hint">${esc(v.notes||"Ingen notater.")}</p><div class="card-actions">${v.url?`<a class="small-btn" href="${esc(v.url)}" target="_blank" rel="noopener">Åpne</a>`:""}<button class="small-btn danger" data-delete-version="${v.id}">Slett</button></div></article>`;
+    return`<div class="version-card"><div class="section-title" style="margin:0"><h3>${esc(v.name)}</h3><span class="hint">${new Date(v.createdAt).toLocaleDateString("no-NO")}</span></div><strong>${esc(d?.title||"Ukjent")}</strong><p class="hint">${esc(v.notes||"")}</p><div class="card-actions">${v.url?`<a class="small-btn" href="${esc(v.url)}" target="_blank">Åpne</a>`:""}<button class="small-btn danger" data-dv="${v.id}">Slett</button></div></div>`;
   }).join("");
 }
 
-// ── A/B GLOBAL ──
-function renderABOptions(){
-  const type=document.getElementById("abType")?.value||"demos";
-  const items=type==="demos"?state.demos:state.beats;
-  const opts=items.map(i=>`<option value="${i.id}">${esc(i.title||i.name)}</option>`).join("");
-  if(document.getElementById("abA"))document.getElementById("abA").innerHTML=opts;
-  if(document.getElementById("abB"))document.getElementById("abB").innerHTML=opts;
-  renderABCompare();
-}
-function renderABCompare(){
-  const type=document.getElementById("abType")?.value||"demos";
-  const items=type==="demos"?state.demos:state.beats;
-  const a=items.find(i=>i.id===document.getElementById("abA")?.value);
-  const b=items.find(i=>i.id===document.getElementById("abB")?.value);
-  document.getElementById("abCompare").innerHTML=[a,b].map((item,idx)=>item?`<article class="ab-card"><div class="eyebrow">${idx===0?"A":"B"}</div><h3>${esc(item.title||item.name)}</h3><p class="hint">${type==="demos"?`${item.stage} · ${item.done}% ferdig · score ${releaseScore(item)}`:`${item.favorite?"Favoritt":"–"} · ${item.lyrics?.trim()?"Har tekst":"Mangler tekst"}`}</p></article>`:`<div class="empty">Velg ${idx===0?"A":"B"}</div>`).join("");
-  document.getElementById("abHistory").innerHTML=state.abHistory.slice(0,10).map(h=>`<article class="beat-item"><div class="icon-pill">🏆</div><div class="beat-meta"><strong>${esc(h.winnerName)}</strong><span>Vant over ${esc(h.loserName)} · ${new Date(h.createdAt).toLocaleDateString("no-NO")}</span></div></article>`).join("")||`<div class="empty">Ingen A/B-valg ennå.</div>`;
-}
-
-// ── RELEASE SCORES ──
-function renderReleaseScores(){
+// ── RELEASE ──
+function renderRelease(){
   const grid=document.getElementById("releaseGrid");
   const demos=state.demos.slice().sort((a,b)=>releaseScore(b)-releaseScore(a));
-  if(!demos.length){grid.innerHTML=`<div class="empty">Ingen demoer å score ennå.</div>`;return;}
+  if(!demos.length){grid.innerHTML=`<div class="empty">Ingen demoer ennå.</div>`;return;}
   grid.innerHTML=demos.map(d=>{
-    const sc=releaseScore(d);
-    return`<article class="release-card"><div class="section-title" style="margin:0"><h3>${esc(d.title)}</h3><div class="release-score" style="--score:${sc}"><span>${sc}</span></div></div><p class="hint">${d.stage} · ${d.done}% ferdig · ${d.mix}% mix · ${d.rating}/10</p><div class="progress-bar"><div style="width:${sc}%"></div></div><div class="tag-row"><span class="tag">${state.moodboards[d.id]?"✓ Moodboard":"Mangler moodboard"}</span><span class="tag">${state.versions.some(v=>v.demoId===d.id)?"✓ Versjon lagret":"Ingen versjon"}</span><span class="tag">${d.ab?.winner?"✓ A/B valgt":"Ingen A/B"}</span></div></article>`;
+    const sc=releaseScore(d);const col=sc>=70?"#34d399":sc>=40?"#f97316":"#fb7185";
+    return`<div class="release-card"><div class="section-title" style="margin:0"><h3>${esc(d.title)}</h3><div class="release-score" style="--score:${sc}"><span style="color:${col}">${sc}</span></div></div><p class="hint">${d.stage} · ${d.done}% ferdig · ${d.mix}% mix · ${d.rating}/10</p><div class="progress-bar" style="margin-top:4px"><div style="width:${sc}%"></div></div><div class="tag-row" style="margin-top:8px"><span class="tag">${state.versions.some(v=>v.demoId===d.id)?"✓ Versjon lagret":"Ingen versjon"}</span><span class="tag">${(d.lyricsNotes||"").trim()?"✓ Notater":"Ingen notater"}</span></div></div>`;
   }).join("");
 }
 
@@ -826,326 +768,146 @@ function renderIntegrations(){
   document.getElementById("soundcloudProxy").value=state.settings.soundcloudProxy||"";
 }
 
-function renderAll(){renderStats();renderBeats();renderDemos();renderMoodboards();renderPipeline();renderPrompts();renderVersions();renderABOptions();renderReleaseScores();renderIntegrations();}
+function renderAll(){renderStats();renderBeats();renderDemos();renderAlbums();renderPipeline();renderVersions();renderRelease();renderIntegrations();}
 
-// ── MODAL ──
+// ── DEMO MODAL ──
 function openDemoModal(id){
   const d=state.demos.find(x=>x.id===id);if(!d)return;
   document.getElementById("editDemoId").value=d.id;
   document.getElementById("editModalTitle").textContent=d.title;
-  document.getElementById("editModalArtist").textContent=d.url&&d.url!=="https://soundcloud.com/"?d.url:"";
+  document.getElementById("editModalSub").textContent="";
   updateModalScore(d);
-
-  // SC embed
   const ew=document.getElementById("editEmbedWrap");
-  if(d.url&&d.url!=="https://soundcloud.com/"){
-    ew.innerHTML=`<iframe width="100%" height="120" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=${encodeURIComponent(d.url)}&color=%23a855f7&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=false" style="border-radius:12px"></iframe>`;
-  }else{ew.innerHTML="";}
-
-  // Pipeline
-  document.getElementById("editPipelineSel").innerHTML=STAGES.map(s=>`<button class="p-btn${d.stage===s?" active":""}" onclick="selectModalStage('${s}',this)">${s}</button>`).join("");
-
-  // Completion + rating
+  ew.innerHTML=d.url&&d.url!=="https://soundcloud.com/"?`<iframe width="100%" height="120" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=${encodeURIComponent(d.url)}&color=%23a855f7&auto_play=false&hide_related=true&show_comments=false&show_user=true&visual=false" style="border-radius:12px"></iframe>`:"";
+  document.getElementById("editPipelineSel").innerHTML=STAGES.map(s=>`<button class="p-btn${d.stage===s?" active":""}" onclick="selectPStage('${s}',this)">${s}</button>`).join("");
   document.getElementById("editCompl").value=d.done||0;
   document.getElementById("editComplVal").textContent=(d.done||0)+"%";
   modalRating=d.rating||0;renderModalStars(modalRating);
-
-  // Notes
   document.getElementById("editNotes").value=d.notes||"";
-
-  // Moodboard
-  const mb=state.moodboards[d.id]||{feeling:"",images:"",refs:[],colors:[]};
-  document.getElementById("editMoodFeeling").value=mb.feeling||"";
-  // render tags
-  renderModalMoodTags(d.id);
-
-  // Versions
-  renderModalVersions(d.id);
-
-  // A/B
-  const ab=d.ab||{};
-  document.getElementById("editAbALbl").value=ab.aLabel||"";
-  document.getElementById("editAbANote").value=ab.aNote||"";
-  document.getElementById("editAbBLbl").value=ab.bLabel||"";
-  document.getElementById("editAbBNote").value=ab.bNote||"";
-  document.getElementById("editAbAWinLbl").textContent=ab.aLabel||"—";
-  document.getElementById("editAbBWinLbl").textContent=ab.bLabel||"—";
-  modalABWin=ab.winner||null;updateModalABUI();
-
-  // Notes tab
+  renderModalVers(d.id);
   document.getElementById("editDemoNotes").value=d.lyricsNotes||"";
-
-  switchModalTab("overview");
+  switchMTab("overview");
   document.getElementById("editDemoModal").classList.add("open");
 }
-
 function updateModalScore(d){
-  const sc=releaseScore(d);
-  const el=document.getElementById("editModalScore");
-  el.textContent=sc;
-  el.style.color=sc>=70?"#34d399":sc>=40?"#f97316":"#fb7185";
+  const sc=releaseScore(d);const el=document.getElementById("editModalScore");
+  el.textContent=sc;el.style.color=sc>=70?"#34d399":sc>=40?"#f97316":"#fb7185";
 }
-
-function switchModalTab(tab){
-  document.querySelectorAll(".mtab").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll(".mtab-content").forEach(t=>t.classList.remove("active"));
-  document.querySelector(`.mtab[data-mtab="${tab}"]`).classList.add("active");
-  document.getElementById(`mtab-${tab}`).classList.add("active");
+function switchMTab(t){
+  document.querySelectorAll(".mtab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".mtab-content").forEach(x=>x.classList.remove("active"));
+  document.querySelector(`.mtab[data-mtab="${t}"]`).classList.add("active");
+  document.getElementById(`mtab-${t}`).classList.add("active");
 }
-
-function selectModalStage(s,el){
-  document.querySelectorAll(".p-btn").forEach(b=>b.classList.remove("active"));
-  el.classList.add("active");
-}
-
+function selectPStage(s,el){document.querySelectorAll(".p-btn").forEach(b=>b.classList.remove("active"));el.classList.add("active");}
 function renderModalStars(r){
   modalRating=r;
-  document.getElementById("editRatingStars").innerHTML=Array.from({length:10},(_,i)=>`<button class="rstar${i<r?" on":""}" onmouseover="previewStars(${i+1})" onmouseout="renderModalStars(${modalRating})" onclick="setModalRating(${i+1})">★</button>`).join("");
+  document.getElementById("editRatingStars").innerHTML=Array.from({length:10},(_,i)=>`<button class="rstar${i<r?" on":""}" onmouseover="pvStars(${i+1})" onmouseout="renderModalStars(${modalRating})" onclick="setMRating(${i+1})">★</button>`).join("");
 }
-function previewStars(n){document.querySelectorAll(".rstar").forEach((s,i)=>s.classList.toggle("on",i<n));}
-function setModalRating(n){modalRating=n;renderModalStars(n);}
-
-function renderModalMoodTags(demoId){
-  const mb=state.moodboards[demoId]||{};
-  const tags=mb.tags||[];
-  const refs=mb.refs||[];
-  const colors=mb.colors||[];
-  document.getElementById("editMoodTags").innerHTML=tags.map(t=>`<span class="tag">${esc(t)}<span class="tag-x" onclick="removeModalMoodItem('tag','${esc(t)}')">✕</span></span>`).join("");
-  document.getElementById("editMoodRefs").innerHTML=refs.map(r=>`<span class="tag">🎵 ${esc(r)}<span class="tag-x" onclick="removeModalMoodItem('ref','${esc(r)}')">✕</span></span>`).join("");
-  document.getElementById("editMoodColors").innerHTML=colors.map(c=>`<span class="tag"><span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:${esc(c)};margin-right:4px;vertical-align:middle"></span>${esc(c)}<span class="tag-x" onclick="removeModalMoodItem('color','${esc(c)}')">✕</span></span>`).join("");
-}
-
-function addModalTag(type){
-  const demoId=document.getElementById("editDemoId").value;
-  const inputs={tag:"editMoodTagIn",ref:"editMoodRefIn",color:"editMoodColorIn"};
-  const val=document.getElementById(inputs[type]).value.trim();
-  if(!val)return;
-  if(!state.moodboards[demoId])state.moodboards[demoId]={feeling:"",images:"",tags:[],refs:[],colors:[],updatedAt:Date.now()};
-  const mb=state.moodboards[demoId];
-  const key=type+"s";
-  if(!mb[key])mb[key]=[];
-  if(!mb[key].includes(val))mb[key].push(val);
-  renderModalMoodTags(demoId);
-  document.getElementById(inputs[type]).value="";
-}
-
-function removeModalMoodItem(type,val){
-  const demoId=document.getElementById("editDemoId").value;
-  const mb=state.moodboards[demoId];if(!mb)return;
-  const key=type+"s";
-  mb[key]=(mb[key]||[]).filter(x=>x!==val);
-  renderModalMoodTags(demoId);
-}
-
-function renderModalVersions(demoId){
+function pvStars(n){document.querySelectorAll(".rstar").forEach((s,i)=>s.classList.toggle("on",i<n));}
+function setMRating(n){modalRating=n;renderModalStars(n);}
+function renderModalVers(demoId){
   const vers=state.versions.filter(v=>v.demoId===demoId).sort((a,b)=>b.createdAt-a.createdAt);
   const el=document.getElementById("editVerList");
   if(!vers.length){el.innerHTML=`<div class="hint" style="padding:10px 0">Ingen versjoner ennå.</div>`;return;}
-  el.innerHTML=vers.map(v=>`<div class="ver-item"><div class="ver-date">${new Date(v.createdAt).toLocaleDateString("no-NO")} ${new Date(v.createdAt).toLocaleTimeString("no-NO",{hour:"2-digit",minute:"2-digit"})}</div><div class="ver-text"><strong>${esc(v.name)}</strong>${v.notes?`<br><span style="color:var(--muted);font-size:12px">${esc(v.notes)}</span>`:""}</div><button class="ver-del" onclick="deleteModalVersion('${v.id}')">✕</button></div>`).join("");
+  el.innerHTML=vers.map(v=>`<div class="ver-item"><div class="ver-date">${new Date(v.createdAt).toLocaleDateString("no-NO")} ${new Date(v.createdAt).toLocaleTimeString("no-NO",{hour:"2-digit",minute:"2-digit"})}</div><div class="ver-text"><strong>${esc(v.name)}</strong>${v.notes?`<br><span style="color:var(--muted);font-size:12px">${esc(v.notes)}</span>`:""}</div><button class="ver-del" onclick="delMVer('${v.id}')">✕</button></div>`).join("");
 }
+function delMVer(id){state.versions=state.versions.filter(v=>v.id!==id);saveState();const did=document.getElementById("editDemoId").value;renderModalVers(did);renderVersions();}
 
-function deleteModalVersion(id){
-  state.versions=state.versions.filter(v=>v.id!==id);
-  saveState();
-  const demoId=document.getElementById("editDemoId").value;
-  renderModalVersions(demoId);
-  renderVersions();
-}
-
-function setModalABWin(side){
-  modalABWin=side;updateModalABUI();
-}
-function updateModalABUI(){
-  document.getElementById("editAbAWin").classList.toggle("winner",modalABWin==="A");
-  document.getElementById("editAbBWin").classList.toggle("winner",modalABWin==="B");
-  document.getElementById("editAbAWinLbl").textContent=document.getElementById("editAbALbl").value||"—";
-  document.getElementById("editAbBWinLbl").textContent=document.getElementById("editAbBLbl").value||"—";
-}
-
-// ── MODAL SAVE BUTTONS ──
 document.getElementById("saveOverviewBtn").addEventListener("click",()=>{
   const d=state.demos.find(x=>x.id===document.getElementById("editDemoId").value);if(!d)return;
   const ap=document.querySelector(".p-btn.active");if(ap)d.stage=ap.textContent;
-  d.done=clamp(document.getElementById("editCompl").value);
-  d.rating=modalRating;
-  d.notes=document.getElementById("editNotes").value.trim();
-  saveState();renderAll();updateModalScore(d);
-  showToast("✓ Endringer lagret");
+  d.done=clamp(document.getElementById("editCompl").value);d.rating=modalRating;d.notes=document.getElementById("editNotes").value.trim();
+  saveState();renderAll();updateModalScore(d);showToast("✓ Lagret");
 });
-
 document.getElementById("deleteDemoBtn").addEventListener("click",()=>{
-  const id=document.getElementById("editDemoId").value;
-  if(!confirm("Slette denne demoen?"))return;
-  state.demos=state.demos.filter(d=>d.id!==id);
-  delete state.moodboards[id];
-  state.versions=state.versions.filter(v=>v.demoId!==id);
-  saveState();renderAll();document.getElementById("editDemoModal").classList.remove("open");
-  showToast("🗑 Demo slettet");
+  const id=document.getElementById("editDemoId").value;if(!confirm("Slette demoen?"))return;
+  state.demos=state.demos.filter(d=>d.id!==id);state.versions=state.versions.filter(v=>v.demoId!==id);
+  saveState();renderAll();document.getElementById("editDemoModal").classList.remove("open");showToast("🗑 Slettet");
 });
-
-document.getElementById("saveMoodboardModalBtn").addEventListener("click",()=>{
-  const demoId=document.getElementById("editDemoId").value;
-  if(!state.moodboards[demoId])state.moodboards[demoId]={tags:[],refs:[],colors:[]};
-  state.moodboards[demoId].feeling=document.getElementById("editMoodFeeling").value.trim();
-  state.moodboards[demoId].updatedAt=Date.now();
-  saveState();renderAll();
-  const d=state.demos.find(x=>x.id===demoId);if(d)updateModalScore(d);
-  showToast("✓ Moodboard lagret");
-});
-
 document.getElementById("addModalVerBtn").addEventListener("click",()=>{
-  const demoId=document.getElementById("editDemoId").value;
-  const text=document.getElementById("editVerInput").value.trim();if(!text)return;
-  state.versions.unshift({id:uid(),demoId,name:text,url:"",notes:"",createdAt:Date.now()});
-  document.getElementById("editVerInput").value="";
-  saveState();renderModalVersions(demoId);renderVersions();
-  const d=state.demos.find(x=>x.id===demoId);if(d)updateModalScore(d);
-  showToast("✓ Versjon lagt til");
+  const did=document.getElementById("editDemoId").value;const t=document.getElementById("editVerInput").value.trim();if(!t)return;
+  state.versions.unshift({id:uid(),demoId:did,name:t,url:"",notes:"",createdAt:Date.now()});
+  document.getElementById("editVerInput").value="";saveState();renderModalVers(did);renderVersions();
+  const d=state.demos.find(x=>x.id===did);if(d)updateModalScore(d);showToast("✓ Versjon lagt til");
 });
-
-document.getElementById("saveABModalBtn").addEventListener("click",()=>{
-  const d=state.demos.find(x=>x.id===document.getElementById("editDemoId").value);if(!d)return;
-  d.ab={aLabel:document.getElementById("editAbALbl").value,aNote:document.getElementById("editAbANote").value,bLabel:document.getElementById("editAbBLbl").value,bNote:document.getElementById("editAbBNote").value,winner:modalABWin};
-  saveState();updateModalScore(d);showToast("✓ A/B lagret");
-});
-
 document.getElementById("saveDemoNotesBtn").addEventListener("click",()=>{
   const d=state.demos.find(x=>x.id===document.getElementById("editDemoId").value);if(!d)return;
-  d.lyricsNotes=document.getElementById("editDemoNotes").value;
-  saveState();showToast("✓ Notater lagret");
+  d.lyricsNotes=document.getElementById("editDemoNotes").value;saveState();updateModalScore(d);showToast("✓ Notater lagret");
 });
-
 document.getElementById("closeModalBtn").addEventListener("click",()=>document.getElementById("editDemoModal").classList.remove("open"));
 document.getElementById("editDemoModal").addEventListener("click",e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove("open");});
-document.querySelectorAll(".mtab").forEach(t=>t.addEventListener("click",()=>switchModalTab(t.dataset.mtab)));
+document.querySelectorAll(".mtab").forEach(t=>t.addEventListener("click",()=>switchMTab(t.dataset.mtab)));
 
-// ── BEATS EVENTS ──
+// ── BEAT EVENTS ──
 document.getElementById("beatFiles").addEventListener("change",e=>{
   Array.from(e.target.files).forEach(f=>state.beats.unshift({id:uid(),name:f.name.replace(/\.[^/.]+$/,""),url:URL.createObjectURL(f),source:"local",favorite:false,lyrics:"",createdAt:Date.now()}));
   saveState();renderAll();
 });
 document.getElementById("addBeatUrlBtn").addEventListener("click",()=>{
-  const name=document.getElementById("beatNameInput").value.trim();
-  const url=document.getElementById("beatUrlInput").value.trim();
-  if(!name||!url){alert("Legg inn navn og URL.");return;}
-  state.beats.unshift({id:uid(),name,url:convertDriveUrl(url),source:url.includes("drive.google")?"Google Drive":"URL",favorite:false,lyrics:"",createdAt:Date.now()});
+  const name=document.getElementById("beatNameInput").value.trim(),url=document.getElementById("beatUrlInput").value.trim();
+  if(!name||!url){alert("Navn og URL kreves.");return;}
+  state.beats.unshift({id:uid(),name,url:convertDrive(url),source:url.includes("drive.google")?"Google Drive":"URL",favorite:false,lyrics:"",createdAt:Date.now()});
   document.getElementById("beatNameInput").value="";document.getElementById("beatUrlInput").value="";
-  saveState();renderAll();
+  saveState();renderAll();showToast("✓ Beat lagt til");
 });
-document.getElementById("beatList").addEventListener("click",e=>{
-  const star=e.target.closest("[data-star-id]");
-  if(star){e.stopPropagation();const b=state.beats.find(x=>x.id===star.dataset.starId);if(b){b.favorite=!b.favorite;saveState();renderAll();if(selectedBeatId===b.id)selectBeat(b.id);}return;}
-  const item=e.target.closest("[data-beat-id]");if(item)selectBeat(item.dataset.beatId);
-});
-document.getElementById("selectedFavBtn").addEventListener("click",()=>{const b=state.beats.find(x=>x.id===selectedBeatId);if(!b)return;b.favorite=!b.favorite;saveState();selectBeat(b.id);renderAll();});
-document.getElementById("saveLyricsBtn").addEventListener("click",()=>{const b=state.beats.find(x=>x.id===selectedBeatId);if(!b)return;b.lyrics=document.getElementById("lyricsBox").value;saveState();renderAll();showToast("✓ Tekst lagret");});
-document.getElementById("lyricsBox").addEventListener("input",()=>{const b=state.beats.find(x=>x.id===selectedBeatId);if(!b)return;b.lyrics=document.getElementById("lyricsBox").value;saveState();renderBeats();});
-document.getElementById("copyLyricsBtn").addEventListener("click",async()=>{await navigator.clipboard.writeText(document.getElementById("lyricsBox").value);showToast("✓ Teksten er kopiert");});
-document.getElementById("deleteBeatBtn").addEventListener("click",()=>{if(!selectedBeatId||!confirm("Slette dette beatet?"))return;state.beats=state.beats.filter(b=>b.id!==selectedBeatId);selectedBeatId=null;document.getElementById("playerPanel").classList.add("hidden");saveState();renderAll();});
-document.getElementById("clearBeatsBtn").addEventListener("click",()=>{if(!confirm("Slette alle beats?"))return;state.beats=[];selectedBeatId=null;document.getElementById("playerPanel").classList.add("hidden");saveState();renderAll();});
-document.getElementById("beatSearch").addEventListener("input",renderBeats);
-document.getElementById("beatFilter").addEventListener("change",renderBeats);
+document.getElementById("beatSearch").addEventListener("input",()=>renderBeats());
+document.getElementById("beatFilter").addEventListener("change",()=>renderBeats());
+document.getElementById("clearBeatsBtn").addEventListener("click",()=>{if(!confirm("Slette alle beats?"))return;state.beats=[];state.albums.forEach(a=>a.beatIds=[]);saveState();renderAll();});
 
-// ── DEMOS EVENTS ──
+// ── DEMO EVENTS ──
 document.getElementById("fetchSCBtn").addEventListener("click",async()=>{
-  const url=document.getElementById("demoUrl").value.trim();
-  if(!url){alert("Legg inn SoundCloud-URL.");return;}
-  const btn=document.getElementById("fetchSCBtnTxt");
-  btn.innerHTML='<span class="spinner"></span>';
+  const url=document.getElementById("demoUrl").value.trim();if(!url){alert("Legg inn URL.");return;}
+  const btn=document.getElementById("fetchSCBtnTxt");btn.innerHTML='<span class="spinner"></span>';
   try{
     const proxy=state.settings.soundcloudProxy;
-    const endpoint=proxy?`${proxy}${encodeURIComponent(url)}`:`https://soundcloud.com/oembed?url=${encodeURIComponent(url)}&format=json`;
-    const r=await fetch(endpoint);
-    const d=await r.json();
+    const ep=proxy?`${proxy}${encodeURIComponent(url)}`:`https://soundcloud.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+    const r=await fetch(ep);const d=await r.json();
     if(d.title)document.getElementById("demoTitle").value=d.title;
     if(d.thumbnail_url)document.getElementById("demoCover").value=d.thumbnail_url;
-    btn.textContent="✓ Hentet";
-    setTimeout(()=>btn.textContent="Hent metadata",2000);
-  }catch{btn.textContent="Hent metadata";alert("Kunne ikke hente. Fyll inn tittel manuelt, eller bruk proxy for private tracks.");}
+    btn.textContent="✓ Hentet";setTimeout(()=>btn.textContent="Hent metadata",2000);
+  }catch{btn.textContent="Hent metadata";alert("Kunne ikke hente. Fyll inn manuelt.");}
 });
-
 document.getElementById("addDemoBtn").addEventListener("click",()=>{
-  const url=document.getElementById("demoUrl").value.trim();
-  const title=document.getElementById("demoTitle").value.trim();
-  if(!url||!title){alert("Legg inn URL og tittel.");return;}
-  state.demos.unshift({id:uid(),title,url,cover:document.getElementById("demoCover").value.trim(),rating:Number(document.getElementById("demoRating").value),done:clamp(document.getElementById("demoDone").value),mix:clamp(document.getElementById("demoMix").value),stage:document.getElementById("demoStage").value,notes:document.getElementById("demoNotes").value.trim(),lyricsNotes:"",ab:{aLabel:"",aNote:"",bLabel:"",bNote:"",winner:null},createdAt:Date.now()});
+  const url=document.getElementById("demoUrl").value.trim(),title=document.getElementById("demoTitle").value.trim();
+  if(!url||!title){alert("URL og tittel kreves.");return;}
+  state.demos.unshift({id:uid(),title,url,cover:document.getElementById("demoCover").value.trim(),rating:Number(document.getElementById("demoRating").value),done:clamp(document.getElementById("demoDone").value),mix:clamp(document.getElementById("demoMix").value),stage:document.getElementById("demoStage").value,notes:document.getElementById("demoNotes").value.trim(),lyricsNotes:"",createdAt:Date.now()});
   ["demoUrl","demoTitle","demoCover","demoNotes"].forEach(id=>document.getElementById(id).value="");
-  document.getElementById("demoDone").value=20;document.getElementById("demoMix").value=0;document.getElementById("demoRating").value=1;document.getElementById("demoStage").value="Idé";
+  document.getElementById("demoDone").value=20;document.getElementById("demoMix").value=0;
   saveState();renderAll();showToast("✓ Demo lagt til");
 });
-
 document.getElementById("demoGrid").addEventListener("click",e=>{
-  const edit=e.target.closest("[data-edit-demo]");if(edit){openDemoModal(edit.dataset.editDemo);return;}
-  const rate=e.target.closest("[data-demo-rate]");if(rate){const d=state.demos.find(x=>x.id===rate.dataset.demoRate);if(d){d.rating=Number(rate.dataset.rate);saveState();renderAll();}}
+  const ed=e.target.closest("[data-ed]");if(ed){openDemoModal(ed.dataset.ed);return;}
+  const rt=e.target.closest("[data-dr]");if(rt){const d=state.demos.find(x=>x.id===rt.dataset.dr);if(d){d.rating=Number(rt.dataset.rt);saveState();renderAll();}}
 });
 document.getElementById("demoGrid").addEventListener("input",e=>{
-  const progress=e.target.closest("[data-demo-progress]");const stage=e.target.closest("[data-demo-stage]");const mix=e.target.closest("[data-demo-mix]");
-  if(progress){const d=state.demos.find(x=>x.id===progress.dataset.demoProgress);if(d)d.done=clamp(progress.value);}
-  if(stage){const d=state.demos.find(x=>x.id===stage.dataset.demoStage);if(d)d.stage=stage.value;}
-  if(mix){const d=state.demos.find(x=>x.id===mix.dataset.demoMix);if(d)d.mix=clamp(mix.value);}
+  const p=e.target.closest("[data-dp]"),st=e.target.closest("[data-ds]"),mx=e.target.closest("[data-dm]");
+  if(p){const d=state.demos.find(x=>x.id===p.dataset.dp);if(d)d.done=clamp(p.value);}
+  if(st){const d=state.demos.find(x=>x.id===st.dataset.ds);if(d)d.stage=st.value;}
+  if(mx){const d=state.demos.find(x=>x.id===mx.dataset.dm);if(d)d.mix=clamp(mx.value);}
   saveState();renderAll();
 });
 document.getElementById("demoSearch").addEventListener("input",renderDemos);
 document.getElementById("demoSort").addEventListener("change",renderDemos);
 
-// ── MOODBOARD EVENTS ──
-document.getElementById("saveMoodBtn").addEventListener("click",()=>{
-  const demoId=document.getElementById("moodDemoSelect").value;
-  if(!state.demos.some(d=>d.id===demoId)){alert("Velg en demo.");return;}
-  const existing=state.moodboards[demoId]||{tags:[],refs:[],colors:[]};
-  state.moodboards[demoId]={...existing,feeling:document.getElementById("moodFeeling").value.trim(),images:document.getElementById("moodImages").value.trim(),refs:lines(document.getElementById("moodRefs").value),colors:[document.getElementById("moodColor1").value,document.getElementById("moodColor2").value,document.getElementById("moodColor3").value],updatedAt:Date.now()};
-  saveState();renderAll();showToast("✓ Moodboard lagret");
-});
-document.getElementById("moodGrid").addEventListener("click",e=>{
-  const btn=e.target.closest("[data-load-mood]");if(!btn)return;
-  const mb=state.moodboards[btn.dataset.loadMood];
-  document.getElementById("moodDemoSelect").value=btn.dataset.loadMood;
-  document.getElementById("moodFeeling").value=mb.feeling||"";
-  document.getElementById("moodImages").value=typeof mb.images==="string"?mb.images:"";
-  document.getElementById("moodRefs").value=Array.isArray(mb.refs)?mb.refs.join("\n"):(mb.refs||"");
-  document.getElementById("moodColor1").value=mb.colors?.[0]||"#a855f7";
-  document.getElementById("moodColor2").value=mb.colors?.[1]||"#22d3ee";
-  document.getElementById("moodColor3").value=mb.colors?.[2]||"#facc15";
-});
-
-// ── PROMPTS EVENTS ──
-document.getElementById("addPromptBtn").addEventListener("click",()=>{const t=document.getElementById("newPromptText").value.trim();if(!t)return;state.prompts.unshift(t);document.getElementById("newPromptText").value="";saveState();renderAll();showToast("✓ Prompt lagt til");});
-document.getElementById("promptList").addEventListener("click",e=>{const btn=e.target.closest("[data-delete-prompt]");if(!btn)return;state.prompts.splice(Number(btn.dataset.deletePrompt),1);if(!state.prompts.length)state.prompts=[...DEFAULT_PROMPTS];saveState();renderAll();});
-
-// ── VERSIONS EVENTS ──
+// ── VERSION EVENTS ──
 document.getElementById("addVersionBtn").addEventListener("click",()=>{
-  const demoId=document.getElementById("versionDemoSelect").value;
-  const name=document.getElementById("versionName").value.trim();
-  if(!state.demos.some(d=>d.id===demoId)||!name){alert("Velg demo og skriv versjonsnavn.");return;}
-  state.versions.unshift({id:uid(),demoId,name,url:document.getElementById("versionUrl").value.trim(),notes:document.getElementById("versionNotes").value.trim(),createdAt:Date.now()});
+  const did=document.getElementById("versionDemoSelect").value,name=document.getElementById("versionName").value.trim();
+  if(!state.demos.some(d=>d.id===did)||!name){alert("Velg demo og skriv navn.");return;}
+  state.versions.unshift({id:uid(),demoId:did,name,url:document.getElementById("versionUrl").value.trim(),notes:document.getElementById("versionNotes").value.trim(),createdAt:Date.now()});
   ["versionName","versionUrl","versionNotes"].forEach(id=>document.getElementById(id).value="");
   saveState();renderAll();showToast("✓ Versjon lagret");
 });
-document.getElementById("versionList").addEventListener("click",e=>{const btn=e.target.closest("[data-delete-version]");if(!btn)return;state.versions=state.versions.filter(v=>v.id!==btn.dataset.deleteVersion);saveState();renderAll();});
-
-// ── A/B EVENTS ──
-["abType","abA","abB"].forEach(id=>document.getElementById(id).addEventListener("change",renderABOptions));
-function chooseAB(side){
-  const type=document.getElementById("abType").value;
-  const items=type==="demos"?state.demos:state.beats;
-  const a=items.find(i=>i.id===document.getElementById("abA").value);
-  const b=items.find(i=>i.id===document.getElementById("abB").value);
-  if(!a||!b||a.id===b.id){alert("Velg to forskjellige.");return;}
-  const winner=side==="A"?a:b;const loser=side==="A"?b:a;
-  state.abHistory.unshift({id:uid(),type,winnerId:winner.id,loserId:loser.id,winnerName:winner.title||winner.name,loserName:loser.title||loser.name,createdAt:Date.now()});
-  saveState();renderAll();showToast(`✓ ${winner.title||winner.name} vant`);
-}
-document.getElementById("chooseABtn").addEventListener("click",()=>chooseAB("A"));
-document.getElementById("chooseBBtn").addEventListener("click",()=>chooseAB("B"));
+document.getElementById("versionList").addEventListener("click",e=>{const b=e.target.closest("[data-dv]");if(!b)return;state.versions=state.versions.filter(v=>v.id!==b.dataset.dv);saveState();renderAll();});
 
 // ── INTEGRATIONS ──
-document.getElementById("saveDriveSettingsBtn").addEventListener("click",()=>{state.settings.driveFolderId=document.getElementById("driveFolderId").value.trim();state.settings.driveApiKey=document.getElementById("driveApiKey").value.trim();saveState();showToast("✓ Drive-innstillinger lagret");});
-document.getElementById("mockDriveImportBtn").addEventListener("click",()=>{state.beats.unshift({id:uid(),name:"Drive-import eksempel",url:"",source:"Google Drive API demo",favorite:false,lyrics:"",createdAt:Date.now()});saveState();renderAll();showToast("✓ Simulert Drive-import lagt til");});
-document.getElementById("saveSCSettingsBtn").addEventListener("click",()=>{state.settings.soundcloudProxy=document.getElementById("soundcloudProxy").value.trim();saveState();showToast("✓ SoundCloud-innstillinger lagret");});
+document.getElementById("saveDriveSettingsBtn").addEventListener("click",()=>{state.settings.driveFolderId=document.getElementById("driveFolderId").value.trim();state.settings.driveApiKey=document.getElementById("driveApiKey").value.trim();saveState();showToast("✓ Lagret");});
+document.getElementById("mockDriveImportBtn").addEventListener("click",()=>{state.beats.unshift({id:uid(),name:"Drive-import eksempel",url:"",source:"Google Drive (demo)",favorite:false,lyrics:"",createdAt:Date.now()});saveState();renderAll();showToast("✓ Simulert import");});
+document.getElementById("saveSCSettingsBtn").addEventListener("click",()=>{state.settings.soundcloudProxy=document.getElementById("soundcloudProxy").value.trim();saveState();showToast("✓ Lagret");});
 
 // ── EXPORT / IMPORT ──
-document.getElementById("exportBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="music-vault-backup.json";a.click();URL.revokeObjectURL(url);});
-document.getElementById("importInput").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const imp=migrate(JSON.parse(r.result));Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,imp);selectedBeatId=null;document.getElementById("playerPanel").classList.add("hidden");saveState();renderAll();showToast("✓ Backup importert");}catch{alert("Kunne ikke importere filen.");}};r.readAsText(f);});
+document.getElementById("exportBtn").addEventListener("click",()=>{const b=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download="music-vault-backup.json";a.click();URL.revokeObjectURL(u);});
+document.getElementById("importInput").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const imp=migrate(JSON.parse(r.result));Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,imp);currentAlbumId=null;saveState();renderAll();showToast("✓ Backup importert");}catch{alert("Ugyldig fil.")}};r.readAsText(f);});
 
 // ── TABS ──
 document.querySelectorAll(".tab-btn").forEach(btn=>btn.addEventListener("click",()=>{
@@ -1156,16 +918,21 @@ document.querySelectorAll(".tab-btn").forEach(btn=>btn.addEventListener("click",
   renderAll();
 }));
 
+// ── CLOSE MODALS ON BACKDROP ──
+["newAlbumModal","addBeatsModal"].forEach(id=>{
+  document.getElementById(id).addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal(id);});
+});
+function closeModal(id){document.getElementById(id).classList.remove("open");}
+
 // ── TOAST ──
 let _tt;
 function showToast(msg){
   let t=document.getElementById("_toast");
-  if(!t){t=document.createElement("div");t.id="_toast";t.style.cssText="position:fixed;bottom:22px;right:22px;background:rgba(255,255,255,.15);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:11px 18px;font-size:13px;z-index:999;transform:translateY(60px);opacity:0;transition:all .25s;pointer-events:none";document.body.appendChild(t);}
+  if(!t){t=document.createElement("div");t.id="_toast";t.style.cssText="position:fixed;bottom:22px;right:22px;background:rgba(18,18,27,.96);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:11px 18px;font-size:13px;z-index:999;transform:translateY(60px);opacity:0;transition:all .25s;pointer-events:none";document.body.appendChild(t);}
   t.textContent=msg;t.style.transform="translateY(0)";t.style.opacity="1";
   clearTimeout(_tt);_tt=setTimeout(()=>{t.style.transform="translateY(60px)";t.style.opacity="0";},2500);
 }
 
-// ── INIT ──
 renderAll();
 </script>
 </body>
