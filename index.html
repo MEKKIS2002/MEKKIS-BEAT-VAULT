@@ -651,7 +651,7 @@ button.primary-btn,.primary-btn{background:linear-gradient(135deg,var(--accent),
 .dragging{opacity:.62!important;transform:scale(.985) translateY(-6px)!important;filter:drop-shadow(0 20px 34px rgba(0,0,0,.42))!important}.drag-over{box-shadow:0 0 0 2px var(--accent2),0 0 0 8px rgba(255,186,94,.12)!important}.drop-zone.drag-over,.drop-zone.active{box-shadow:0 0 0 3px rgba(255,186,94,.12),0 16px 44px rgba(223,127,34,.10)!important}
 .album-detail-layout{display:grid;grid-template-columns:minmax(260px,380px) minmax(0,1fr) 280px;gap:24px;align-items:start}.album-hero-vinyl{position:relative;min-height:340px}.album-hero-vinyl .vinyl-disc{width:260px;height:260px;position:absolute;right:0;top:32px;animation:none}.album-hero-vinyl .record-sleeve{width:260px;height:260px;position:absolute;left:0;top:20px;border-radius:0}.is-playing-album .album-hero-vinyl .vinyl-disc{animation:vinylSpin 7s linear infinite}.is-playing-mixtape .cass-reel{animation-play-state:running}.cass-reel{animation-play-state:paused}
 .meta-panel{border:1px solid rgba(255,255,255,.12);border-radius:22px;background:rgba(255,255,255,.045);padding:18px;display:grid;gap:12px}.meta-row{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:13px}.meta-row strong{color:var(--text);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-.beat-chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 8px;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.12);font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}.color-dot{width:9px;height:9px;border-radius:50%;background:var(--chip-color,var(--accent));box-shadow:0 0 14px var(--chip-color,var(--accent))}
+.beat-chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 8px;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.12);font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.color-dot{width:9px;height:9px;min-width:9px;flex:0 0 9px;border-radius:50%;background:var(--chip-color,var(--accent));box-shadow:0 0 14px var(--chip-color,var(--accent))}.album-beat-card .ab-body{min-width:0;overflow:hidden}.album-beat-card .ab-title{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.album-beat-card .beat-chip-row{max-width:100%;min-width:0;overflow:hidden}.album-beat-card .beat-chip-row .beat-chip{max-width:100%;flex:0 1 auto}
 .batch-bar{grid-column:1/-1;display:none;position:sticky;top:82px;z-index:48;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:rgba(18,18,27,.86);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(16px)}.batch-bar.active{display:flex}.ab-top{position:relative}.select-beat-check{appearance:none;-webkit-appearance:none;position:absolute;top:10px;left:10px;width:28px;height:28px;border-radius:999px;cursor:pointer;z-index:14;border:1px solid rgba(255,255,255,.18);background:linear-gradient(180deg,rgba(32,32,42,.98),rgba(16,16,24,.94));box-shadow:0 10px 20px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(255,168,78,.08);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}.select-beat-check:hover{transform:translateY(-1px) scale(1.03);box-shadow:0 12px 22px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px rgba(255,168,78,.18)}.select-beat-check:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(255,168,78,.22),0 12px 22px rgba(0,0,0,.36)}.select-beat-check:checked{border-color:rgba(255,186,94,.72);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2317110a' d='M9.2 16.6 4.95 12.35l-1.4 1.4 5.65 5.65L20.45 8.15l-1.4-1.4z'/%3E%3C/svg%3E"),linear-gradient(180deg,#ffb652,#df7f22);background-repeat:no-repeat,no-repeat;background-position:center,center;background-size:13px 13px,100% 100%;box-shadow:0 12px 24px rgba(223,127,34,.34),inset 0 1px 0 rgba(255,255,255,.3),0 0 0 1px rgba(255,186,94,.28)}.album-beat-card.is-batch-selected{transform:translateY(-2px);border-color:rgba(255,186,94,.72)!important;box-shadow:0 0 0 1px rgba(255,186,94,.24),0 22px 54px rgba(223,127,34,.16)}.album-beat-card.is-batch-selected .ab-cover-wrap::after{background:rgba(255,186,94,.16);border-color:rgba(255,186,94,.32)}.album-display,.cass-body,.ab-cover-wrap{cursor:grab}.album-display:active,.cass-body:active,.ab-cover-wrap:active{cursor:grabbing}@media (max-width:720px){.select-beat-check{left:8px;top:8px;width:26px;height:26px;background-size:12px 12px,100% 100%}}.producer-dashboard{border-radius:24px;padding:20px;margin-bottom:18px;background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(34,211,238,.08));border:1px solid rgba(52,211,153,.18)}
 .toast-action{margin-left:12px;border:0;background:rgba(255,255,255,.12);color:#fff;border-radius:999px;padding:6px 10px;font-weight:800;cursor:pointer}.beat-item.flash,.album-beat-card.flash{animation:flashBeat 1.2s ease}@keyframes flashBeat{0%{box-shadow:0 0 0 0 rgba(255,186,94,.55)}45%{box-shadow:0 0 0 8px rgba(255,186,94,.10)}100%{box-shadow:inherit}}
 .waveform{height:42px;border-radius:12px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.15) 0 3px,transparent 3px 7px),linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025));mask:linear-gradient(180deg,transparent 2%,#000 12%,#000 88%,transparent 98%);opacity:.75}.loop-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.mini-thumb{width:30px;height:30px;border-radius:8px;object-fit:cover;display:inline-grid;place-items:center;background:var(--chip-color,var(--accent));flex-shrink:0}.beat-check-item{border-left:4px solid var(--chip-color,var(--accent));gap:10px}.beat-check-item .mini-thumb{margin-right:4px}
@@ -3023,8 +3023,8 @@ select:focus,.ux-input:is(select):focus,.mixtape-sort-select:focus{
   }
 
   function installArchiveControls(){
-    const a=state.albums?.find(x=>x.id===window.currentAlbumId); if(a&&$('#albumDetailHd')&&!$('#archiveAlbumBtn')) $('#albumDetailHd').insertAdjacentHTML('afterend',`<div class="archive-toolbar"><button id="archiveAlbumBtn" class="ghost-btn" onclick="toggleArchiveItem('album','${a.id}')">${a.archived?'Gjenopprett album':'Arkiver album'}</button><span class="hint">Arkiver skjuler uten å slette.</span></div>`);
-    const m=state.mixtapes?.find(x=>x.id===window.currentMixtapeId); if(m&&$('#mixtapeDetailHd')&&!$('#archiveMixtapeBtn')) $('#mixtapeDetailHd').insertAdjacentHTML('afterend',`<div class="archive-toolbar"><button id="archiveMixtapeBtn" class="ghost-btn" onclick="toggleArchiveItem('mixtape','${m.id}')">${m.archived?'Gjenopprett mixtape':'Arkiver mixtape'}</button><button class="ghost-btn" onclick="openCassetteCropEditor('${m.id}')">Rediger kassettbilde</button><span class="hint">Status: ${safeEsc(m.status||'')}</span></div>`);
+    const a=state.albums?.find(x=>x.id===currentAlbumId); if(a&&$('#albumDetailHd')&&!$('#archiveAlbumBtn')) $('#albumDetailHd').insertAdjacentHTML('afterend',`<div class="archive-toolbar"><button id="archiveAlbumBtn" class="ghost-btn" onclick="toggleArchiveItem('album','${a.id}')">${a.archived?'Gjenopprett album':'Arkiver album'}</button><span class="hint">Arkiver skjuler uten å slette.</span></div>`);
+    const m=state.mixtapes?.find(x=>x.id===currentMixtapeId); if(m&&$('#mixtapeDetailHd')&&!$('#archiveMixtapeBtn')) $('#mixtapeDetailHd').insertAdjacentHTML('afterend',`<div class="archive-toolbar"><button id="archiveMixtapeBtn" class="ghost-btn" onclick="toggleArchiveItem('mixtape','${m.id}')">${m.archived?'Gjenopprett mixtape':'Arkiver mixtape'}</button><button class="ghost-btn" onclick="openCassetteCropEditor('${m.id}')">Rediger kassettbilde</button><span class="hint">Status: ${safeEsc(m.status||'')}</span></div>`);
     if(!$('#archiveToggleGlobal')) $('.tabs')?.insertAdjacentHTML('afterend',`<div class="archive-toolbar"><button id="archiveToggleGlobal" class="ghost-btn" onclick="toggleShowArchived()">${state.settings.showArchived?'Skjul arkiv':'Vis arkiv'}</button></div>`);
     if(!state.settings.showArchived){(state.albums||[]).forEach((al,i)=>{if(al.archived) $$('.album-card')[i]?.classList.add('archive-hidden')}); (state.mixtapes||[]).forEach((mt,i)=>{if(mt.archived) $$('.cassette-card')[i]?.classList.add('archive-hidden')});}
   }
@@ -3055,6 +3055,485 @@ select:focus,.ux-input:is(select):focus,.mixtape-sort-select:focus{
   function runFullEnhancements(){installGlobalSearch();installQueueDrawer();installArchiveControls();installImportPreview();installProducerEnhancements();installResetDemo();enhanceWaveforms();addExtendedMeta();addPipelineInputs();renderQueueDrawer();}
   ensureFullData(); setTimeout(()=>{try{runFullEnhancements(); renderQueueDrawer();}catch(e){console.error(e)}},120);
 })();
+</script>
+
+
+<script>
+(function(){
+  // Full arkiv-funksjon: arkiverte elementer skjules fra statistikk og vanlige lister,
+  // men vises samlet under egen fane "Arkivert".
+  const ACTIVE_FILTER_FLAG='__mvRenderingActiveOnly';
+
+  function activeTab(){return document.querySelector('.tab-btn.active')?.dataset?.tab||'mixtapes';}
+  function isArchiveTab(){return activeTab()==='archive';}
+  function beatById(id){return (state.beats||[]).find(b=>b.id===id);}
+  function isArchivedBeat(id){const b=beatById(id);return !!(b&&b.archived);}
+  function activeBeatIds(ids){return (ids||[]).filter(id=>!isArchivedBeat(id));}
+  function activeBeatCount(ids){return activeBeatIds(ids).length;}
+  function show(msg){if(typeof showToast==='function')showToast(msg);}
+
+  function ensureArchiveData(){
+    state.settings=state.settings||{};
+    state.settings.showArchived=false;
+    (state.beats||[]).forEach(b=>{b.archived=!!b.archived;});
+    (state.albums||[]).forEach(a=>{a.archived=!!a.archived; a.beatIds=a.beatIds||[];});
+    (state.mixtapes||[]).forEach(m=>{m.archived=!!m.archived; m.beatIds=m.beatIds||[];});
+  }
+
+  const oldRenderStats=window.renderStats;
+  window.renderStats=function(){
+    ensureArchiveData();
+    const byId=new Map((state.beats||[]).map(b=>[b.id,b]));
+    const mixtapeBeatIds=new Set((state.mixtapes||[]).filter(mt=>!mt.archived).flatMap(mt=>activeBeatIds(mt.beatIds)));
+    const albumDemoIds=new Set((state.albums||[]).filter(a=>!a.archived).flatMap(a=>activeBeatIds(a.beatIds)));
+    const mixtapeBeats=[...mixtapeBeatIds].map(id=>byId.get(id)).filter(b=>b&&!b.archived);
+    const albumDemos=[...albumDemoIds].map(id=>byId.get(id)).filter(b=>b&&!b.archived);
+    const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+    set('beatCount',mixtapeBeats.length);
+    set('favCount',mixtapeBeats.filter(b=>b.favorite).length);
+    set('demoCount',albumDemos.length);
+    const avg=albumDemos.length?Math.round(albumDemos.reduce((s,d)=>s+Number(d.done||0),0)/albumDemos.length):0;
+    set('avgDone',avg+'%');
+  };
+
+  function withFilteredCollections(kind,fn){
+    ensureArchiveData();
+    if(isArchiveTab())return fn();
+    const key=kind==='album'?'albums':'mixtapes';
+    const original=state[key];
+    state[key]=(original||[]).filter(x=>!x.archived);
+    window[ACTIVE_FILTER_FLAG]=true;
+    try{return fn();}finally{state[key]=original;window[ACTIVE_FILTER_FLAG]=false;}
+  }
+
+  const oldRenderAlbums=window.renderAlbums;
+  if(oldRenderAlbums){
+    window.renderAlbums=function(){
+      if(currentAlbumId){return renderAlbumDetail();}
+      return withFilteredCollections('album',()=>oldRenderAlbums());
+    };
+  }
+  const oldRenderMixtapes=window.renderMixtapes;
+  if(oldRenderMixtapes){
+    window.renderMixtapes=function(){
+      if(currentMixtapeId){return renderMixtapeDetail();}
+      return withFilteredCollections('mixtape',()=>oldRenderMixtapes());
+    };
+  }
+
+  const oldGetSortedMixtapeBeats=window.getSortedMixtapeBeats;
+  if(oldGetSortedMixtapeBeats){
+    window.getSortedMixtapeBeats=function(mt){
+      const arr=oldGetSortedMixtapeBeats(mt)||[];
+      return (mt&&mt.archived)||isArchiveTab()?arr:arr.filter(b=>!b.archived);
+    };
+  }
+
+  const oldRenderAlbumBeats=window.renderAlbumBeats;
+  if(oldRenderAlbumBeats){
+    window.renderAlbumBeats=function(beats,mode,customEl){
+      ensureArchiveData();
+      const listMode=mode||'album';
+      const col=listMode==='mixtape'?(state.mixtapes||[]).find(m=>m.id===currentMixtapeId):(state.albums||[]).find(a=>a.id===currentAlbumId);
+      const includeArchived=!!(col&&col.archived)||isArchiveTab();
+      const filtered=includeArchived?(beats||[]):(beats||[]).filter(b=>!b.archived);
+      oldRenderAlbumBeats(filtered,mode,customEl);
+      setTimeout(()=>installBeatArchiveButtons(listMode),0);
+    };
+  }
+
+  const oldRenderBeats=window.renderBeats;
+  if(oldRenderBeats){
+    window.renderBeats=function(container,beats,albumMode){
+      const includeArchived=isArchiveTab();
+      if(Array.isArray(beats)&&!includeArchived)beats=beats.filter(b=>!b.archived);
+      oldRenderBeats(container,beats,albumMode);
+      setTimeout(()=>installBeatArchiveButtons('beat'),0);
+    };
+  }
+
+  function archiveLabel(type,item){
+    if(type==='beat')return item.archived?'Gjenopprett sang':'Arkiver sang';
+    if(type==='album')return item.archived?'Gjenopprett album':'Arkiver album';
+    return item.archived?'Gjenopprett mixtape':'Arkiver mixtape';
+  }
+
+  window.toggleArchiveItem=function(type,id){
+    ensureArchiveData();
+    let arr=type==='album'?state.albums:type==='mixtape'?state.mixtapes:state.beats;
+    const item=(arr||[]).find(x=>x.id===id);
+    if(!item)return;
+    item.archived=!item.archived;
+    saveState();
+    renderAll();
+    if(isArchiveTab())renderArchiveView();
+    show(item.archived?'✓ Arkivert':'✓ Gjenopprettet fra arkiv');
+  };
+
+  window.toggleShowArchived=function(){openArchiveTab();};
+
+  function installArchiveTab(){
+    const tabs=document.querySelector('.tabs');
+    if(!tabs)return;
+    if(!document.querySelector('[data-tab="archive"]')){
+      tabs.insertAdjacentHTML('beforeend','<button class="tab-btn" data-tab="archive">🗄️ Arkivert</button>');
+    }
+    if(!document.getElementById('archiveTab')){
+      const integrations=document.getElementById('integrationsTab');
+      const sec=document.createElement('section');
+      sec.id='archiveTab';
+      sec.className='tab-view hidden';
+      sec.innerHTML=`<div class="content-panel glass">
+        <div class="section-title"><h2>Arkivert</h2><span class="hint">Elementer her teller ikke med i statistikk.</span></div>
+        <p class="hint" style="margin-bottom:18px">Arkiverte beats/sanger, albumer og mixtapes skjules fra de vanlige visningene uten å bli slettet.</p>
+        <div id="archiveList" class="archive-list"></div>
+      </div>`;
+      integrations?.insertAdjacentElement('afterend',sec) || document.querySelector('main.app')?.appendChild(sec);
+    }
+    document.querySelectorAll('[data-tab="archive"]').forEach(btn=>{
+      if(btn.dataset.archiveBound)return;
+      btn.dataset.archiveBound='1';
+      btn.addEventListener('click',function(e){
+        e.preventDefault();e.stopImmediatePropagation();
+        openArchiveTab();
+      },true);
+    });
+    const legacy=document.getElementById('archiveToggleGlobal');
+    if(legacy){legacy.textContent='Vis arkiv';legacy.onclick=function(e){e.preventDefault();openArchiveTab();};}
+  }
+
+  window.openArchiveTab=function(){
+    installArchiveTab();
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab==='archive'));
+    document.querySelectorAll('.tab-view').forEach(v=>v.classList.add('hidden'));
+    document.getElementById('archiveTab')?.classList.remove('hidden');
+    currentAlbumId=null;
+    currentMixtapeId=null;
+    renderArchiveView();
+  };
+
+  window.renderArchiveView=function(){
+    ensureArchiveData();
+    const el=document.getElementById('archiveList');
+    if(!el)return;
+    const archivedMixtapes=(state.mixtapes||[]).filter(m=>m.archived);
+    const archivedAlbums=(state.albums||[]).filter(a=>a.archived);
+    const archivedBeats=(state.beats||[]).filter(b=>b.archived);
+    const section=(title,items,empty)=>`<div class="archive-section"><h3>${title} <span>${items.length}</span></h3>${items.length?items.join(''):`<div class="empty">${empty}</div>`}</div>`;
+    const beatCard=b=>`<div class="archive-row">
+      <div class="archive-main"><strong>${esc(b.name||'Uten navn')}</strong><span>Sang/beat · ${esc(b.source||'lokal')}</span></div>
+      <div class="archive-actions"><button class="ghost-btn" onclick="toggleArchiveItem('beat','${b.id}')">Gjenopprett</button></div>
+    </div>`;
+    const albumCard=a=>`<div class="archive-row">
+      <div class="archive-main"><strong>${esc(a.name||'Uten navn')}</strong><span>Album · ${activeBeatCount(a.beatIds)} aktive / ${(a.beatIds||[]).length} totalt</span></div>
+      <div class="archive-actions"><button class="ghost-btn" onclick="toggleArchiveItem('album','${a.id}')">Gjenopprett</button><button class="small-btn" onclick="document.querySelector('[data-tab=albums]')?.click();setTimeout(()=>openAlbum('${a.id}'),60)">Åpne</button></div>
+    </div>`;
+    const mixtapeCard=m=>`<div class="archive-row">
+      <div class="archive-main"><strong>${esc(m.name||'Uten navn')}</strong><span>Mixtape · ${activeBeatCount(m.beatIds)} aktive / ${(m.beatIds||[]).length} totalt</span></div>
+      <div class="archive-actions"><button class="ghost-btn" onclick="toggleArchiveItem('mixtape','${m.id}')">Gjenopprett</button><button class="small-btn" onclick="document.querySelector('[data-tab=mixtapes]')?.click();setTimeout(()=>openMixtape('${m.id}'),60)">Åpne</button></div>
+    </div>`;
+    el.innerHTML=section('Mixtapes',archivedMixtapes.map(mixtapeCard),'Ingen arkiverte mixtapes.')+
+      section('Albumer',archivedAlbums.map(albumCard),'Ingen arkiverte albumer.')+
+      section('Sanger og beats',archivedBeats.map(beatCard),'Ingen arkiverte sanger eller beats.');
+  };
+
+  function installBeatArchiveButtons(listMode){
+    ensureArchiveData();
+    document.querySelectorAll('.album-beat-card[data-beat-id]').forEach(card=>{
+      const id=card.dataset.beatId;
+      const b=beatById(id);if(!b)return;
+      card.classList.toggle('archive-badge',!!b.archived);
+      if(card.querySelector('.archive-song-btn')){
+        card.querySelector('.archive-song-btn').textContent=archiveLabel('beat',b);
+        return;
+      }
+      const target=card.querySelector('.ab-expand-actions')||card.querySelector('.ab-expand-right')||card.querySelector('.ab-body');
+      if(target){
+        target.insertAdjacentHTML('beforeend',`<button class="ghost-btn archive-song-btn" onclick="event.stopPropagation();toggleArchiveItem('beat','${id}')">${archiveLabel('beat',b)}</button>`);
+      }
+    });
+    document.querySelectorAll('.beat-item[id^="bi-"]').forEach(item=>{
+      const id=item.id.replace(/^bi-/,'');
+      const b=beatById(id);if(!b)return;
+      item.classList.toggle('archive-badge',!!b.archived);
+      if(item.querySelector('.archive-song-btn')){item.querySelector('.archive-song-btn').textContent=archiveLabel('beat',b);return;}
+      const target=item.querySelector('.beat-expand-actions')||item.querySelector('.beat-expand');
+      if(target)target.insertAdjacentHTML('beforeend',`<button class="ghost-btn archive-song-btn" onclick="event.stopPropagation();toggleArchiveItem('beat','${id}')">${archiveLabel('beat',b)}</button>`);
+    });
+  }
+
+  function installCollectionArchiveButtons(){
+    ensureArchiveData();
+    const album=(state.albums||[]).find(a=>a.id===currentAlbumId);
+    const mixtape=(state.mixtapes||[]).find(m=>m.id===currentMixtapeId);
+    const make=(id,type,item)=>{
+      const hd=document.getElementById(id);if(!hd||!item)return;
+      let bar=hd.parentElement.querySelector('.mv-archive-detail-toolbar');
+      if(!bar){
+        bar=document.createElement('div');
+        bar.className='archive-toolbar mv-archive-detail-toolbar';
+        hd.insertAdjacentElement('afterend',bar);
+      }
+      bar.innerHTML=`<button class="ghost-btn" onclick="toggleArchiveItem('${type}','${item.id}')">${archiveLabel(type,item)}</button><span class="hint">Arkiverte elementer fjernes fra statistikk uten å slettes.</span>`;
+    };
+    make('albumDetailHd','album',album);
+    make('mixtapeDetailHd','mixtape',mixtape);
+  }
+
+  function installArchiveCss(){
+    if(document.getElementById('mvArchiveCss'))return;
+    document.head.insertAdjacentHTML('beforeend',`<style id="mvArchiveCss">
+      .archive-list{display:grid;gap:18px}.archive-section{display:grid;gap:10px}.archive-section h3{display:flex;align-items:center;gap:8px;margin:0;font-size:16px}.archive-section h3 span{font-size:12px;color:var(--muted);font-weight:800}.archive-row{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.045);border-radius:18px;padding:14px}.archive-main{display:grid;gap:4px;min-width:0}.archive-main strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.archive-main span{color:var(--muted);font-size:12px}.archive-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.archive-song-btn{margin-top:6px}.archive-badge{opacity:.62;filter:grayscale(.35)}
+      @media(max-width:640px){.archive-row{align-items:flex-start;flex-direction:column}.archive-actions{justify-content:flex-start}}
+    </style>`);
+  }
+
+  function patchAddBeatModals(){
+    const albumBtn=document.getElementById('addBeatsToAlbumBtn');
+    if(albumBtn&&!albumBtn.dataset.archivePatch){
+      albumBtn.dataset.archivePatch='1';
+      albumBtn.addEventListener('click',function(e){
+        e.stopImmediatePropagation();
+        const album=(state.albums||[]).find(a=>a.id===currentAlbumId);if(!album)return;
+        albumAddBeatCandidates=(state.beats||[]).filter(b=>!b.archived&&!album.beatIds.includes(b.id));
+        const search=document.getElementById('beatSearchInput');if(search)search.value='';
+        if(typeof renderAlbumAddBeatSearch==='function')renderAlbumAddBeatSearch();
+        document.getElementById('addBeatsModal')?.classList.add('open');
+        setTimeout(()=>document.getElementById('beatSearchInput')?.focus(),80);
+      },true);
+    }
+    const mixBtn=document.getElementById('addBeatsToMixtapeBtn');
+    if(mixBtn&&!mixBtn.dataset.archivePatch){
+      mixBtn.dataset.archivePatch='1';
+      mixBtn.addEventListener('click',function(e){
+        e.stopImmediatePropagation();
+        const mt=(state.mixtapes||[]).find(m=>m.id===currentMixtapeId);if(!mt)return;
+        mixtapeAddBeatCandidates=(state.beats||[]).filter(b=>!b.archived&&!mt.beatIds.includes(b.id));
+        const search=document.getElementById('mixtapeBeatSearchInput');if(search)search.value='';
+        if(typeof renderMixtapeAddBeatSearch==='function')renderMixtapeAddBeatSearch();
+        document.getElementById('addBeatsToMixtapeModal')?.classList.add('open');
+        setTimeout(()=>document.getElementById('mixtapeBeatSearchInput')?.focus(),80);
+      },true);
+    }
+  }
+
+  const prevRenderAll=window.renderAll;
+  window.renderAll=function(){
+    ensureArchiveData();
+    if(prevRenderAll)prevRenderAll();
+    renderStats();
+    setTimeout(()=>{installArchiveCss();installArchiveTab();installBeatArchiveButtons();installCollectionArchiveButtons();patchAddBeatModals();if(isArchiveTab())renderArchiveView();},0);
+  };
+
+  installArchiveCss();
+  ensureArchiveData();
+  setTimeout(()=>{installArchiveTab();installBeatArchiveButtons();installCollectionArchiveButtons();patchAddBeatModals();renderStats();},150);
+})();
+</script>
+
+
+<!-- SUPABASE ADMIN LOGIN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script id="supabaseAdminLoginScript">
+/*
+  Supabase admin-login for Music Vault
+  1) Bytt ut SUPABASE_URL og SUPABASE_ANON_KEY med verdiene fra Supabase.
+  2) Brukeren må finnes i Authentication -> Users.
+  3) Brukeren må ha role = 'admin' i public.profiles.
+*/
+const SUPABASE_URL = "https://ylvqkfdvijqnecuqznyr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsdnFrZmR2aWpxbmVjdXF6bnlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzA4MzIsImV4cCI6MjA5MzkwNjgzMn0.bYPTaxQK8n7I7w5Ri2DVYW5_LbFHg2IXkuhHsLTDDqc";
+
+const isSupabaseConfigured =
+  SUPABASE_URL &&
+  SUPABASE_ANON_KEY &&
+  !SUPABASE_URL.includes("DIN_SUPABASE") &&
+  !SUPABASE_ANON_KEY.includes("DIN_SUPABASE");
+
+const supabaseClient = isSupabaseConfigured && window.supabase
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+window.supabaseClient = supabaseClient;
+window.currentAdminUser = null;
+window.isAdminMode = false;
+
+function showAdminMessage(message, type = "info") {
+  const el = document.getElementById("adminLoginMessage");
+  if (!el) return;
+  el.textContent = message;
+  el.dataset.type = type;
+}
+
+async function checkAdminRole(userId) {
+  if (!supabaseClient || !userId) return false;
+
+  const { data, error } = await supabaseClient
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .single();
+
+  if (error) {
+    console.error("Kunne ikke sjekke admin-rolle:", error);
+    return false;
+  }
+
+  return data?.role === "admin";
+}
+
+async function updateAdminUi() {
+  const statusEl = document.getElementById("adminLoginStatus");
+  const loginBox = document.getElementById("adminLoginBox");
+  const logoutBox = document.getElementById("adminLogoutBox");
+  const emailEl = document.getElementById("adminLoggedInEmail");
+
+  if (!supabaseClient) {
+    if (statusEl) statusEl.textContent = "Supabase er ikke konfigurert ennå.";
+    if (loginBox) loginBox.style.display = "grid";
+    if (logoutBox) logoutBox.style.display = "none";
+    showAdminMessage("Fyll inn SUPABASE_URL og SUPABASE_ANON_KEY i HTML-filen først.", "warning");
+    return;
+  }
+
+  const { data } = await supabaseClient.auth.getSession();
+  const user = data?.session?.user || null;
+
+  window.currentAdminUser = user;
+  window.isAdminMode = user ? await checkAdminRole(user.id) : false;
+
+  if (window.isAdminMode) {
+    if (statusEl) statusEl.textContent = "Admin-modus aktiv";
+    if (emailEl) emailEl.textContent = user.email || "Innlogget admin";
+    if (loginBox) loginBox.style.display = "none";
+    if (logoutBox) logoutBox.style.display = "grid";
+    showAdminMessage("Du er logget inn som admin.", "success");
+    document.body.classList.add("admin-mode");
+  } else if (user) {
+    if (statusEl) statusEl.textContent = "Innlogget, men ikke admin";
+    if (emailEl) emailEl.textContent = user.email || "Innlogget bruker";
+    if (loginBox) loginBox.style.display = "none";
+    if (logoutBox) logoutBox.style.display = "grid";
+    showAdminMessage("Denne brukeren finnes, men har ikke role = 'admin' i profiles-tabellen.", "warning");
+    document.body.classList.remove("admin-mode");
+  } else {
+    if (statusEl) statusEl.textContent = "Ikke innlogget";
+    if (loginBox) loginBox.style.display = "grid";
+    if (logoutBox) logoutBox.style.display = "none";
+    showAdminMessage("Logg inn for å legge til, endre, arkivere eller slette innhold.", "info");
+    document.body.classList.remove("admin-mode");
+  }
+}
+
+async function loginAdmin(email, password) {
+  if (!supabaseClient) {
+    showAdminMessage("Supabase er ikke konfigurert. Fyll inn URL og anon public key i HTML-filen.", "warning");
+    return null;
+  }
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    console.error("Admin-login feilet:", error);
+    showAdminMessage("Feil e-post eller passord.", "error");
+    return null;
+  }
+
+  await updateAdminUi();
+
+  if (!window.isAdminMode) {
+    showAdminMessage("Du er logget inn, men brukeren er ikke satt som admin i Supabase.", "warning");
+  }
+
+  return data.user;
+}
+
+async function logoutAdmin() {
+  if (!supabaseClient) return;
+  await supabaseClient.auth.signOut();
+  window.currentAdminUser = null;
+  window.isAdminMode = false;
+  await updateAdminUi();
+}
+
+function installAdminLoginPanel() {
+  if (document.getElementById("supabaseAdminPanel")) return;
+
+  const integrationsPanel = document.querySelector("#integrationsTab .content-panel") || document.querySelector("#integrationsTab") || document.body;
+
+  integrationsPanel.insertAdjacentHTML("afterbegin", `
+    <div id="supabaseAdminPanel" class="settings-card supabase-admin-card">
+      <h2>🔐 Admin-login</h2>
+      <p class="hint">Bruk Supabase Auth for å låse redigering, arkivering og sletting til admin-brukeren din.</p>
+
+      <div class="admin-status-row">
+        <strong>Status:</strong>
+        <span id="adminLoginStatus">Sjekker...</span>
+      </div>
+
+      <div id="adminLoginBox" class="admin-login-box">
+        <div class="input-group">
+          <label>E-post</label>
+          <input id="adminEmailInput" type="email" autocomplete="username" placeholder="din-epost@example.com" />
+        </div>
+        <div class="input-group">
+          <label>Passord</label>
+          <input id="adminPasswordInput" type="password" autocomplete="current-password" placeholder="Passord" />
+        </div>
+        <button class="primary-btn" id="adminLoginBtn">Logg inn som admin</button>
+      </div>
+
+      <div id="adminLogoutBox" class="admin-login-box" style="display:none">
+        <p class="hint">Innlogget som <strong id="adminLoggedInEmail"></strong></p>
+        <button class="ghost-btn" id="adminLogoutBtn">Logg ut</button>
+      </div>
+
+      <p id="adminLoginMessage" class="hint admin-login-message"></p>
+    </div>
+  `);
+
+  const style = document.createElement("style");
+  style.textContent = `
+    .supabase-admin-card{margin-bottom:14px;border:1px solid rgba(52,211,153,.18)!important;background:rgba(52,211,153,.055)!important}
+    .admin-status-row{display:flex;gap:8px;align-items:center;margin:10px 0 14px;font-size:13px;color:var(--muted)}
+    .admin-status-row strong{color:var(--text)}
+    .admin-login-box{display:grid;gap:10px;margin-top:10px}
+    .admin-login-message{margin-top:10px;min-height:18px}
+    .admin-login-message[data-type="success"]{color:#34d399}
+    .admin-login-message[data-type="warning"]{color:#fbbf24}
+    .admin-login-message[data-type="error"]{color:#fb7185}
+  `;
+  document.head.appendChild(style);
+
+  document.getElementById("adminLoginBtn")?.addEventListener("click", async () => {
+    const email = document.getElementById("adminEmailInput")?.value.trim();
+    const password = document.getElementById("adminPasswordInput")?.value;
+
+    if (!email || !password) {
+      showAdminMessage("Skriv inn e-post og passord.", "warning");
+      return;
+    }
+
+    showAdminMessage("Logger inn...", "info");
+    await loginAdmin(email, password);
+  });
+
+  document.getElementById("adminLogoutBtn")?.addEventListener("click", logoutAdmin);
+}
+
+window.loginAdmin = loginAdmin;
+window.logoutAdmin = logoutAdmin;
+window.updateAdminUi = updateAdminUi;
+
+if (supabaseClient) {
+  supabaseClient.auth.onAuthStateChange(() => updateAdminUi());
+}
+
+installAdminLoginPanel();
+updateAdminUi();
 </script>
 
 </body>
