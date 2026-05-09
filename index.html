@@ -672,14 +672,28 @@ const audioDB=(()=>{
 
 async function loadAudioForBeat(beatId){
   const el=document.getElementById("au-"+beatId);if(!el)return;
+  const wrap=document.getElementById("au-wrap-"+beatId)||el.parentElement;
   const b=state.beats.find(x=>x.id===beatId);
-  // Try IndexedDB first
+  // Try IndexedDB first for local uploads
   const blob=await audioDB.load(beatId);
-  if(blob){el.src=URL.createObjectURL(blob);el.parentElement.style.display="block";return;}
-  // Fall back to stored URL
-  if(b&&b.url){el.src=b.url;el.parentElement.style.display="block";return;}
-  // No audio
-  el.parentElement.style.display="none";
+  if(blob){
+    if(el.dataset.objectUrl)URL.revokeObjectURL(el.dataset.objectUrl);
+    const objectUrl=URL.createObjectURL(blob);
+    el.dataset.objectUrl=objectUrl;
+    el.src=objectUrl;
+    if(wrap)wrap.style.display="block";
+    return;
+  }
+  // Fall back to a real stored URL. Ignore the IndexedDB sentinel if the blob is missing.
+  if(b&&b.url&&!String(b.url).endsWith(":idb")){
+    el.src=b.url;
+    if(wrap)wrap.style.display="block";
+    return;
+  }
+  // No playable audio available
+  el.removeAttribute("src");
+  el.load();
+  if(wrap)wrap.style.display="none";
 }
 
 async function uploadBeatAudio(beatId,file){
@@ -687,9 +701,17 @@ async function uploadBeatAudio(beatId,file){
   const b=state.beats.find(x=>x.id===beatId);if(!b)return;
   await audioDB.save(beatId,file);
   b.url=beatId+":idb"; // sentinel so we know audio exists
+  b.source="local";
   saveState();
   const el=document.getElementById("au-"+beatId);
-  if(el){el.src=URL.createObjectURL(file);el.parentElement.style.display="block";}
+  if(el){
+    if(el.dataset.objectUrl)URL.revokeObjectURL(el.dataset.objectUrl);
+    const objectUrl=URL.createObjectURL(file);
+    el.dataset.objectUrl=objectUrl;
+    el.src=objectUrl;
+    const wrap=document.getElementById("au-wrap-"+beatId)||el.parentElement;
+    if(wrap)wrap.style.display="block";
+  }
   showToast("✓ Lydfil lastet opp");
 }
 
@@ -776,7 +798,12 @@ function renderBeats(container,beats,albumMode){
         <span class="expand-arrow">▾</span>
       </div>
       <div class="beat-expand">
-        ${b.url?`<audio controls src="${esc(b.url)}" preload="none"></audio>`:""}
+        <div id="au-wrap-${b.id}" style="margin-bottom:12px">
+          <audio id="au-${b.id}" controls preload="none"></audio>
+        </div>
+        <div style="margin-bottom:12px">
+          <label class="ghost-btn" style="cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:6px;padding:6px 12px">🎵 Last opp / bytt lydfil<input type="file" accept="audio/*" hidden onchange="uploadBeatAudio('${b.id}',this.files[0])"></label>
+        </div>
         <textarea placeholder="Skriv hook, vers, tekst, ideer, flows..." oninput="autosaveLyrics('${b.id}',this.value)">${esc(b.lyrics||"")}</textarea>
         <div class="beat-expand-actions">
           <button class="primary-btn" onclick="saveBeatLyrics('${b.id}')">Lagre tekst</button>
@@ -787,7 +814,11 @@ function renderBeats(container,beats,albumMode){
     </div>`).join("");
 }
 
-function toggleBeat(id){document.getElementById(`bi-${id}`)?.classList.toggle("expanded");}
+function toggleBeat(id){
+  const item=document.getElementById(`bi-${id}`);if(!item)return;
+  item.classList.toggle("expanded");
+  if(item.classList.contains("expanded"))loadAudioForBeat(id);
+}
 const _lt={};
 function autosaveLyrics(id,val){clearTimeout(_lt[id]);_lt[id]=setTimeout(()=>{const b=state.beats.find(x=>x.id===id);if(b){b.lyrics=val;saveState();}},800);}
 function saveBeatLyrics(id){
@@ -904,7 +935,11 @@ function renderAlbumBeats(beats,mode,customEl){
     </div>`;
   }).join("");
 }
-function toggleAlbumBeat(id){document.getElementById(`abi-${id}`)?.classList.toggle("expanded");}
+function toggleAlbumBeat(id){
+  const card=document.getElementById(`abi-${id}`);if(!card)return;
+  card.classList.toggle("expanded");
+  if(card.classList.contains("expanded"))loadAudioForBeat(id);
+}
 function setAlbumBeatRating(id,r){
   const b=state.beats.find(x=>x.id===id);if(!b)return;
   b.rating=r;saveState();
@@ -1223,9 +1258,11 @@ document.getElementById("editDemoModal").addEventListener("click",e=>{if(e.targe
 document.querySelectorAll(".mtab").forEach(t=>t.addEventListener("click",()=>switchMTab(t.dataset.mtab)));
 
 // ── BEAT EVENTS ──
-document.getElementById("beatFiles").addEventListener("change",e=>{
-  Array.from(e.target.files).forEach(f=>state.beats.unshift({id:uid(),name:f.name.replace(/\.[^/.]+$/,""),url:URL.createObjectURL(f),source:"local",favorite:false,lyrics:"",rating:0,cover:"",done:0,createdAt:Date.now()}));
-  saveState();renderAll();
+document.getElementById("beatFiles").addEventListener("change",async e=>{
+  const files=Array.from(e.target.files).filter(f=>f.type.startsWith("audio")||/\.(mp3|wav|flac|m4a|ogg|aac)$/i.test(f.name));
+  for(const f of files)state.beats.unshift(await createBeatFromFile(f));
+  saveState();renderAll();showToast(`✓ ${files.length} beat${files.length===1?"":"s"} lagt til`);
+  e.target.value="";
 });
 document.getElementById("addBeatUrlBtn").addEventListener("click",()=>{
   const name=document.getElementById("beatNameInput").value.trim(),url=document.getElementById("beatUrlInput").value.trim();
@@ -1325,8 +1362,8 @@ document.getElementById("saveNewMixtapeBtn").addEventListener("click",()=>{
 document.getElementById("backToMixtapesBtn").addEventListener("click",()=>{currentMixtapeId=null;renderMixtapes();});
 
 // ── UPLOAD / DROP helpers ──
-function createBeatFromFile(file){
-  return{id:uid(),name:file.name.replace(/\.[^/.]+$/,""),url:URL.createObjectURL(file),source:"local",favorite:false,lyrics:"",rating:0,cover:"",done:0,createdAt:Date.now()};
+async function createBeatFromFile(file){
+  return await createBeatFromFileIDB(file);
 }
 function addBeatToMixtape(beat){
   if(!state.beats.find(b=>b.id===beat.id))state.beats.push(beat);
@@ -1340,28 +1377,30 @@ function addBeatToAlbum(beat){
   if(album&&!album.beatIds.includes(beat.id))album.beatIds.push(beat.id);
   saveState();
 }
-function handleMixtapeDrop(e){
+async function handleMixtapeDrop(e){
   e.preventDefault();document.getElementById("mixtapeDrop").classList.remove("drag-over");
   const files=[...e.dataTransfer.files].filter(f=>f.type.startsWith("audio")||/\.(mp3|wav|flac|m4a|ogg|aac)$/i.test(f.name));
   if(!files.length){showToast("Ingen lydfiler funnet");return;}
-  files.forEach(f=>{addBeatToMixtape(createBeatFromFile(f));});
+  for(const f of files)addBeatToMixtape(await createBeatFromFile(f));
   renderMixtapeDetail();showToast(`✓ ${files.length} beat${files.length===1?"":"s"} lagt til`);
 }
-function handleAlbumDrop(e){
+async function handleAlbumDrop(e){
   e.preventDefault();document.getElementById("albumDrop").classList.remove("drag-over");
   const files=[...e.dataTransfer.files].filter(f=>f.type.startsWith("audio")||/\.(mp3|wav|flac|m4a|ogg|aac)$/i.test(f.name));
   if(!files.length){showToast("Ingen lydfiler funnet");return;}
-  files.forEach(f=>{addBeatToAlbum(createBeatFromFile(f));});
+  for(const f of files)addBeatToAlbum(await createBeatFromFile(f));
   renderAlbumDetail();showToast(`✓ ${files.length} beat${files.length===1?"":"s"} lagt til`);
 }
-document.getElementById("mixtapeUploadInput").addEventListener("change",e=>{
-  [...e.target.files].forEach(f=>addBeatToMixtape(createBeatFromFile(f)));
-  renderMixtapeDetail();showToast(`✓ ${e.target.files.length} beat${e.target.files.length===1?"":"s"} lagt til`);
+document.getElementById("mixtapeUploadInput").addEventListener("change",async e=>{
+  const files=[...e.target.files].filter(f=>f.type.startsWith("audio")||/\.(mp3|wav|flac|m4a|ogg|aac)$/i.test(f.name));
+  for(const f of files)addBeatToMixtape(await createBeatFromFile(f));
+  renderMixtapeDetail();showToast(`✓ ${files.length} beat${files.length===1?"":"s"} lagt til`);
   e.target.value="";
 });
-document.getElementById("albumUploadInput").addEventListener("change",e=>{
-  [...e.target.files].forEach(f=>addBeatToAlbum(createBeatFromFile(f)));
-  renderAlbumDetail();showToast(`✓ ${e.target.files.length} beat${e.target.files.length===1?"":"s"} lagt til`);
+document.getElementById("albumUploadInput").addEventListener("change",async e=>{
+  const files=[...e.target.files].filter(f=>f.type.startsWith("audio")||/\.(mp3|wav|flac|m4a|ogg|aac)$/i.test(f.name));
+  for(const f of files)addBeatToAlbum(await createBeatFromFile(f));
+  renderAlbumDetail();showToast(`✓ ${files.length} beat${files.length===1?"":"s"} lagt til`);
   e.target.value="";
 });
 // Show drop zones when in detail views
