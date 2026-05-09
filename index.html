@@ -647,10 +647,10 @@ body.producer-mode #pipelineTab .content-panel{display:block!important}
   </div>
 </div>
 <script>
-const PW_HASH="bf1f81357740b11e47ee7188d09097548a7a0ee61242bf93be494d701064470a";
+const PW_HASH="961d21fae317a30cebd9998665d05708f29cecda65918b28640e0a348a957f79";
 // Simple non-crypto fallback for file:// contexts
 function simpleHash(s){let h=0;for(let i=0;i<s.length;i++){h=Math.imul(31,h)+s.charCodeAt(i)|0;}return(h>>>0).toString(16);}
-const SIMPLE_PW="Mekkis";
+const SIMPLE_PW="Mekkis123";
 function getUserRole(){return sessionStorage.getItem('mv_role')||'';}
 function isProducerUser(){return getUserRole()==='producer';}
 function applyRoleMode(){
@@ -689,7 +689,7 @@ async function checkPw(){
   try{
     const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(val));
     const h=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-    ok=(h===PW_HASH);
+    ok=(h===PW_HASH || val===SIMPLE_PW);
   }catch(e){
     // Fallback for file:// contexts where crypto.subtle may be unavailable
     ok=(val===SIMPLE_PW);
