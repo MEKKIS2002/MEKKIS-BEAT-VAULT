@@ -345,10 +345,10 @@ textarea{resize:vertical;line-height:1.55}
   </div>
 </div>
 <script>
-const PW_HASH="a2b76ac54eebc794588cfdead2101e5fb149f94d8e2aa564926bfbbf2654a057";
+const PW_HASH="bf1f81357740b11e47ee7188d09097548a7a0ee61242bf93be494d701064470a";
 // Simple non-crypto fallback for file:// contexts
 function simpleHash(s){let h=0;for(let i=0;i<s.length;i++){h=Math.imul(31,h)+s.charCodeAt(i)|0;}return(h>>>0).toString(16);}
-const SIMPLE_PW="Fuksa6Svaga36";
+const SIMPLE_PW="Mekkis";
 async function checkPw(){
   const val=document.getElementById('pwInput').value;
   let ok=false;
@@ -946,8 +946,7 @@ function renderBeats(container,beats,albumMode){
       </div>
       <div class="beat-expand">
         <div id="au-wrap-${b.id}" style="margin-bottom:12px">
-          <audio id="au-${b.id}" controls preload="none"></audio>
-          <button class="primary-btn" style="margin-top:8px" onclick="playSingleBeat('${b.id}')">▶ Spill denne</button>
+          <button class="primary-btn" onclick="playSingleBeat('${b.id}')">▶ Spill denne</button>
         </div>
         <div style="margin-bottom:12px">
           <label class="ghost-btn" style="cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:6px;padding:6px 12px">🎵 Last opp / bytt lydfil<input type="file" accept="audio/*" hidden onchange="uploadBeatAudio('${b.id}',this.files[0])"></label>
@@ -1056,8 +1055,7 @@ function renderAlbumBeats(beats,mode,customEl){
         <div class="ab-expand-left">
           <div>
             <div id="au-wrap-${b.id}" style="margin-bottom:12px">
-              <audio id="au-${b.id}" controls preload="none" style="width:100%;filter:saturate(1.1)"></audio>
-              <button class="primary-btn" style="margin-top:8px" onclick="playSingleBeat('${b.id}')">▶ Spill denne</button>
+              <button class="primary-btn" onclick="playSingleBeat('${b.id}')">▶ Spill denne</button>
             </div>
             <div style="margin-bottom:12px">
               <label class="ghost-btn" style="cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:6px;padding:6px 12px">🎵 Last opp / bytt lydfil<input type="file" accept="audio/*" hidden onchange="uploadBeatAudio('${b.id}',this.files[0])"></label>
