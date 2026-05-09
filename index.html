@@ -585,11 +585,9 @@ input:focus,textarea:focus,select:focus{border-color:rgba(255,167,76,.74);box-sh
 .cass-window-ridge{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.20));box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),0 0 0 1px rgba(0,0,0,.52)}
 
 /* PRODUCER MODE */
-body.producer-mode .tabs .tab-btn:not([data-tab="mixtapes"]),
+body.producer-mode .tabs .tab-btn:not([data-tab="mixtapes"]):not([data-tab="pipeline"]),
 body.producer-mode #albumsTab,
-body.producer-mode #pipelineTab,
 body.producer-mode #integrationsTab,
-body.producer-mode #newMixtapeBtn,
 body.producer-mode #addBeatsToMixtapeBtn,
 body.producer-mode #mixtapeCoverInput,
 body.producer-mode #deleteMixtapeBtn,
@@ -597,13 +595,22 @@ body.producer-mode #exportBtn,
 body.producer-mode #importInput,
 body.producer-mode label:has(#importInput),
 body.producer-mode label:has(#mixtapeCoverInput),
-body.producer-mode .cass-new-card,
 body.producer-mode .producer-hidden{display:none!important}
 body.producer-mode .tabs{width:max-content}
-body.producer-mode .hero-main p::after{content:" Produsentmodus: du kan se mixtapes og laste opp nye beats.";color:var(--accent)}
+body.producer-mode .hero-main p::after{content:" Produsentmodus: du kan se mixtapes, pipeline, opprette mixtapes og laste opp nye beats.";color:var(--accent)}
 body.producer-mode .stats-card{display:none}
 body.producer-mode .hero{grid-template-columns:1fr}
 body.producer-mode .album-beat-card{cursor:default}
+body.producer-mode #newMixtapeBtn{display:inline-flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+body.producer-mode #newMixtapeModal .primary-btn{display:inline-flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+
+.producer-login-btn{position:fixed;top:18px;right:18px;z-index:2000;display:none;background:linear-gradient(135deg,#f4a443,#cb6e1a);border:0;border-radius:999px;padding:10px 15px;color:#fff;font-size:13px;font-weight:800;letter-spacing:.1px;cursor:pointer;box-shadow:0 12px 36px rgba(0,0,0,.34);font-family:inherit}
+.producer-login-btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
+body.producer-mode .producer-login-btn{display:inline-flex;align-items:center;gap:8px}
+.beat-check-item.mixtape-source{border-color:color-mix(in srgb,var(--source-mixtape-color) 72%,rgba(255,255,255,.1));box-shadow:inset 4px 0 0 var(--source-mixtape-color),0 0 0 1px color-mix(in srgb,var(--source-mixtape-color) 18%,transparent)}
+.beat-check-item.mixtape-source:hover{border-color:color-mix(in srgb,var(--source-mixtape-color) 88%,white 8%);background:color-mix(in srgb,var(--source-mixtape-color) 15%,rgba(255,255,255,.06))}
+.beat-check-meta{margin-left:auto;color:var(--muted);font-size:11px;font-weight:700;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.beat-check-item.mixtape-source .beat-check-meta{color:color-mix(in srgb,var(--source-mixtape-color) 72%,white 20%)}
 
 
 /* Favorite feedback + mixtape-colored song borders */
@@ -611,6 +618,17 @@ body.producer-mode .album-beat-card{cursor:default}
 .star-btn:active{transform:scale(1.16)}
 .album-beat-card.mixtape-colored{border-color:color-mix(in srgb,var(--song-border-color) 72%,rgba(255,255,255,.14));box-shadow:0 0 0 1px color-mix(in srgb,var(--song-border-color) 22%,transparent),0 18px 52px rgba(0,0,0,.22)}
 .album-beat-card.mixtape-colored:hover,.album-beat-card.mixtape-colored.expanded{border-color:color-mix(in srgb,var(--song-border-color) 88%,white 10%);box-shadow:0 0 0 1px color-mix(in srgb,var(--song-border-color) 36%,transparent),0 20px 60px rgba(0,0,0,.28)}
+
+/* Producer pipeline access fix */
+body.producer-mode .tabs .tab-btn[data-tab="mixtapes"],
+body.producer-mode .tabs .tab-btn[data-tab="pipeline"]{display:inline-flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+body.producer-mode .tabs .tab-btn:not([data-tab="mixtapes"]):not([data-tab="pipeline"]){display:none!important}
+body.producer-mode #mixtapesTab.hidden,
+body.producer-mode #pipelineTab.hidden{display:none!important}
+body.producer-mode #mixtapesTab:not(.hidden),
+body.producer-mode #pipelineTab:not(.hidden){display:block!important}
+body.producer-mode #pipelineTab .content-panel{display:block!important}
+
 </style>
 </head>
 <body>
@@ -636,12 +654,26 @@ const SIMPLE_PW="Mekkis";
 function getUserRole(){return sessionStorage.getItem('mv_role')||'';}
 function isProducerUser(){return getUserRole()==='producer';}
 function applyRoleMode(){
-  document.body.classList.toggle('producer-mode',isProducerUser());
-  if(isProducerUser()){
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab==='mixtapes'));
+  const producer=isProducerUser();
+  document.body.classList.toggle('producer-mode',producer);
+  if(producer){
+    const active=document.querySelector('.tab-btn.active');
+    const activeTab=active?.dataset?.tab||'mixtapes';
+    const allowed=['mixtapes','pipeline'];
+    const target=allowed.includes(activeTab)?activeTab:'mixtapes';
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===target));
     document.querySelectorAll('.tab-view').forEach(v=>v.classList.add('hidden'));
-    const mt=document.getElementById('mixtapesTab');if(mt)mt.classList.remove('hidden');
+    const view=document.getElementById(`${target}Tab`);if(view)view.classList.remove('hidden');
   }
+}
+function returnToPasswordScreen(){
+  sessionStorage.removeItem('mv_unlocked');
+  sessionStorage.removeItem('mv_role');
+  document.body.classList.remove('producer-mode');
+  const lock=document.getElementById('lockScreen');
+  if(lock)lock.style.display='flex';
+  const pw=document.getElementById('pwInput');
+  if(pw){pw.value='';setTimeout(()=>pw.focus(),60);}
 }
 function unlockAs(role){
   sessionStorage.setItem('mv_unlocked','1');
@@ -681,6 +713,7 @@ function initLock(){
 initLock();
 </script>
 <main class="app">
+<button id="producerLoginBtn" class="producer-login-btn" onclick="returnToPasswordScreen()">Logg inn</button>
 
 <section class="hero">
   <div class="hero-main glass">
@@ -714,7 +747,7 @@ initLock();
     <div id="mixtapesListView">
       <div class="section-title">
         <h2>Mixtapes</h2>
-        <button class="primary-btn" id="newMixtapeBtn">+ Ny mixtape</button>
+        <button class="primary-btn" id="newMixtapeBtn" onclick="openNewMixtapeModal()">+ Ny mixtape</button>
       </div>
       <p class="hint" style="margin-bottom:24px">Organiser beats i kasetter. Klikk på en kasett for å åpne den.</p>
       <div id="mixtapeGrid" class="mixtape-grid"></div>
@@ -1735,11 +1768,23 @@ document.getElementById("saveNewAlbumBtn").addEventListener("click",()=>{
 
 document.getElementById("backToAlbumsBtn").addEventListener("click",()=>{currentAlbumId=null;renderAlbums();});
 
+function beatSourceMixtape(beatId){
+  const mt=(state.mixtapes||[]).find(x=>(x.beatIds||[]).includes(beatId));
+  return mt?{mixtape:mt,color:cassColor(mt,state.mixtapes.indexOf(mt))}:null;
+}
+function beatCheckItemMarkup(b){
+  const src=beatSourceMixtape(b.id);
+  const cls=src?'beat-check-item mixtape-source':'beat-check-item';
+  const style=src?` style="--source-mixtape-color:${src.color}"`:'';
+  const meta=src?`<span class="beat-check-meta">${esc(src.mixtape.name)}</span>`:'';
+  return `<label class="${cls}"${style}><input type="checkbox" value="${b.id}"><span>${esc(b.name)}</span>${meta}</label>`;
+}
+
 function renderAlbumAddBeatSearch(){
   const q=(document.getElementById("beatSearchInput")?.value||"").trim().toLowerCase();
   const filtered=albumAddBeatCandidates.filter(b=>String(b.name||"").toLowerCase().includes(q)||String(b.source||"").toLowerCase().includes(q));
   document.getElementById("beatCheckList").innerHTML=filtered.length
-    ?filtered.map(b=>`<label class="beat-check-item"><input type="checkbox" value="${b.id}"><span>${esc(b.name)}</span></label>`).join("")
+    ?filtered.map(beatCheckItemMarkup).join("")
     :`<div class="hint">${albumAddBeatCandidates.length?"Ingen beats matcher søket.":"Alle beats er allerede i dette albumet."}</div>`;
 }
 
@@ -1893,12 +1938,10 @@ function renderMixtapes(){
       <button class="small-btn" style="margin-top:8px;padding:6px 11px" onclick="event.stopPropagation();playMixtapeFromStart('${mt.id}')">▶ Play</button>
     </div>`;
   });
-  if(!isProducerUser()){
-    cards.push(`<div class="cass-new-card" onclick="document.getElementById('newMixtapeBtn').click()">
+  cards.push(`<div class="cass-new-card" onclick="document.getElementById('newMixtapeBtn').click()">
       <div class="cass-new-body">+</div>
       <span>Ny mixtape</span>
     </div>`);
-  }
   grid.innerHTML=cards.join("");
 }
 
@@ -2061,7 +2104,7 @@ document.getElementById("importInput").addEventListener("change",e=>{const f=e.t
 
 // ── TABS ──
 document.querySelectorAll(".tab-btn").forEach(btn=>btn.addEventListener("click",()=>{
-  if(isProducerUser()&&btn.dataset.tab!=="mixtapes"){showToast("Produsentmodus har bare tilgang til mixtapes");return;}
+  if(isProducerUser()&&! ["mixtapes","pipeline"].includes(btn.dataset.tab)){showToast("Produsentmodus har tilgang til mixtapes og pipeline");return;}
   document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
   document.querySelectorAll(".tab-view").forEach(v=>v.classList.add("hidden"));
@@ -2139,12 +2182,16 @@ function makeMixtapeCover(file,cb){
 }
 
 // ── MIXTAPE EVENTS ──
-document.getElementById("newMixtapeBtn").addEventListener("click",()=>{
+function openNewMixtapeModal(){
   document.getElementById("newMixtapeName").value="";
   const inp=document.getElementById("newMixtapeCoverInput");if(inp)inp.value="";
   const wrap=document.getElementById("newMixtapeCoverPreviewWrap");if(wrap)wrap.style.display="none";
   newMixtapeCoverBase64=null;
   document.getElementById("newMixtapeModal").classList.add("open");
+}
+document.getElementById("newMixtapeBtn").addEventListener("click",(e)=>{
+  e.preventDefault();
+  openNewMixtapeModal();
 });
 document.getElementById("newMixtapeCoverInput").addEventListener("change",e=>{
   const f=e.target.files[0];if(!f)return;
@@ -2160,7 +2207,12 @@ document.getElementById("saveNewMixtapeBtn").addEventListener("click",()=>{
   if(!name){alert("Skriv inn et navn.");return;}
   const id=uid();
   state.mixtapes.unshift({id,name,beatIds:[],cover:newMixtapeCoverBase64||null,color:CASS_COLORS[Math.floor(Math.random()*CASS_COLORS.length)],createdAt:Date.now()});
-  saveState();renderMixtapes();closeModal("newMixtapeModal");showToast(`✓ "${name}" opprettet`);
+  saveState();
+  currentMixtapeId=null;
+  renderMixtapes();
+  applyRoleMode();
+  closeModal("newMixtapeModal");
+  showToast(`✓ "${name}" opprettet`);
 });
 document.getElementById("backToMixtapesBtn").addEventListener("click",()=>{currentMixtapeId=null;renderMixtapes();});
 
@@ -2227,7 +2279,7 @@ function renderMixtapeAddBeatSearch(){
   const q=(document.getElementById("mixtapeBeatSearchInput")?.value||"").trim().toLowerCase();
   const filtered=mixtapeAddBeatCandidates.filter(b=>String(b.name||"").toLowerCase().includes(q)||String(b.source||"").toLowerCase().includes(q));
   document.getElementById("mixtapeBeatCheckList").innerHTML=filtered.length
-    ?filtered.map(b=>`<label class="beat-check-item"><input type="checkbox" value="${b.id}"><span>${esc(b.name)}</span></label>`).join("")
+    ?filtered.map(beatCheckItemMarkup).join("")
     :`<div class="hint">${mixtapeAddBeatCandidates.length?"Ingen beats matcher søket.":"Alle beats er allerede i denne mixtapen."}</div>`;
 }
 
@@ -2282,6 +2334,56 @@ document.getElementById('deleteConfirmInput').addEventListener('input',function(
 document.getElementById('deleteConfirmModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal('deleteConfirmModal');});
 
 renderAll();
+</script>
+
+<script>
+(function(){
+  const PRODUCER_TABS=["mixtapes","pipeline"];
+  function safeTab(tab){return PRODUCER_TABS.includes(tab)?tab:"mixtapes";}
+  window.showProducerAllowedTab=function(tab){
+    const target=safeTab(tab);
+    document.body.classList.toggle('producer-mode',typeof isProducerUser==='function'&&isProducerUser());
+    document.querySelectorAll('.tab-btn').forEach(btn=>{
+      const isActive=btn.dataset.tab===target;
+      btn.classList.toggle('active',isActive);
+      if(typeof isProducerUser==='function'&&isProducerUser()){
+        btn.style.display=PRODUCER_TABS.includes(btn.dataset.tab)?'inline-flex':'none';
+      }else{
+        btn.style.display='';
+      }
+    });
+    document.querySelectorAll('.tab-view').forEach(view=>view.classList.add('hidden'));
+    const view=document.getElementById(target+'Tab');
+    if(view)view.classList.remove('hidden');
+    if(target==='pipeline'&&typeof renderPipeline==='function')renderPipeline();
+    if(target==='mixtapes'&&typeof renderMixtapes==='function')renderMixtapes();
+  };
+  const previousApply=window.applyRoleMode;
+  window.applyRoleMode=function(){
+    if(typeof previousApply==='function')previousApply();
+    if(typeof isProducerUser==='function'&&isProducerUser()){
+      const active=document.querySelector('.tab-btn.active')?.dataset?.tab||'mixtapes';
+      window.showProducerAllowedTab(active);
+    }
+  };
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click',function(e){
+      if(!(typeof isProducerUser==='function'&&isProducerUser()))return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const tab=btn.dataset.tab;
+      if(!PRODUCER_TABS.includes(tab)){
+        if(typeof showToast==='function')showToast('Produsentmodus har tilgang til mixtapes og pipeline');
+        return false;
+      }
+      window.showProducerAllowedTab(tab);
+      return false;
+    },true);
+  });
+  document.addEventListener('DOMContentLoaded',()=>{
+    if(typeof isProducerUser==='function'&&isProducerUser())window.showProducerAllowedTab(document.querySelector('.tab-btn.active')?.dataset?.tab||'mixtapes');
+  });
+})();
 </script>
 </body>
 </html>
