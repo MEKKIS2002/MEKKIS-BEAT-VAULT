@@ -228,6 +228,21 @@ textarea{resize:vertical;line-height:1.55}
 .pipeline-beat-bar div{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2))}
 .pipeline-beat-pct{font-size:12px;color:var(--muted);min-width:34px;text-align:right}
 
+/* DROP ZONE */
+.drop-zone{border:2px dashed rgba(255,255,255,.18);border-radius:14px;padding:16px;text-align:center;margin-bottom:14px;transition:all .2s;display:none}
+.drop-zone.active{display:block}
+.drop-zone.drag-over{border-color:var(--accent);background:rgba(168,85,247,.08);box-shadow:0 0 0 3px rgba(168,85,247,.15)}
+.drop-hint{color:var(--muted);font-size:13px}
+/* HIGHLIGHT EDITOR */
+.lyrics-editor-wrap{position:relative;margin-bottom:10px}
+.highlight-toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:7px;padding:7px 10px;background:rgba(255,255,255,.06);border-radius:10px;border:1px solid rgba(255,255,255,.1);align-items:center}
+.highlight-toolbar span{font-size:11px;color:var(--muted);font-weight:700;margin-right:4px}
+.hl-btn{width:22px;height:22px;border-radius:5px;border:2px solid rgba(255,255,255,.2);cursor:pointer;transition:transform .1s;flex-shrink:0}
+.hl-btn:hover{transform:scale(1.15)}
+.hl-btn.hl-clear{background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text);width:auto;padding:0 7px;border-radius:6px}
+.lyrics-editor{min-height:300px;width:100%;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:12px 14px;color:var(--text);font-size:14px;line-height:1.7;outline:none;white-space:pre-wrap;word-break:break-word;overflow-y:auto;font-family:inherit;resize:vertical;transition:border-color .2s}
+.lyrics-editor:focus{border-color:rgba(168,85,247,.75);box-shadow:0 0 0 4px rgba(168,85,247,.16)}
+.lyrics-editor::selection{background:rgba(168,85,247,.3)}
 /* VERSIONS */
 .version-list{display:grid;gap:12px}
 .version-card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:18px;padding:15px;display:grid;gap:10px}
@@ -365,7 +380,6 @@ initLock();
   <button class="tab-btn active" data-tab="mixtapes">📼 Mixtapes</button>
   <button class="tab-btn" data-tab="albums">📁 Albumer</button>
   <button class="tab-btn" data-tab="pipeline">📊 Pipeline</button>
-  <button class="tab-btn" data-tab="release">🚀 Release-score</button>
   <button class="tab-btn" data-tab="integrations">🔌 Integrasjoner</button>
 </nav>
 
@@ -384,8 +398,12 @@ initLock();
       <div style="margin-bottom:18px"><button class="ghost-btn" id="backToMixtapesBtn">← Tilbake til mixtapes</button></div>
       <div class="album-detail-hd" id="mixtapeDetailHd"></div>
       <div class="toolbar" style="margin-bottom:18px">
-        <button class="primary-btn" id="addBeatsToMixtapeBtn">+ Legg til beats</button>
+        <button class="primary-btn" id="addBeatsToMixtapeBtn">+ Legg til eksisterende</button>
+        <label class="ghost-btn" style="cursor:pointer">📂 Last opp filer<input id="mixtapeUploadInput" type="file" accept="audio/*" multiple hidden /></label>
         <button class="small-btn danger" id="deleteMixtapeBtn">Slett mixtape</button>
+      </div>
+      <div id="mixtapeDrop" class="drop-zone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleMixtapeDrop(event)">
+        <div class="drop-hint">🎵 Slipp lydfiler her for å legge til beats</div>
       </div>
       <div id="mixtapeBeatList" class="beat-list"></div>
     </div>
@@ -408,8 +426,12 @@ initLock();
       <div style="margin-bottom:18px"><button class="ghost-btn" id="backToAlbumsBtn">← Tilbake til albumer</button></div>
       <div class="album-detail-hd" id="albumDetailHd"></div>
       <div class="toolbar" style="margin-bottom:18px">
-        <button class="primary-btn" id="addBeatsToAlbumBtn">+ Legg til beats</button>
+        <button class="primary-btn" id="addBeatsToAlbumBtn">+ Legg til eksisterende</button>
+        <label class="ghost-btn" style="cursor:pointer">📂 Last opp filer<input id="albumUploadInput" type="file" accept="audio/*" multiple hidden /></label>
         <button class="small-btn danger" id="deleteAlbumBtn">Slett album</button>
+      </div>
+      <div id="albumDrop" class="drop-zone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleAlbumDrop(event)">
+        <div class="drop-hint">🎵 Slipp lydfiler her for å legge til beats</div>
       </div>
       <div id="albumBeatList" class="beat-list"></div>
     </div>
@@ -425,44 +447,6 @@ initLock();
 </section>
 
 
-<!-- RELEASE SCORE -->
-<section id="releaseTab" class="tab-view hidden">
-  <section class="content-panel glass">
-    <div class="section-title"><h2>Release-score</h2></div>
-
-    <div class="score-explain">
-      <h2>Hva er release-score?</h2>
-      <p>Release-score er et tall fra 0 til 100 som automatisk beregnes for hver demo. Det gir deg et raskt overblikk over hvilke låter som er nærmest ferdig og burde prioriteres. Du trenger ikke gjøre noe — scoren oppdateres hver gang du endrer en demo.</p>
-      <p>Slik regnes den ut:</p>
-      <div class="score-factor">
-        <div class="score-pts">30p</div>
-        <div class="score-info"><strong>Ferdigstillelse %</strong><span>Hva du selv angir som total ferdigstillelse for låten. 100% = 30 poeng.</span></div>
-      </div>
-      <div class="score-factor">
-        <div class="score-pts">25p</div>
-        <div class="score-info"><strong>Rangering (1–10 stjerner)</strong><span>Din subjektive vurdering av låten. 10 stjerner = 25 poeng, 1 stjerne = 2,5 poeng.</span></div>
-      </div>
-      <div class="score-factor">
-        <div class="score-pts">20p</div>
-        <div class="score-info"><strong>Mix-status %</strong><span>Separat sporbar fremgang for miksen. Lar deg skille mellom "låten er ferdig skrevet" og "miksen er ferdig".</span></div>
-      </div>
-      <div class="score-factor">
-        <div class="score-pts">15p</div>
-        <div class="score-info"><strong>Pipeline-stage</strong><span>Idé = 0p, Klar = 15p. Hvert steg fremover gir proporsjonalt mer poeng. Innspilt gir f.eks. ~8,75p.</span></div>
-      </div>
-      <div class="score-factor">
-        <div class="score-pts">+3p</div>
-        <div class="score-info"><strong>Versjon logget</strong><span>Bonuspoeng hvis du har lagret minst én versjon i versjonsloggen. Signaliserer aktiv utvikling.</span></div>
-      </div>
-      <div class="score-factor">
-        <div class="score-pts">+2p</div>
-        <div class="score-info"><strong>Notater / tekst skrevet</strong><span>Bonuspoeng hvis du har tekst eller notater lagret på demoen.</span></div>
-      </div>
-      <p style="margin-top:18px;margin-bottom:0;font-size:13px;color:var(--muted)">En låt med score over 70 er vanligvis klar for å vurdere release. Under 40 er det fortsatt mye arbeid igjen.</p>
-    </div>
-
-    <div id="releaseGrid" class="release-grid"></div>
-  </section>
 </section>
 
 <!-- INTEGRASJONER -->
@@ -486,6 +470,24 @@ initLock();
       <button class="ghost-btn" id="mockDriveImportBtn" style="margin-top:8px">Simuler Drive-import</button>
     </aside>
     <section class="content-panel glass">
+      <div class="settings-card" style="margin-bottom:14px">
+        <h2>💾 Trygg lagring av beats</h2>
+        <p class="hint" style="font-size:13px;line-height:1.65">Beats lastet opp via fil-upload lagres som midlertidige <strong>object URLs</strong> i nettleseren. Disse <strong>forsvinner når du lukker fanen</strong> — men tekster, ratings og metadata beholdes i localStorage.<br><br>For trygg, varig lagring anbefaler vi:</p>
+        <div style="display:grid;gap:10px;margin-top:4px">
+          <div style="background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);border-radius:12px;padding:12px 14px">
+            <div style="font-size:13px;font-weight:700;margin-bottom:3px">☁️ Google Drive (anbefalt)</div>
+            <div class="hint">Last opp beats til Drive-mappen, legg inn lenken i "URL / Drive-lenke"-feltet. Beats spilles av direkte fra Drive og overlever alle sesjoner.</div>
+          </div>
+          <div style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2);border-radius:12px;padding:12px 14px">
+            <div style="font-size:13px;font-weight:700;margin-bottom:3px">🖥️ Lokal server (teknisk)</div>
+            <div class="hint">Kjør en enkel lokal server (f.eks. med Node.js) i mappen der beatsa ligger. Lenk til <code style="background:rgba(255,255,255,.1);padding:1px 5px;border-radius:4px">http://localhost:3000/beat.mp3</code> — fungerer så lenge serveren er oppe.</div>
+          </div>
+          <div style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:12px 14px">
+            <div style="font-size:13px;font-weight:700;margin-bottom:3px">📤 Eksporter backup regelmessig</div>
+            <div class="hint">Bruk "Eksporter backup"-knappen øverst for å lagre alt til en JSON-fil. Tekster, ratings og metadata er alltid trygge der.</div>
+          </div>
+        </div>
+      </div>
       <div class="settings-card">
         <h2>SoundCloud oEmbed</h2>
         <p class="hint">Hentes direkte uten proxy for offentlige tracks. Private tracks krever proxy.</p>
@@ -632,7 +634,73 @@ initLock();
   </div>
 </div>
 
+<!-- DELETE CONFIRM MODAL -->
+<div id="deleteConfirmModal" class="modal">
+  <div class="modal-card modal-sm" style="max-width:400px">
+    <div class="modal-hd">
+      <div class="modal-hd-left"><h2 id="deleteConfirmTitle" style="font-size:16px;color:#fb7185">Bekreft sletting</h2></div>
+      <div class="modal-hd-right"><button class="close-btn" onclick="closeModal('deleteConfirmModal')">×</button></div>
+    </div>
+    <div style="padding:20px 28px 26px;display:grid;gap:14px">
+      <p class="hint" id="deleteConfirmMsg" style="font-size:14px;line-height:1.6"></p>
+      <p class="hint">Skriv <strong style="color:var(--text)">slett</strong> for å bekrefte:</p>
+      <input id="deleteConfirmInput" type="text" placeholder="slett" style="text-align:center;font-size:15px;letter-spacing:2px" oninput="document.getElementById('deleteConfirmBtn').disabled=this.value.toLowerCase()!=='slett'"/>
+      <button class="primary-btn" id="deleteConfirmBtn" disabled onclick="executeDelete()" style="background:linear-gradient(135deg,#ef4444,#b91c1c);opacity:.5;transition:opacity .2s">Slett permanent</button>
+    </div>
+  </div>
+</div>
+
 <script>
+// ── IndexedDB audio store ──
+const audioDB=(()=>{
+  let db=null;
+  function open(){
+    return new Promise((res,rej)=>{
+      if(db){res(db);return;}
+      const req=indexedDB.open("mvAudio",1);
+      req.onupgradeneeded=e=>e.target.result.createObjectStore("files");
+      req.onsuccess=e=>{db=e.target.result;res(db);};
+      req.onerror=e=>rej(e);
+    });
+  }
+  return{
+    async save(id,blob){const d=await open();return new Promise((res,rej)=>{const tx=d.transaction("files","readwrite");tx.objectStore("files").put(blob,id);tx.oncomplete=res;tx.onerror=rej;});},
+    async load(id){const d=await open();return new Promise((res,rej)=>{const tx=d.transaction("files","readonly");const req=tx.objectStore("files").get(id);req.onsuccess=e=>res(e.target.result||null);req.onerror=rej;});},
+    async del(id){const d=await open();return new Promise((res,rej)=>{const tx=d.transaction("files","readwrite");tx.objectStore("files").delete(id);tx.oncomplete=res;tx.onerror=rej;});}
+  };
+})();
+
+async function loadAudioForBeat(beatId){
+  const el=document.getElementById("au-"+beatId);if(!el)return;
+  const b=state.beats.find(x=>x.id===beatId);
+  // Try IndexedDB first
+  const blob=await audioDB.load(beatId);
+  if(blob){el.src=URL.createObjectURL(blob);el.parentElement.style.display="block";return;}
+  // Fall back to stored URL
+  if(b&&b.url){el.src=b.url;el.parentElement.style.display="block";return;}
+  // No audio
+  el.parentElement.style.display="none";
+}
+
+async function uploadBeatAudio(beatId,file){
+  if(!file||!file.type.startsWith("audio"))return;
+  const b=state.beats.find(x=>x.id===beatId);if(!b)return;
+  await audioDB.save(beatId,file);
+  b.url=beatId+":idb"; // sentinel so we know audio exists
+  saveState();
+  const el=document.getElementById("au-"+beatId);
+  if(el){el.src=URL.createObjectURL(file);el.parentElement.style.display="block";}
+  showToast("✓ Lydfil lastet opp");
+}
+
+// When creating beats from file upload, also store in IDB
+async function createBeatFromFileIDB(file){
+  const b={id:uid(),name:file.name.replace(/\.[^/.]+$/,""),url:"",source:"local",favorite:false,lyrics:"",rating:0,cover:"",done:0,createdAt:Date.now()};
+  await audioDB.save(b.id,file);
+  b.url=b.id+":idb";
+  return b;
+}
+
 const STAGES=["Idé","Hook","Vers","Innspilt","Mix","Master","Klar"];
 const SK="musicVault.v4";
 const state=loadState();
@@ -760,11 +828,12 @@ function renderAlbums(){
   grid.innerHTML=cards.join("");
 }
 
-function openAlbum(id){currentAlbumId=id;renderAlbumDetail();}
+function openAlbum(id){currentAlbumId=id;renderAlbumDetail();setTimeout(()=>showDropZone("albumDrop"),50);}
 
 function renderAlbumDetail(){
   document.getElementById("albumsListView").classList.add("hidden");
   document.getElementById("albumDetailView").classList.remove("hidden");
+  const dz=document.getElementById("albumDrop");if(dz)dz.classList.add("active");
   const album=state.albums.find(a=>a.id===currentAlbumId);
   if(!album){currentAlbumId=null;renderAlbums();return;}
   const hd=document.getElementById("albumDetailHd");
@@ -804,6 +873,12 @@ function renderAlbumBeats(beats,mode,customEl){
       <div class="ab-expand">
         <div class="ab-expand-left">
           <div>
+            <div id="au-wrap-${b.id}" style="margin-bottom:12px">
+              <audio id="au-${b.id}" controls preload="none" style="width:100%;filter:saturate(1.1)"></audio>
+            </div>
+            <div style="margin-bottom:12px">
+              <label class="ghost-btn" style="cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:6px;padding:6px 12px">🎵 Last opp / bytt lydfil<input type="file" accept="audio/*" hidden onchange="uploadBeatAudio('${b.id}',this.files[0])"></label>
+            </div>
             <label style="color:var(--muted);font-size:12px;font-weight:700;display:block;margin-bottom:7px">Tekst / Lyrics / Ideer</label>
             <textarea placeholder="Skriv tekst, hooks, vers, ideer..." oninput="autosaveLyrics('${b.id}',this.value)">${esc(b.lyrics||"")}</textarea>
             <div class="ab-expand-actions" style="margin-top:8px">
@@ -922,10 +997,11 @@ document.getElementById("confirmAddBeatsBtn").addEventListener("click",()=>{
 });
 
 document.getElementById("deleteAlbumBtn").addEventListener("click",()=>{
-  const a=state.albums.find(x=>x.id===currentAlbumId);
-  if(!a||!confirm(`Slette albumet "${a.name}"? Beatsa slettes ikke.`))return;
-  state.albums=state.albums.filter(x=>x.id!==currentAlbumId);
-  currentAlbumId=null;saveState();renderAlbums();showToast("🗑 Album slettet");
+  const a=state.albums.find(x=>x.id===currentAlbumId);if(!a)return;
+  showDeleteConfirm(`Slette albumet "${a.name}"?`,()=>{
+    state.albums=state.albums.filter(x=>x.id!==currentAlbumId);
+    currentAlbumId=null;saveState();renderAlbums();showToast("🗑 Album slettet");
+  });
 });
 
 // ── PIPELINE ──
@@ -965,7 +1041,7 @@ function renderPipeline(){
 }
 
 // ── MIXTAPES ──
-const CASS_COLORS=["#c41a1a","#1a65b0","#1a7a30","#7a1a7a","#c47a10","#1a5a7a","#8a1a2a","#3a6a1a"];
+const CASS_COLORS=["#8b3030","#2a5080","#2a6040","#5a2a6a","#8a6020","#1e4d6a","#6a2535","#325530"];
 let currentMixtapeId=null;
 
 function renderMixtapes(){
@@ -1023,30 +1099,50 @@ function renderMixtapes(){
   grid.innerHTML=cards.join("");
 }
 
-function openMixtape(id){currentMixtapeId=id;renderMixtapeDetail();}
+function openMixtape(id){currentMixtapeId=id;renderMixtapeDetail();setTimeout(()=>showDropZone("mixtapeDrop"),50);}
 
 function renderMixtapeDetail(){
   document.getElementById("mixtapesListView").classList.add("hidden");
   document.getElementById("mixtapeDetailView").classList.remove("hidden");
+  const dz=document.getElementById("mixtapeDrop");if(dz)dz.classList.add("active");
   const mt=state.mixtapes.find(x=>x.id===currentMixtapeId);
   if(!mt){currentMixtapeId=null;renderMixtapes();return;}
   const idx=state.mixtapes.indexOf(mt);
   const col=CASS_COLORS[idx%CASS_COLORS.length];
   const hd=document.getElementById("mixtapeDetailHd");
-  hd.innerHTML=`<div style="width:90px;height:90px;border-radius:12px;background:${col};flex-shrink:0;display:grid;place-items:center;font-size:30px">📼</div>
-    <div class="album-detail-info"><h2>${esc(mt.name)}</h2><span>${mt.beatIds.length} beat${mt.beatIds.length===1?"":"s"}</span></div>`;
+  hd.style.background="none";hd.style.border="none";hd.style.padding="0 0 4px 0";
+  hd.innerHTML=`
+    <div style="display:flex;align-items:flex-end;gap:20px;width:100%">
+      <div style="position:relative;flex-shrink:0">
+        <div style="width:130px;height:80px;background:linear-gradient(180deg,#cbc8b5 0%,#a8a598 100%);border-radius:4px 4px 8px 8px;border:1px solid rgba(0,0,0,.4);box-shadow:0 6px 20px rgba(0,0,0,.5);position:relative;overflow:hidden">
+          <div style="position:absolute;top:4px;left:8px;right:8px;height:24px;background:linear-gradient(180deg,#f5f1e3,#ede9d8);border-radius:2px;border:1px solid rgba(0,0,0,.2);display:flex;align-items:center;overflow:hidden">
+            <div style="width:14px;border-right:1px solid rgba(0,0,0,.12);padding:2px;font-size:7px;font-weight:900;color:#333;font-family:Arial">1<br><span style="font-size:5px">SIDE</span></div>
+            <div style="flex:1;padding:2px 4px;min-width:0">
+              <div style="font-size:7px;font-weight:800;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:Arial">${esc(mt.name)}</div>
+              <svg viewBox="0 0 70 4" width="70" height="4" style="display:block;margin-top:1px"><path d="M0,2 Q5,0 10,2 Q15,4 20,2 Q25,0 30,2 Q35,4 40,2 Q45,0 50,2 Q55,4 60,2 Q65,0 70,2" stroke="${col}" stroke-width="1.2" fill="none"/></svg>
+            </div>
+          </div>
+          <div style="position:absolute;top:30px;left:4px;right:4px;height:38px;background:${col};border-radius:2px;display:flex;align-items:center;justify-content:space-between;padding:2px 4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.15)">
+            <div style="width:28px;height:28px;border-radius:50%;background:#0a0a0a;border:1.5px solid rgba(0,0,0,.8);animation:reelSpin 2.8s linear infinite;box-shadow:inset 0 0 6px rgba(0,0,0,.5)"></div>
+            <div style="flex:1;margin:0 3px;height:10px;background:#080808;border-radius:2px;border:1px solid rgba(0,0,0,.7);overflow:hidden"><div style="margin:2px 0;height:6px;background:repeating-linear-gradient(90deg,#181818 0,#181818 2px,#222 2px,#222 4px)"></div></div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#0a0a0a;border:1.5px solid rgba(0,0,0,.8);animation:reelSpin 2.8s linear infinite;box-shadow:inset 0 0 6px rgba(0,0,0,.5)"></div>
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:10px;background:rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;gap:4px">
+            <div style="width:9px;height:5px;border-radius:1px;background:rgba(0,0,0,.4);border:1px solid rgba(0,0,0,.4)"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#e8d870,#c0a830);border:1px solid rgba(0,0,0,.5);position:relative"><div style="position:absolute;inset:2.5px 1px;background:rgba(0,0,0,.6);border-radius:1px"></div><div style="position:absolute;inset:1px 2.5px;background:rgba(0,0,0,.6);border-radius:1px"></div></div>
+            <div style="width:9px;height:5px;border-radius:1px;background:rgba(0,0,0,.4);border:1px solid rgba(0,0,0,.4)"></div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;padding-bottom:8px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${col};margin-bottom:6px">Mixtape</div>
+        <h2 style="margin:0 0 4px;font-size:22px;letter-spacing:-.05em">${esc(mt.name)}</h2>
+        <span style="color:var(--muted);font-size:13px">${mt.beatIds.length} beat${mt.beatIds.length===1?"":"s"}</span>
+      </div>
+    </div>
+  `;
   const beats=state.beats.filter(b=>mt.beatIds.includes(b.id));
   renderAlbumBeats(beats,"mixtape",document.getElementById("mixtapeBeatList"));
-}
-
-function renderRelease(){
-  const grid=document.getElementById("releaseGrid");
-  const demos=state.demos.slice().sort((a,b)=>releaseScore(b)-releaseScore(a));
-  if(!demos.length){grid.innerHTML=`<div class="empty">Ingen demoer ennå.</div>`;return;}
-  grid.innerHTML=demos.map(d=>{
-    const sc=releaseScore(d);const col=sc>=70?"#34d399":sc>=40?"#f97316":"#fb7185";
-    return`<div class="release-card"><div class="section-title" style="margin:0"><h3>${esc(d.title)}</h3><div class="release-score" style="--score:${sc}"><span style="color:${col}">${sc}</span></div></div><p class="hint">${d.stage} · ${d.done}% ferdig · ${d.mix}% mix · ${d.rating}/10</p><div class="progress-bar" style="margin-top:4px"><div style="width:${sc}%"></div></div><div class="tag-row" style="margin-top:8px"><span class="tag">${state.versions.some(v=>v.demoId===d.id)?"✓ Versjon lagret":"Ingen versjon"}</span><span class="tag">${(d.lyricsNotes||"").trim()?"✓ Notater":"Ingen notater"}</span></div></div>`;
-  }).join("");
 }
 
 function renderIntegrations(){
@@ -1055,7 +1151,7 @@ function renderIntegrations(){
   document.getElementById("soundcloudProxy").value=state.settings.soundcloudProxy||"";
 }
 
-function renderAll(){renderStats();renderMixtapes();renderAlbums();renderPipeline();renderRelease();renderIntegrations();}
+function renderAll(){renderStats();renderMixtapes();renderAlbums();renderPipeline();renderIntegrations();}
 
 // ── DEMO MODAL ──
 function openDemoModal(id){
@@ -1167,10 +1263,44 @@ document.querySelectorAll(".tab-btn").forEach(btn=>btn.addEventListener("click",
 }));
 
 // ── CLOSE MODALS ON BACKDROP ──
-["newAlbumModal","addBeatsModal"].forEach(id=>{
-  document.getElementById(id).addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal(id);});
+["newAlbumModal","addBeatsModal","newMixtapeModal","addBeatsToMixtapeModal","deleteConfirmModal"].forEach(id=>{
+  const el=document.getElementById(id);if(el)el.addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal(id);});
 });
 function closeModal(id){document.getElementById(id).classList.remove("open");}
+
+// ── RICH LYRICS EDITOR ──
+function escToHtml(t){return String(t||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");}
+function richToPlain(html){return html.replace(/<br\s*\/?>/gi,"\n").replace(/<[^>]+>/g,"");}
+const _lrt={};
+function autosaveLyricsRich(id,el){
+  clearTimeout(_lrt[id]);
+  _lrt[id]=setTimeout(()=>{const b=state.beats.find(x=>x.id===id);if(b){b.lyrics=el.innerHTML;saveState();}},600);
+}
+function saveBeatLyricsRich(id){
+  const el=document.getElementById("le-"+id);
+  const b=state.beats.find(x=>x.id===id);
+  if(b&&el){b.lyrics=el.innerHTML;saveState();showToast("✓ Tekst lagret");}
+}
+function copyBeatLyricsRich(id){
+  const el=document.getElementById("le-"+id);if(!el)return;
+  navigator.clipboard.writeText(richToPlain(el.innerHTML)).then(()=>showToast("✓ Tekst kopiert"));
+}
+function applyHighlight(beatId,color){
+  const el=document.getElementById("le-"+beatId);if(!el)return;
+  el.focus();
+  const sel=window.getSelection();
+  if(!sel||sel.rangeCount===0||sel.isCollapsed){showToast("Merk tekst først");return;}
+  const range=sel.getRangeAt(0);
+  if(color==="none"){
+    document.execCommand("removeFormat");
+  }else{
+    const mark=document.createElement("mark");
+    mark.style.cssText="background:"+color+";color:#111;border-radius:3px;padding:0 2px";
+    try{range.surroundContents(mark);}catch(e){const frag=range.extractContents();mark.appendChild(frag);range.insertNode(mark);}
+    sel.removeAllRanges();
+  }
+  autosaveLyricsRich(beatId,el);
+}
 
 // ── TOAST ──
 let _tt;
@@ -1193,6 +1323,49 @@ document.getElementById("saveNewMixtapeBtn").addEventListener("click",()=>{
   saveState();renderMixtapes();closeModal("newMixtapeModal");showToast(`✓ "${name}" opprettet`);
 });
 document.getElementById("backToMixtapesBtn").addEventListener("click",()=>{currentMixtapeId=null;renderMixtapes();});
+
+// ── UPLOAD / DROP helpers ──
+function createBeatFromFile(file){
+  return{id:uid(),name:file.name.replace(/\.[^/.]+$/,""),url:URL.createObjectURL(file),source:"local",favorite:false,lyrics:"",rating:0,cover:"",done:0,createdAt:Date.now()};
+}
+function addBeatToMixtape(beat){
+  if(!state.beats.find(b=>b.id===beat.id))state.beats.push(beat);
+  const mt=state.mixtapes.find(x=>x.id===currentMixtapeId);
+  if(mt&&!mt.beatIds.includes(beat.id))mt.beatIds.push(beat.id);
+  saveState();
+}
+function addBeatToAlbum(beat){
+  if(!state.beats.find(b=>b.id===beat.id))state.beats.push(beat);
+  const album=state.albums.find(x=>x.id===currentAlbumId);
+  if(album&&!album.beatIds.includes(beat.id))album.beatIds.push(beat.id);
+  saveState();
+}
+function handleMixtapeDrop(e){
+  e.preventDefault();document.getElementById("mixtapeDrop").classList.remove("drag-over");
+  const files=[...e.dataTransfer.files].filter(f=>f.type.startsWith("audio")||/\.(mp3|wav|flac|m4a|ogg|aac)$/i.test(f.name));
+  if(!files.length){showToast("Ingen lydfiler funnet");return;}
+  files.forEach(f=>{addBeatToMixtape(createBeatFromFile(f));});
+  renderMixtapeDetail();showToast(`✓ ${files.length} beat${files.length===1?"":"s"} lagt til`);
+}
+function handleAlbumDrop(e){
+  e.preventDefault();document.getElementById("albumDrop").classList.remove("drag-over");
+  const files=[...e.dataTransfer.files].filter(f=>f.type.startsWith("audio")||/\.(mp3|wav|flac|m4a|ogg|aac)$/i.test(f.name));
+  if(!files.length){showToast("Ingen lydfiler funnet");return;}
+  files.forEach(f=>{addBeatToAlbum(createBeatFromFile(f));});
+  renderAlbumDetail();showToast(`✓ ${files.length} beat${files.length===1?"":"s"} lagt til`);
+}
+document.getElementById("mixtapeUploadInput").addEventListener("change",e=>{
+  [...e.target.files].forEach(f=>addBeatToMixtape(createBeatFromFile(f)));
+  renderMixtapeDetail();showToast(`✓ ${e.target.files.length} beat${e.target.files.length===1?"":"s"} lagt til`);
+  e.target.value="";
+});
+document.getElementById("albumUploadInput").addEventListener("change",e=>{
+  [...e.target.files].forEach(f=>addBeatToAlbum(createBeatFromFile(f)));
+  renderAlbumDetail();showToast(`✓ ${e.target.files.length} beat${e.target.files.length===1?"":"s"} lagt til`);
+  e.target.value="";
+});
+// Show drop zones when in detail views
+function showDropZone(id){const el=document.getElementById(id);if(el)el.classList.add("active");}
 document.getElementById("addBeatsToMixtapeBtn").addEventListener("click",()=>{
   const mt=state.mixtapes.find(x=>x.id===currentMixtapeId);if(!mt)return;
   const avail=state.beats.filter(b=>!mt.beatIds.includes(b.id));
@@ -1208,16 +1381,37 @@ document.getElementById("confirmAddBeatsToMixtapeBtn").addEventListener("click",
   saveState();renderMixtapeDetail();closeModal("addBeatsToMixtapeModal");showToast(`✓ ${checked.length} beat${checked.length===1?"":"s"} lagt til`);
 });
 document.getElementById("deleteMixtapeBtn").addEventListener("click",()=>{
-  const mt=state.mixtapes.find(x=>x.id===currentMixtapeId);
-  if(!mt||!confirm(`Slette "${mt.name}"? Beatsa slettes ikke.`))return;
-  state.mixtapes=state.mixtapes.filter(x=>x.id!==currentMixtapeId);
-  currentMixtapeId=null;saveState();renderMixtapes();showToast("🗑 Mixtape slettet");
+  const mt=state.mixtapes.find(x=>x.id===currentMixtapeId);if(!mt)return;
+  showDeleteConfirm(`Slette mixtapen "${mt.name}"?`,()=>{
+    state.mixtapes=state.mixtapes.filter(x=>x.id!==currentMixtapeId);
+    currentMixtapeId=null;saveState();renderMixtapes();showToast("🗑 Mixtape slettet");
+  });
 });
-["newMixtapeModal","addBeatsToMixtapeModal"].forEach(id=>{
-  document.getElementById(id).addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal(id);});
-});
+// (handled above)
 
 // ── REMOVE old beat listeners that reference gone elements ──
+
+let _deleteCallback=null;
+function showDeleteConfirm(msg,cb){
+  _deleteCallback=cb;
+  document.getElementById('deleteConfirmTitle').textContent='Bekreft sletting';
+  document.getElementById('deleteConfirmMsg').textContent=msg+' Denne handlingen kan ikke angres.';
+  document.getElementById('deleteConfirmInput').value='';
+  const btn=document.getElementById('deleteConfirmBtn');
+  btn.disabled=true;btn.style.opacity='.5';
+  document.getElementById('deleteConfirmModal').classList.add('open');
+  setTimeout(()=>document.getElementById('deleteConfirmInput').focus(),100);
+}
+function executeDelete(){
+  if(_deleteCallback){_deleteCallback();_deleteCallback=null;}
+  closeModal('deleteConfirmModal');
+}
+document.getElementById('deleteConfirmInput').addEventListener('input',function(){
+  const btn=document.getElementById('deleteConfirmBtn');
+  const ok=this.value.toLowerCase()==='slett';
+  btn.disabled=!ok;btn.style.opacity=ok?'1':'.5';
+});
+document.getElementById('deleteConfirmModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal('deleteConfirmModal');});
 
 renderAll();
 </script>
