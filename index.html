@@ -255,6 +255,10 @@ textarea{resize:vertical;line-height:1.55}
 .color-chip{width:25px;height:25px;border-radius:7px;border:2px solid rgba(255,255,255,.22);cursor:pointer;transition:transform .12s,box-shadow .12s;background:var(--chip)}
 .color-chip:hover{transform:scale(1.12);box-shadow:0 0 0 3px rgba(255,255,255,.08)}
 .color-clear{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);color:var(--text);border-radius:8px;padding:5px 9px;font-size:12px;cursor:pointer}
+.drag-handle{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:var(--muted);border-radius:10px;width:30px;height:30px;display:grid;place-items:center;cursor:grab;font-size:16px;line-height:1;flex-shrink:0}
+.drag-handle:active{cursor:grabbing}.drag-handle:hover{background:rgba(255,255,255,.14);color:var(--text)}
+.album-beat-card.dragging{opacity:.45}.album-beat-card.drag-over{border-color:rgba(34,211,238,.75);box-shadow:0 0 0 2px rgba(34,211,238,.22),0 20px 60px rgba(34,211,238,.1)}
+.reorder-hint{font-size:12px;color:var(--muted);margin:0 0 12px;display:flex;align-items:center;gap:7px}
 .bottom-player{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(8,8,12,.92);border-top:1px solid rgba(255,255,255,.14);backdrop-filter:blur(18px);box-shadow:0 -20px 60px rgba(0,0,0,.5);padding:12px 18px;display:none;align-items:center;gap:18px;color:var(--text)}
 .bottom-player.show{display:flex}
 .bp-track{display:flex;align-items:center;gap:12px;min-width:220px;max-width:360px;flex:1}
@@ -777,12 +781,23 @@ function updateBottomUI(){
   document.getElementById("bpSub").textContent=beat?ctx:"Trykk play på en beat, et album eller en mixtape";
   const cover=document.getElementById("bpCover");
   if(beat&&beat.cover){cover.innerHTML=`<img src="${esc(beat.cover)}" alt="">`;}else{cover.innerHTML="🎵";}
+  updateOpenCollectionControls();
+}
+function updateOpenCollectionControls(){
+  const beat=bottomPlayer.queue[bottomPlayer.index];
   const playing=!!beat&&!bottomPlayer.audio.paused;
-  const current=beat;
-  const text=playing?`⏸ Spiller: ${current?current.name:""}`:"▶ Spill fra start";
-  ["playAlbumBtn","playMixtapeBtn"].forEach(id=>{const btn=document.getElementById(id);if(btn)btn.textContent=text;});
-  ["stopAlbumBtn","stopMixtapeBtn"].forEach(id=>{const btn=document.getElementById(id);if(btn)btn.classList.toggle("hidden",!playing);});
-  ["albumNowPlaying","mixtapeNowPlaying"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=playing?`Nå spilles ${bottomPlayer.index+1}/${bottomPlayer.queue.length}: ${current?current.name:""}`:"";});
+  const ctx=bottomPlayer.context||{};
+  const update=(type,currentId,playBtnId,stopBtnId,nowId)=>{
+    const isThis=playing&&ctx.type===type&&ctx.id===currentId;
+    const btn=document.getElementById(playBtnId);
+    if(btn)btn.textContent=isThis?`⏸ Spiller: ${beat.name}`:"▶ Spill fra start";
+    const stop=document.getElementById(stopBtnId);
+    if(stop)stop.classList.toggle("hidden",!isThis);
+    const now=document.getElementById(nowId);
+    if(now)now.textContent=isThis?`Nå spilles ${bottomPlayer.index+1}/${bottomPlayer.queue.length}: ${beat.name}`:"";
+  };
+  update("album",currentAlbumId,"playAlbumBtn","stopAlbumBtn","albumNowPlaying");
+  update("mixtape",currentMixtapeId,"playMixtapeBtn","stopMixtapeBtn","mixtapeNowPlaying");
 }
 function updateBottomProgress(){
   const a=bottomPlayer.audio;
@@ -955,7 +970,7 @@ function renderBeats(container,beats,albumMode){
         <div class="beat-expand-actions">
           <button class="primary-btn" onclick="saveBeatLyrics('${b.id}')">Lagre tekst</button>
           <button class="ghost-btn" onclick="copyBeatLyrics('${b.id}')">Kopier tekst</button>
-          ${albumMode?`<button class="small-btn danger" onclick="removeFromAlbum('${b.id}')">Fjern fra album</button>`:`<button class="small-btn danger" onclick="deleteBeat('${b.id}')">Slett beat</button>`}
+          ${albumMode?`<button class="small-btn danger" onclick="removeFromCollection('${b.id}','${listMode}')">Fjern fra ${listMode==="mixtape"?"mixtape":"album"}</button>`:`<button class="small-btn danger" onclick="deleteBeat('${b.id}')">Slett beat</button>`}
         </div>
       </div>
     </div>`).join("");
@@ -1024,23 +1039,79 @@ function renderAlbumDetail(){
   updateCollectionPlayerUI();
 }
 
+let collectionDrag={beatId:null,mode:null};
+function activeCollectionForMode(mode){
+  if(mode==="mixtape")return state.mixtapes.find(m=>m.id===currentMixtapeId)||null;
+  return state.albums.find(a=>a.id===currentAlbumId)||null;
+}
+function startCollectionDrag(event,beatId,mode){
+  collectionDrag={beatId,mode:mode||"album"};
+  event.stopPropagation();
+  event.dataTransfer.effectAllowed="move";
+  event.dataTransfer.setData("text/plain",beatId);
+  setTimeout(()=>{const card=document.getElementById(`abi-${beatId}`);if(card)card.classList.add("dragging");},0);
+}
+function endCollectionDrag(){
+  document.querySelectorAll(".album-beat-card.dragging,.album-beat-card.drag-over").forEach(el=>el.classList.remove("dragging","drag-over"));
+  collectionDrag={beatId:null,mode:null};
+}
+function dragBeatOver(event,targetId){
+  if(!collectionDrag.beatId||collectionDrag.beatId===targetId)return;
+  event.preventDefault();
+  const card=document.getElementById(`abi-${targetId}`);if(card)card.classList.add("drag-over");
+}
+function dragBeatLeave(event,targetId){
+  const card=document.getElementById(`abi-${targetId}`);if(card&&!card.contains(event.relatedTarget))card.classList.remove("drag-over");
+}
+function dropCollectionBeat(event,targetId,mode){
+  event.preventDefault();event.stopPropagation();
+  const draggedId=collectionDrag.beatId||event.dataTransfer.getData("text/plain");
+  const dragMode=collectionDrag.mode||mode||"album";
+  document.querySelectorAll(".album-beat-card.drag-over").forEach(el=>el.classList.remove("drag-over"));
+  if(!draggedId||draggedId===targetId||dragMode!==mode){endCollectionDrag();return;}
+  const col=activeCollectionForMode(mode);if(!col||!Array.isArray(col.beatIds)){endCollectionDrag();return;}
+  const ids=col.beatIds.slice();
+  const from=ids.indexOf(draggedId);const to=ids.indexOf(targetId);
+  if(from<0||to<0){endCollectionDrag();return;}
+  ids.splice(from,1);
+  ids.splice(ids.indexOf(targetId),0,draggedId);
+  col.beatIds=ids;
+  saveState();
+  if(bottomPlayer.context&&bottomPlayer.context.type===mode&&bottomPlayer.context.id===col.id){
+    const current=bottomPlayer.queue[bottomPlayer.index];
+    bottomPlayer.queue=beatsFromIds(col.beatIds);
+    bottomPlayer.index=Math.max(0,bottomPlayer.queue.findIndex(b=>current&&b.id===current.id));
+  }
+  mode==="mixtape"?renderMixtapeDetail():renderAlbumDetail();
+  showToast("✓ Rekkefølge oppdatert");
+  endCollectionDrag();
+}
+function removeFromCollection(beatId,mode){
+  const col=activeCollectionForMode(mode||"album");if(!col)return;
+  col.beatIds=col.beatIds.filter(id=>id!==beatId);
+  saveState();
+  if(mode==="mixtape"){renderMixtapeDetail();showToast("✓ Beat fjernet fra mixtape");}
+  else{renderAlbumDetail();showToast("✓ Beat fjernet fra album");}
+}
 function renderAlbumBeats(beats,mode,customEl){
+  const listMode=mode||"album";
   const el=customEl||document.getElementById("albumBeatList");
   el.className="album-beat-grid";
-  if(!beats||!beats.length){el.innerHTML=`<div class="empty">Ingen beats i dette albumet ennå. Klikk "+ Legg til beats".</div>`;return;}
-  el.innerHTML=beats.map(b=>{
+  if(!beats||!beats.length){el.innerHTML=`<div class="empty">Ingen beats i dette ${listMode==="mixtape"?"mixtapen":"albumet"} ennå. Klikk "+ Legg til beats".</div>`;return;}
+  const hint=`<div class="reorder-hint" style="grid-column:1/-1"><span>☰</span><span>Dra i håndtaket på en sang for å endre rekkefølge.</span></div>`;
+  el.innerHTML=hint+beats.map(b=>{
     const coverHtml=b.cover
       ?`<img class="ab-cover" src="${esc(b.cover)}" alt="${esc(b.name)}">`
       :`<div class="ab-cover-ph">🎵</div>`;
     const stars=Array.from({length:10},(_,i)=>`<button class="${i<(b.rating||0)?"on":""}" onclick="setAlbumBeatRating('${b.id}',${i+1})">★</button>`).join("");
-    return`<div class="album-beat-card" id="abi-${b.id}">
+    return`<div class="album-beat-card" id="abi-${b.id}" data-beat-id="${b.id}" ondragover="dragBeatOver(event,'${b.id}')" ondragleave="dragBeatLeave(event,'${b.id}')" ondrop="dropCollectionBeat(event,'${b.id}','${listMode}')">
       <div class="ab-top">
         <div class="ab-cover-wrap" onclick="toggleAlbumBeat('${b.id}')">
           ${coverHtml}
         </div>
         <div class="ab-body">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-            <div class="ab-title">${esc(b.name)}</div>
+            <div style="display:flex;align-items:center;gap:8px;min-width:0"><button class="drag-handle" draggable="true" title="Dra for å endre rekkefølge" onclick="event.stopPropagation()" ondragstart="startCollectionDrag(event,'${b.id}','${listMode}')" ondragend="endCollectionDrag()">☰</button><div class="ab-title" style="min-width:0">${esc(b.name)}</div></div>
             <button class="star-btn${b.favorite?" active":""}" onclick="event.stopPropagation();toggleFav('${b.id}')" style="font-size:20px;padding:0;flex-shrink:0">★</button>
           </div>
           <div class="ab-stars" onclick="event.stopPropagation()">${stars}</div>
@@ -1078,7 +1149,7 @@ function renderAlbumBeats(beats,mode,customEl){
             <div class="ab-stars" style="gap:4px" id="abistars-${b.id}">${Array.from({length:10},(_,i)=>`<button style="font-size:24px" class="${i<(b.rating||0)?"on":""}" onclick="setAlbumBeatRating('${b.id}',${i+1})">★</button>`).join("")}</div>
           </div>
           <div class="ab-expand-actions" style="margin-top:auto;padding-top:8px">
-            <button class="small-btn danger" onclick="removeFromAlbum('${b.id}')">Fjern fra album</button>
+            <button class="small-btn danger" onclick="removeFromCollection('${b.id}','${listMode}')">Fjern fra ${listMode==="mixtape"?"mixtape":"album"}</button>
           </div>
         </div>
       </div>
@@ -1116,16 +1187,7 @@ function setAlbumBeatCover(id,input){
     };img.src=e.target.result;
   };reader.readAsDataURL(f);
 }
-function removeFromAlbum(beatId){
-  if(currentMixtapeId){
-    const mt=state.mixtapes.find(x=>x.id===currentMixtapeId);
-    if(mt){mt.beatIds=mt.beatIds.filter(id=>id!==beatId);saveState();renderMixtapeDetail();showToast("✓ Beat fjernet fra mixtape");}return;
-  }
-  const album=state.albums.find(a=>a.id===currentAlbumId);
-  if(!album)return;
-  album.beatIds=album.beatIds.filter(id=>id!==beatId);
-  saveState();renderAlbumDetail();showToast("✓ Beat fjernet fra album");
-}
+function removeFromAlbum(beatId){removeFromCollection(beatId,currentMixtapeId?"mixtape":"album");}
 
 document.getElementById("newAlbumCoverInput").addEventListener("change",e=>{
   const f=e.target.files[0];if(!f)return;
