@@ -866,6 +866,31 @@ body.is-playing-album #albumDetailHd .album-detail-vinyl{animation:vinylSpin 7s 
 }
 </style>
 
+
+<style id="lyricsTextColorFixCss">
+/* Fiks: lyrics/tekst under beats og demoer skal være lys/hvit på mørk bakgrunn */
+.beat-expand textarea,
+.ab-expand textarea,
+.lyrics-editor,
+.rich-lyrics-editor,
+.rich-lyrics-editor *,
+.lyrics-editor *{
+  color:#f7f3ea !important;
+  caret-color:#f7f3ea !important;
+}
+.beat-expand textarea::placeholder,
+.ab-expand textarea::placeholder,
+.lyrics-editor:empty:before,
+.rich-lyrics-editor:empty:before{
+  color:rgba(247,243,234,.45) !important;
+}
+.beat-expand textarea,
+.ab-expand textarea,
+.lyrics-editor,
+.rich-lyrics-editor{
+  background:rgba(0,0,0,.28) !important;
+}
+</style>
 </head>
 <body>
 <!-- PASSWORD SCREEN -->
@@ -4330,15 +4355,19 @@ alter table public.mixtapes add column if not exists metadata jsonb default '{}'
   }
   function updateToggleButtons(){document.querySelectorAll('[data-track-view]').forEach(btn=>btn.classList.toggle('active',btn.dataset.trackView===currentView()));}
   window.advancedSetTrackViewMode=function(mode){
-    localStorage.setItem(KEY,['cards','list','studio'].includes(mode)?mode:'cards');
-    if(typeof window.setTrackViewMode==='function'&&mode!=='studio')window.setTrackViewMode(mode); else rerenderActive();
+    const next=['cards','list','studio'].includes(mode)?mode:'cards';
+    localStorage.setItem(KEY,next);
+    rerenderActive();
     updateToggleButtons();
   };
   const oldSet=window.setTrackViewMode;
   window.setTrackViewMode=function(mode){
     if(mode==='studio')return window.advancedSetTrackViewMode('studio');
-    localStorage.setItem(KEY,mode==='list'?'list':'cards');
-    if(typeof oldSet==='function')oldSet(mode);
+    const next=mode==='list'?'list':'cards';
+    localStorage.setItem(KEY,next);
+    /* Viktig: når man bytter fra Studio tilbake til Kort/Liste må hele
+       track-listen rendres på nytt. Ellers blir studio-board stående i DOM-en. */
+    rerenderActive();
     updateToggleButtons();
   };
   window.advancedTrackFilter=function(filter){localStorage.setItem(FILTER_KEY,filter||'all');rerenderActive();};
