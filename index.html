@@ -632,17 +632,12 @@ body.producer-mode #pipelineTab .content-panel{display:block!important}
 
 /* === UX UPGRADE PACK === */
 :root{--radius-xl:24px;--panel-blur:24px;--safe-bottom:92px}
-body.theme-studio{--accent:#df7f22;--accent2:#ffba5e;background:radial-gradient(circle at 18% 8%,rgba(223,127,34,.16),transparent 32%),radial-gradient(circle at 86% 18%,rgba(104,70,255,.12),transparent 34%),#090806}
-body.theme-vintage{--accent:#d49a52;--accent2:#f0c27b;background:radial-gradient(circle at 15% 10%,rgba(181,94,31,.18),transparent 28%),#15100b;filter:sepia(.06)}
-body.theme-minimal{--accent:#8b8f98;--accent2:#d1d5db;background:#111318}
-body.theme-neon{--accent:#a855f7;--accent2:#22d3ee;background:radial-gradient(circle at 18% 10%,rgba(168,85,247,.22),transparent 30%),radial-gradient(circle at 80% 15%,rgba(34,211,238,.18),transparent 32%),#080815}
-body.theme-clean{--accent:#2563eb;--accent2:#60a5fa;background:#f6f7fb;color:#141414}
+body{--accent:#df7f22;--accent2:#ffba5e;background:radial-gradient(circle at 18% 8%,rgba(223,127,34,.16),transparent 32%),radial-gradient(circle at 86% 18%,rgba(104,70,255,.12),transparent 34%),#090806}
 .glass,.content-panel,.stats-card,.hero-main{border-radius:var(--radius-xl)!important;backdrop-filter:blur(var(--panel-blur)) saturate(1.2);box-shadow:0 28px 80px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.08)}
 .role-badge{position:fixed;top:18px;right:18px;z-index:2100;display:flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;background:rgba(20,20,28,.86);border:1px solid rgba(255,255,255,.16);box-shadow:0 12px 32px rgba(0,0,0,.32);font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;backdrop-filter:blur(16px)}
 .role-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent2);box-shadow:0 0 16px var(--accent2)}
 .role-badge.producer::before{background:#34d399;box-shadow:0 0 16px #34d399}.role-badge.admin::before{background:#f59e0b;box-shadow:0 0 16px #f59e0b}
 body.producer-mode .role-badge{right:102px}.producer-login-btn{top:18px!important;right:18px!important}
-.theme-picker{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.theme-chip{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);color:var(--text);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:700;cursor:pointer}.theme-chip.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#111;border-color:transparent}
 .autosave-indicator{position:fixed;right:20px;bottom:calc(var(--safe-bottom) + 12px);z-index:1800;padding:8px 12px;border-radius:999px;background:rgba(18,18,27,.82);border:1px solid rgba(255,255,255,.14);font-size:12px;color:var(--muted);opacity:0;transform:translateY(10px);transition:.22s;backdrop-filter:blur(16px)}.autosave-indicator.show{opacity:1;transform:translateY(0)}
 .empty-state{grid-column:1/-1;min-height:210px;display:grid;place-items:center;text-align:center;padding:34px;border:1px dashed rgba(255,255,255,.18);border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025))}.empty-state .empty-icon{font-size:42px;margin-bottom:10px}.empty-state h3{font-size:22px;letter-spacing:-.04em;margin:0 0 6px}.empty-state p{color:var(--muted);margin:0 0 18px;max-width:520px}
 button.primary-btn,.primary-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border:0;color:#12100d;font-weight:900;box-shadow:0 12px 34px rgba(223,127,34,.20)}button.ghost-btn,.ghost-btn{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.14);color:var(--text)}button.small-btn,.small-btn{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.065);color:var(--text)}button.danger,.danger{background:rgba(239,68,68,.12)!important;border-color:rgba(239,68,68,.35)!important;color:#fecaca!important}
@@ -775,6 +770,102 @@ body.is-playing-album #albumDetailHd .album-detail-vinyl{animation:vinylSpin 7s 
 @media(max-width:760px){#albumDetailHd.album-detail-hd{padding:20px!important}.album-detail-premium{grid-template-columns:1fr;gap:22px}.album-detail-art{min-height:265px;justify-content:center}.album-detail-vinyl{width:232px;height:232px;transform:translate(-12%,-50%)}.album-detail-cover-card{width:210px;height:210px;transform:translateX(-42px)}#albumDetailHd:hover .album-detail-cover-card{transform:translateX(-42px)}#albumDetailHd:hover .album-detail-vinyl{transform:translate(-12%,-50%)}.album-detail-side{grid-template-columns:1fr}.album-detail-actions .primary-btn,.album-detail-actions .ghost-btn,.album-detail-actions .small-btn{width:100%;justify-content:center;text-align:center}.album-detail-main h2{font-size:36px}}
 
 </style>
+
+<style id="cleanTrackCardsCss">
+/* RENERE AVSPILLINGSSIDER + SANGKORT */
+.album-beat-grid{
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr))!important;
+  gap:16px!important;
+  align-items:start!important;
+}
+.album-beat-card{
+  border-radius:24px!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.032))!important;
+  border:1px solid rgba(255,255,255,.115)!important;
+  box-shadow:0 18px 46px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+.album-beat-card:hover{
+  transform:translateY(-3px)!important;
+  border-color:rgba(255,186,94,.38)!important;
+  box-shadow:0 24px 60px rgba(0,0,0,.30),0 0 0 1px rgba(255,186,94,.08)!important;
+}
+.album-beat-card.expanded{
+  grid-column:1/-1!important;
+  transform:none!important;
+}
+.album-beat-card:not(.expanded) .ab-top{display:block!important}
+.album-beat-card.expanded .ab-top{display:grid!important;grid-template-columns:minmax(230px,320px) 1fr!important}
+.ab-cover-wrap{
+  aspect-ratio:4/3!important;
+  background:linear-gradient(135deg,rgba(255,186,94,.22),rgba(124,58,237,.16))!important;
+  border-bottom:1px solid rgba(255,255,255,.08)!important;
+}
+.ab-cover,.ab-cover-ph{
+  width:100%!important;
+  height:100%!important;
+  aspect-ratio:auto!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  display:block!important;
+}
+.album-beat-card.expanded .ab-cover,.album-beat-card.expanded .ab-cover-ph{height:100%!important;min-height:230px!important}
+.ab-cover-wrap::after{
+  content:"Åpne"!important;
+  right:12px!important;
+  bottom:12px!important;
+  font-size:11px!important;
+  font-weight:900!important;
+  letter-spacing:.02em!important;
+  padding:6px 9px!important;
+  border-radius:999px!important;
+  color:#fff!important;
+  background:rgba(0,0,0,.46)!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  backdrop-filter:blur(10px)!important;
+}
+.album-beat-card.expanded .ab-cover-wrap::after{content:"Lukk"!important}
+.ab-body{padding:14px 15px 15px!important;gap:8px!important}
+.ab-title{font-size:15px!important;font-weight:900!important;letter-spacing:-.035em!important;line-height:1.2!important}
+.album-beat-card:not(.expanded) .ab-body>.ab-stars,
+.album-beat-card:not(.expanded) .ab-body>.progress-wrap,
+.album-beat-card:not(.expanded) .hint:not(:first-child){display:none!important}
+.album-beat-card:not(.expanded) .star-btn{opacity:.65!important}
+.album-beat-card:not(.expanded) .star-btn.active{opacity:1!important;color:var(--gold)!important}
+.album-beat-card:not(.expanded)::after{
+  content:"Klikk på bildet for spiller, tekst og innstillinger";
+  display:block;
+  padding:0 15px 15px;
+  color:var(--muted);
+  font-size:12px;
+}
+.album-beat-card.expanded .ab-expand{
+  display:grid!important;
+  grid-template-columns:minmax(260px,1fr) minmax(220px,360px)!important;
+  gap:18px!important;
+  background:rgba(0,0,0,.16)!important;
+}
+.ab-expand textarea{min-height:320px!important}
+.reorder-hint{
+  padding:10px 14px!important;
+  border-radius:16px!important;
+  background:rgba(255,255,255,.045)!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  color:var(--muted)!important;
+}
+#albumDrop.active,#mixtapeDrop.active{padding:12px!important;min-height:auto!important;border-radius:18px!important}
+#albumDrop.active .drop-hint,#mixtapeDrop.active .drop-hint{font-size:13px!important;opacity:.75!important}
+.mixtape-detail-head{align-items:center!important;padding:4px 0 10px!important}
+.mixtape-detail-copy h2{font-size:clamp(28px,4vw,46px)!important;line-height:1!important}
+.mixtape-detail-kicker{opacity:.85!important}
+.mixtape-detail-actions .primary-btn{border-radius:999px!important}
+@media(max-width:760px){
+  .album-beat-card.expanded .ab-top{grid-template-columns:1fr!important}
+  .album-beat-card.expanded .ab-expand{grid-template-columns:1fr!important}
+  .album-beat-grid{grid-template-columns:1fr!important}
+}
+</style>
+
 </head>
 <body>
 <!-- PASSWORD SCREEN -->
@@ -2594,7 +2685,6 @@ renderAll();
 
   function ensureUxData(){
     state.settings=state.settings||{};
-    state.settings.theme=state.settings.theme||'studio';
     state.settings.lastBackup=state.settings.lastBackup||'';
     (state.beats||[]).forEach(b=>{
       if(!b.uploadedAt)b.uploadedAt=b.createdAt||Date.now();
@@ -2615,12 +2705,6 @@ renderAll();
     (state.albums||[]).forEach(a=>{if(!a.status)a.status='Idé'; if(typeof a.archived==='undefined')a.archived=false;});
   }
 
-  function applyTheme(){
-    const theme=state?.settings?.theme||'studio';
-    document.body.classList.remove('theme-studio','theme-vintage','theme-minimal','theme-neon','theme-clean');
-    document.body.classList.add('theme-'+theme);
-    document.querySelectorAll('.theme-chip').forEach(b=>b.classList.toggle('active',b.dataset.theme===theme));
-  }
 
   function installRoleBadge(){
     let badge=document.getElementById('roleBadge');
@@ -2629,15 +2713,6 @@ renderAll();
     badge.textContent=role;badge.className='role-badge '+role.toLowerCase();
   }
 
-  function installThemePicker(){
-    const card=document.querySelector('.stats-card'); if(!card || document.getElementById('themePicker'))return;
-    const wrap=document.createElement('div');wrap.id='themePicker';wrap.className='theme-picker';
-    [['studio','Mørk studio'],['vintage','Vintage'],['minimal','Minimal'],['neon','Neon'],['clean','Clean']].forEach(([id,label])=>{
-      const btn=document.createElement('button');btn.className='theme-chip';btn.dataset.theme=id;btn.textContent=label;
-      btn.onclick=()=>{state.settings.theme=id;saveState();applyTheme();showToast('✓ Tema oppdatert');};wrap.appendChild(btn);
-    });
-    card.appendChild(wrap);applyTheme();
-  }
 
   function emptyState(icon,title,text,btn,onclick){return `<div class="empty-state"><div><div class="empty-icon">${icon}</div><h3>${esc(title)}</h3><p>${esc(text)}</p>${btn?`<button class="primary-btn" onclick="${onclick}">${esc(btn)}</button>`:''}</div></div>`;}
   window.uxEmptyState=emptyState;
@@ -2773,14 +2848,14 @@ renderAll();
       card.classList.toggle('is-batch-selected',_selectedBeats.has(id));
       if(!card.querySelector('.select-beat-check') && !isProducerUser()) card.querySelector('.ab-top')?.insertAdjacentHTML('afterbegin',`<input class="select-beat-check" type="checkbox" ${_selectedBeats.has(id)?'checked':''} onclick="event.stopPropagation();toggleBeatSelect('${id}',this.checked)" title="Velg beat" aria-label="Velg beat">`);
       const title=card.querySelector('.ab-title');
-      if(title&&!card.querySelector('.beat-chip-row')){const col=beatMixtapeColor(id,mode)||'var(--accent)';title.insertAdjacentHTML('afterend',`<div class="beat-chip-row" style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><span class="beat-chip"><span class="color-dot" style="--chip-color:${col}"></span>${esc(primaryMixtapeName(id)||'Mixtape')}</span>${b.bpm?`<span class="beat-chip">${esc(b.bpm)} BPM</span>`:''}${b.key?`<span class="beat-chip">${esc(b.key)}</span>`:''}${b.priority?`<span class="beat-chip">${esc(b.priority)}</span>`:''}</div>`);}
+      if(title&&!card.querySelector('.beat-chip-row')){const col=beatMixtapeColor(id,mode)||'var(--accent)';title.insertAdjacentHTML('afterend',`<div class="beat-chip-row" style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><span class="beat-chip"><span class="color-dot" style="--chip-color:${col}"></span>${esc(primaryMixtapeName(id)||'Mixtape')}</span></div>`);}
       const exp=card.querySelector('.ab-expand-left');
       if(exp&&!card.querySelector('.ux-extra-fields')) exp.insertAdjacentHTML('beforeend',extraBeatFields(b,mode));
     });
   }
   function beatsFromDom(el){return [...el.querySelectorAll('[data-beat-id]')].map(x=>x.dataset.beatId)}
   function primaryMixtapeName(id){const m=(state.mixtapes||[]).find(mt=>(mt.beatIds||[]).includes(id));return m?.name||'';}
-  function extraBeatFields(b,mode){return `<div class="ux-extra-fields" onclick="event.stopPropagation()"><div class="waveform" title="Waveform preview"></div><div class="loop-controls"><span class="beat-chip">Loop</span><input class="ux-input" style="width:82px;padding:6px 8px" placeholder="Start" value="${esc(b.loopStart||'')}" onchange="updateBeatMeta('${b.id}','loopStart',this.value)"><input class="ux-input" style="width:82px;padding:6px 8px" placeholder="Slutt" value="${esc(b.loopEnd||'')}" onchange="updateBeatMeta('${b.id}','loopEnd',this.value)"></div><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px"><input class="ux-input" placeholder="BPM" value="${esc(b.bpm||'')}" onchange="updateBeatMeta('${b.id}','bpm',this.value)"><input class="ux-input" placeholder="Key" value="${esc(b.key||'')}" onchange="updateBeatMeta('${b.id}','key',this.value)"><select class="ux-input" onchange="updateBeatMeta('${b.id}','priority',this.value)"><option value="low" ${b.priority==='low'?'selected':''}>Lav</option><option value="medium" ${b.priority==='medium'?'selected':''}>Medium</option><option value="high" ${b.priority==='high'?'selected':''}>Høy</option></select></div><textarea class="ux-input" style="width:100%;min-height:70px;margin-top:8px" placeholder="Kommentarer / pipeline-notater / topline-idéer" onchange="updateBeatMeta('${b.id}','comments',this.value)">${esc(b.comments||'')}</textarea><textarea class="ux-input" style="width:100%;min-height:64px;margin-top:8px" placeholder="Song structure: Intro, verse, hook..." onchange="updateBeatMeta('${b.id}','structure',this.value)">${esc(b.structure||'')}</textarea><input class="ux-input" style="width:100%;margin-top:8px" placeholder="Credits: produsent, vokalist, mix, master..." value="${esc(b.credits||'')}" onchange="updateBeatMeta('${b.id}','credits',this.value)">${mode==='mixtape'?`<button class="ghost-btn" style="margin-top:8px" onclick="moveBeatToAlbumPrompt('${b.id}')">↪ Legg i album</button>`:''}</div>`;}
+  function extraBeatFields(b,mode){return ``;}
   window.updateBeatMeta=function(id,key,val){const b=state.beats.find(x=>x.id===id);if(!b)return;b[key]=val;saveState();showToast('✓ Oppdatert');};
   function addBatchBar(el,mode){if(el.querySelector('.batch-bar'))return;el.insertAdjacentHTML('afterbegin',`<div class="batch-bar" id="batchBar-${mode}"><strong><span id="batchCount-${mode}">0</span> valgt</strong><button class="small-btn" onclick="batchFavorite('${mode}')">★ Favoritt</button><button class="small-btn" onclick="batchMoveToAlbum('${mode}')">Legg i album</button><button class="small-btn danger" onclick="batchRemove('${mode}')">Fjern</button></div>`);}
   window.toggleBeatSelect=function(id,on){on?_selectedBeats.add(id):_selectedBeats.delete(id);document.querySelectorAll(`.album-beat-card[data-beat-id=\"${id}\"]`).forEach(card=>card.classList.toggle('is-batch-selected',on));document.querySelectorAll('.batch-bar').forEach(bar=>{const m=bar.id.replace('batchBar-','');const n=_selectedBeats.size;bar.classList.toggle('active',n>0);const c=document.getElementById('batchCount-'+m);if(c)c.textContent=n;});};
@@ -2809,13 +2884,13 @@ renderAll();
   function updatePlayingAnimations(){document.body.classList.toggle('is-playing-mixtape',bottomPlayer.context?.type==='mixtape'&&!bottomPlayer.audio.paused);document.body.classList.toggle('is-playing-album',bottomPlayer.context?.type==='album'&&!bottomPlayer.audio.paused);document.querySelectorAll('.album-detail-hd').forEach(h=>h.classList.toggle('is-playing-album',bottomPlayer.context?.type==='album'&&!bottomPlayer.audio.paused));document.querySelectorAll(`#abi-${bottomPlayer.queue?.[bottomPlayer.index]?.id}`).forEach(el=>el.classList.add('flash'));}
   const _oldUpdateBottomUI=window.updateBottomUI; if(_oldUpdateBottomUI){window.updateBottomUI=function(){_oldUpdateBottomUI();updatePlayingAnimations();};}
 
-  window.renderAll=function(){ensureUxData();applyTheme();installRoleBadge();installThemePicker();if(typeof _oldRenderAll==='function')_oldRenderAll();installRoleBadge();installThemePicker();applyTheme();};
+  window.renderAll=function(){ensureUxData();installRoleBadge();if(typeof _oldRenderAll==='function')_oldRenderAll();installRoleBadge();};
 
   // Backup UX
   document.getElementById('exportBtn')?.addEventListener('click',()=>{state.settings.lastBackup=new Date().toLocaleString('no-NO');setTimeout(()=>showToast('✓ Backup eksportert'),80);});
   document.getElementById('importInput')?.addEventListener('change',e=>{const f=e.target.files?.[0]; if(f)showToast(`Importer: ${f.name}. Sjekk at dette er riktig backup.`);});
 
-  ensureUxData();applyTheme();installRoleBadge();installThemePicker();setTimeout(()=>{try{renderAll();}catch(e){console.error(e);}},80);
+  ensureUxData();installRoleBadge();setTimeout(()=>{try{renderAll();}catch(e){console.error(e);}},80);
 })();
 </script>
 
@@ -3043,7 +3118,7 @@ select:focus,.ux-input:is(select):focus,.mixtape-sort-select:focus{
   }
   function enhanceWaveforms(){ $$('.album-beat-card').forEach(card=>{const id=card.dataset.beatId; const w=$('.waveform',card); if(id&&w&&!w.dataset.hasClick){w.dataset.hasClick='1'; w.textContent='Klikk for waveform'; w.onclick=(e)=>{e.stopPropagation();drawWaveformForBeat(id,w)}; drawWaveformForBeat(id,w);}}); }
 
-  function addExtendedMeta(){
+  function addExtendedMeta(){ return;
     $$('.album-beat-card').forEach(card=>{const id=card.dataset.beatId; const b=state.beats.find(x=>x.id===id); if(!b)return; const ex=$('.ux-extra-fields',card); if(ex&&!$('.full-meta-extra',ex)){
       ex.insertAdjacentHTML('beforeend',`<div class="full-meta-extra"><div class="meta-mini-grid"><input class="ux-input" type="date" title="Deadline" value="${safeEsc(b.deadline||'')}" onchange="updateBeatMeta('${id}','deadline',this.value)"><input class="ux-input" placeholder="Ansvarlig" value="${safeEsc(b.assignee||'')}" onchange="updateBeatMeta('${id}','assignee',this.value)"><select class="ux-input" onchange="updateBeatMeta('${id}','uploadStatus',this.value)"><option ${b.uploadStatus==='sendt inn'?'selected':''}>sendt inn</option><option ${b.uploadStatus==='hørt'?'selected':''}>hørt</option><option ${b.uploadStatus==='favoritt'?'selected':''}>favoritt</option><option ${b.uploadStatus==='valgt til album'?'selected':''}>valgt til album</option><option ${b.uploadStatus==='trenger ny versjon'?'selected':''}>trenger ny versjon</option></select></div><div class="structure-tags"><span class="structure-tag">Intro</span><span class="structure-tag">Verse</span><span class="structure-tag">Hook</span><span class="structure-tag">Bridge</span><span class="structure-tag">Outro</span></div><div class="hint" style="margin-top:8px">Metadata: ${safeEsc(b.fileType||'ukjent filtype')} · ${b.fileSize?Math.round(b.fileSize/1024/1024*10)/10+' MB':'ukjent størrelse'} · ${b.duration?fmtTime(b.duration):'ukjent varighet'} · ${b.uploadedAt?new Date(b.uploadedAt).toLocaleDateString('no-NO'):''}</div></div>`);
       if(isProducer()&&b.owner&&state.settings.producerName&&b.owner!==state.settings.producerName&&b.owner!=='Produsent'){card.classList.add('producer-locked'); ex.querySelectorAll('input,select,textarea,button').forEach(x=>{if(!/play/i.test(x.textContent||''))x.disabled=true;});}
@@ -3962,6 +4037,401 @@ alter table public.mixtapes add column if not exists metadata jsonb default '{}'
 
   installSyncPanel();
   setTimeout(()=>pullFromSupabase(), 800);
+})();
+</script>
+
+
+<script id="cleanTrackCardsJs">
+(function(){
+  function cropImageToCanvas(img,w,h){
+    const canvas=document.createElement('canvas');
+    canvas.width=w; canvas.height=h;
+    const ctx=canvas.getContext('2d');
+    const scale=Math.max(w/img.width,h/img.height);
+    const sw=w/scale, sh=h/scale;
+    const sx=(img.width-sw)/2, sy=(img.height-sh)/2;
+    ctx.drawImage(img,sx,sy,sw,sh,0,0,w,h);
+    return canvas;
+  }
+  window.setAlbumBeatCover=function(id,input){
+    const f=input?.files?.[0]; if(!f)return;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const b=state.beats.find(x=>x.id===id); if(!b)return;
+        b.cover=cropImageToCanvas(img,800,600).toDataURL('image/jpeg',.88);
+        saveState();
+        if(window.currentMixtapeId&&typeof renderMixtapeDetail==='function')renderMixtapeDetail();
+        else if(typeof renderAlbumDetail==='function')renderAlbumDetail();
+        if(typeof showToast==='function')showToast('✓ Coverbildet er croppet og lagret');
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(f);
+  };
+})();
+</script>
+
+
+<style id="trackListModeAndPlaceholderCss">
+/* Fjerner lilla musikklogo på track-kort uten cover, og legger til listevisning */
+.ab-cover-ph{
+  font-size:0!important;
+  color:transparent!important;
+  position:relative!important;
+}
+.ab-cover-ph::before,.ab-cover-ph::after{content:none!important;display:none!important;}
+.track-view-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:4px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.13);
+  background:rgba(255,255,255,.055);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+}
+.track-view-toggle button{
+  border:0;
+  cursor:pointer;
+  padding:8px 11px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+  color:var(--muted);
+  background:transparent;
+  transition:background .18s ease,color .18s ease,transform .18s ease;
+}
+.track-view-toggle button:hover{color:var(--text);background:rgba(255,255,255,.07)}
+.track-view-toggle button.active{
+  color:#17110a;
+  background:linear-gradient(180deg,#ffbd65,#df7f22);
+  box-shadow:0 10px 20px rgba(223,127,34,.18),inset 0 1px 0 rgba(255,255,255,.30);
+}
+.album-beat-listmode{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:10px!important;
+  align-items:start!important;
+}
+.album-beat-listmode .reorder-hint,.album-beat-listmode .batch-bar{grid-column:1/-1!important}
+.album-beat-listmode .album-beat-card:not(.expanded){
+  border-radius:18px!important;
+  overflow:hidden!important;
+}
+.album-beat-listmode .album-beat-card:not(.expanded):hover{transform:translateY(-1px)!important}
+.album-beat-listmode .album-beat-card:not(.expanded)::after{display:none!important;content:none!important}
+.album-beat-listmode .album-beat-card:not(.expanded) .ab-top{
+  display:grid!important;
+  grid-template-columns:76px minmax(0,1fr)!important;
+  align-items:stretch!important;
+  min-height:76px!important;
+}
+.album-beat-listmode .album-beat-card:not(.expanded) .ab-cover-wrap{
+  width:76px!important;
+  min-height:76px!important;
+  aspect-ratio:1/1!important;
+  border-bottom:0!important;
+  border-right:1px solid rgba(255,255,255,.08)!important;
+}
+.album-beat-listmode .album-beat-card:not(.expanded) .ab-cover-wrap::after{
+  content:"Åpne"!important;
+  right:7px!important;
+  bottom:7px!important;
+  padding:4px 7px!important;
+  font-size:10px!important;
+}
+.album-beat-listmode .album-beat-card:not(.expanded) .ab-cover,
+.album-beat-listmode .album-beat-card:not(.expanded) .ab-cover-ph{
+  width:76px!important;
+  height:76px!important;
+  min-height:76px!important;
+  aspect-ratio:1/1!important;
+  object-fit:cover!important;
+}
+.album-beat-listmode .album-beat-card:not(.expanded) .ab-body{
+  padding:12px 14px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  min-width:0!important;
+}
+.album-beat-listmode .album-beat-card:not(.expanded) .ab-title{font-size:15px!important;max-width:100%!important}
+.album-beat-listmode .album-beat-card:not(.expanded) .beat-chip-row{margin-top:5px!important;max-height:24px!important;overflow:hidden!important}
+.album-beat-listmode .album-beat-card:not(.expanded) .hint{display:none!important}
+.album-beat-listmode .album-beat-card.expanded{grid-column:1/-1!important}
+.album-beat-listmode .select-beat-check{top:8px!important;left:8px!important;width:25px!important;height:25px!important}
+@media(max-width:640px){
+  .track-view-toggle{width:100%;justify-content:center}.track-view-toggle button{flex:1}
+  .album-beat-listmode .album-beat-card:not(.expanded) .ab-top{grid-template-columns:68px minmax(0,1fr)!important;min-height:68px!important}
+  .album-beat-listmode .album-beat-card:not(.expanded) .ab-cover-wrap,
+  .album-beat-listmode .album-beat-card:not(.expanded) .ab-cover,
+  .album-beat-listmode .album-beat-card:not(.expanded) .ab-cover-ph{width:68px!important;height:68px!important;min-height:68px!important}
+}
+</style>
+<script id="trackListModeAndPlaceholderJs">
+(function(){
+  const KEY='musicVaultTrackViewMode';
+  function currentView(){return localStorage.getItem(KEY)||'cards';}
+  function activeMode(){return !document.getElementById('mixtapeDetailView')?.classList.contains('hidden')?'mixtape':'album';}
+  function applyView(el){
+    if(!el)return;
+    el.classList.remove('album-beat-grid','album-beat-listmode');
+    el.classList.add(currentView()==='list'?'album-beat-listmode':'album-beat-grid');
+    el.querySelectorAll('.ab-cover-ph').forEach(ph=>{ph.textContent='';ph.setAttribute('aria-label','Ingen coverbilde');});
+    updateToggleButtons();
+  }
+  function rerenderActive(){
+    if(activeMode()==='mixtape'&&typeof renderMixtapeDetail==='function')renderMixtapeDetail();
+    else if(typeof renderAlbumDetail==='function')renderAlbumDetail();
+  }
+  window.setTrackViewMode=function(mode){
+    localStorage.setItem(KEY,mode==='list'?'list':'cards');
+    applyView(document.getElementById('mixtapeBeatList'));
+    applyView(document.getElementById('albumBeatList'));
+    updateToggleButtons();
+  };
+  function updateToggleButtons(){
+    document.querySelectorAll('[data-track-view]').forEach(btn=>btn.classList.toggle('active',btn.dataset.trackView===currentView()));
+  }
+  function toggleMarkup(){
+    return `<div class="track-view-toggle" title="Velg visningsmodus">
+      <button type="button" data-track-view="cards" onclick="setTrackViewMode('cards')">▦ Kort</button>
+      <button type="button" data-track-view="list" onclick="setTrackViewMode('list')">☰ Liste</button>
+    </div>`;
+  }
+  function installToggles(){
+    const mixtapeToolbar=document.getElementById('addBeatsToMixtapeBtn')?.closest('.toolbar');
+    const albumToolbar=document.getElementById('addBeatsToAlbumBtn')?.closest('.toolbar');
+    [mixtapeToolbar,albumToolbar].forEach(tb=>{
+      if(!tb||tb.querySelector('.track-view-toggle'))return;
+      const deleteBtn=tb.querySelector('.danger');
+      if(deleteBtn)deleteBtn.insertAdjacentHTML('beforebegin',toggleMarkup());
+      else tb.insertAdjacentHTML('beforeend',toggleMarkup());
+    });
+    updateToggleButtons();
+  }
+  const previousRender=window.renderAlbumBeats;
+  window.renderAlbumBeats=function(beats,mode,customEl){
+    if(typeof previousRender==='function')previousRender(beats,mode,customEl);
+    const el=customEl||document.getElementById(mode==='mixtape'?'mixtapeBeatList':'albumBeatList');
+    applyView(el);
+    installToggles();
+  };
+  const boot=()=>{installToggles();applyView(document.getElementById('mixtapeBeatList'));applyView(document.getElementById('albumBeatList'));};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+
+
+<style id="clean-song-detail-fields">
+/* Ryddigere sangvisning: skjul gamle metadatafelter hvis de finnes i lagret/eldre DOM */
+.ux-extra-fields,
+.full-meta-extra,
+.meta-mini-grid,
+.structure-tags,
+.loop-controls,
+.waveform{display:none!important;}
+</style>
+<script id="clean-song-detail-fields-script">
+(function(){
+  function removeSongMetaFields(){
+    document.querySelectorAll('.ux-extra-fields,.full-meta-extra,.meta-mini-grid,.structure-tags,.loop-controls,.waveform').forEach(el=>el.remove());
+  }
+  const oldRender=window.renderAlbumBeats;
+  if(typeof oldRender==='function'){
+    window.renderAlbumBeats=function(beats,mode,customEl){
+      oldRender(beats,mode,customEl);
+      requestAnimationFrame(removeSongMetaFields);
+    };
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',removeSongMetaFields);else removeSongMetaFields();
+})();
+</script>
+
+<style id="advanced-music-vault-upgrades-css">
+/* Ekstra forbedringer: søk/filter, studio-visning, renere åpnet sangkort og bedre mini-player */
+.collection-tools{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-2px 0 18px;
+  padding:10px;border-radius:20px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.075)
+}
+.collection-search{min-width:220px;flex:1;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:999px!important;padding:11px 14px!important;color:var(--text)!important;font-family:inherit!important;outline:none!important}
+.collection-filter{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.055);color:var(--muted);border-radius:999px;padding:9px 12px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;transition:.18s ease}
+.collection-filter:hover{color:var(--text);background:rgba(255,255,255,.08)}
+.collection-filter.active{color:#1c1208;background:linear-gradient(180deg,#ffbd65,#df7f22);box-shadow:0 12px 22px rgba(223,127,34,.16)}
+.collection-count{color:var(--muted);font-size:12px;font-weight:800;padding:0 4px;white-space:nowrap}
+.track-view-toggle button[data-track-view="studio"]{display:inline-flex!important;align-items:center;gap:4px}
+.album-beat-card:not(.expanded)::after{content:"Klikk for spiller og tekst"!important}
+.album-beat-card:not(.expanded) .quick-play-btn{display:inline-flex!important}
+.quick-play-btn{align-items:center;justify-content:center;border:0;border-radius:999px;padding:6px 10px;background:rgba(255,255,255,.08);color:var(--text);font-size:12px;font-weight:900;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.quick-play-btn:hover{background:linear-gradient(180deg,#ffbd65,#df7f22);color:#201207}.quick-play-btn.playing{background:var(--accent);color:#180d05}
+.album-beat-card.expanded{grid-column:1/-1!important}.album-beat-card.expanded .ab-top{grid-template-columns:minmax(180px,280px) minmax(0,1fr)!important;align-items:stretch!important}
+.album-beat-card.expanded .ab-cover-wrap{min-height:210px!important;border-radius:22px!important;margin:14px!important;overflow:hidden!important;border:1px solid rgba(255,255,255,.10)!important;box-shadow:0 18px 45px rgba(0,0,0,.28)!important}
+.album-beat-card.expanded .ab-cover-wrap::after{content:"Lukk"!important}.album-beat-card.expanded .ab-body{padding:18px!important;justify-content:center!important}.album-beat-card.expanded .ab-title{font-size:clamp(22px,3vw,34px)!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}.album-beat-card.expanded .ab-expand{grid-template-columns:1fr!important;padding:0 16px 16px!important}.album-beat-card.expanded .ab-expand-left{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.075);border-radius:20px;padding:14px}.album-beat-card.expanded .ab-expand-right{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;align-items:end!important;gap:12px!important;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:12px!important}.album-beat-card.expanded .ab-expand-right>div{min-width:190px;flex:1}.ab-expand textarea,.rich-lyrics-editor{min-height:220px!important}
+.studio-board{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(180px,1fr));gap:12px;width:100%}.studio-col{border:1px solid rgba(255,255,255,.085);background:rgba(255,255,255,.035);border-radius:20px;padding:10px;min-height:160px}.studio-col-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:2px 2px 10px;font-weight:950;color:var(--text)}.studio-col-head span:last-child{color:var(--muted);font-size:12px}.studio-track{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border-radius:16px;border:1px solid rgba(255,255,255,.075);background:rgba(0,0,0,.16);margin-bottom:8px;cursor:pointer}.studio-track:hover{background:rgba(255,255,255,.065);transform:translateY(-1px)}.studio-thumb{width:46px;height:46px;border-radius:12px;object-fit:cover;background:linear-gradient(135deg,rgba(255,189,101,.3),rgba(255,255,255,.04))}.studio-title{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.studio-sub{font-size:12px;color:var(--muted);margin-top:2px}.studio-actions{display:flex;gap:5px}.studio-actions button{border:0;border-radius:999px;background:rgba(255,255,255,.08);color:var(--text);cursor:pointer;padding:7px 9px;font-weight:900}.studio-empty{color:var(--muted);font-size:12px;padding:12px;text-align:center;border:1px dashed rgba(255,255,255,.12);border-radius:16px}.album-beat-listmode .quick-play-btn{position:absolute;right:46px;top:22px}.bottom-player{backdrop-filter:blur(22px)!important}.bottom-player .bp-cover{overflow:hidden}.bottom-player .bp-cover img{width:100%;height:100%;object-fit:cover;border-radius:inherit}.bp-open-current{display:none}.bottom-player.show .bp-open-current{display:inline-flex}
+.empty.upgraded-empty{padding:28px!important;border-radius:24px!important;text-align:center!important;background:linear-gradient(135deg,rgba(255,189,101,.10),rgba(255,255,255,.035))!important;border:1px dashed rgba(255,189,101,.28)!important}.empty.upgraded-empty strong{display:block;font-size:18px;color:var(--text);margin-bottom:6px}.empty.upgraded-empty span{color:var(--muted);font-size:13px}
+@media(max-width:900px){.studio-board{grid-template-columns:1fr 1fr}.album-beat-card.expanded .ab-top{grid-template-columns:1fr!important}.album-beat-card.expanded .ab-cover-wrap{min-height:220px!important}}@media(max-width:640px){.studio-board{grid-template-columns:1fr}.collection-tools{align-items:stretch}.collection-search{min-width:100%}.collection-filter,.collection-count{flex:1;text-align:center}.album-beat-listmode .quick-play-btn{position:static;margin-top:6px;width:max-content}.album-beat-card.expanded .ab-expand-right{flex-direction:column!important;align-items:stretch!important}}
+</style>
+<script id="advanced-music-vault-upgrades-js">
+(function(){
+  const KEY='musicVaultTrackViewMode';
+  const FILTER_KEY='musicVaultCollectionFilter';
+  const SEARCH_KEY='musicVaultCollectionSearch';
+  function safe(s){return (window.esc?esc:String)(s||'');}
+  function getBeat(id){return (window.state?.beats||[]).find(b=>b.id===id);}
+  function getModeForEl(el){return el?.id==='mixtapeBeatList'?'mixtape':'album';}
+  function getCollection(mode){return mode==='mixtape'?(state.mixtapes||[]).find(m=>m.id===currentMixtapeId):(state.albums||[]).find(a=>a.id===currentAlbumId);}
+  function currentView(){return localStorage.getItem(KEY)||'cards';}
+  function getFilter(){return localStorage.getItem(FILTER_KEY)||'all';}
+  function getSearch(){return localStorage.getItem(SEARCH_KEY)||'';}
+  function hasAudio(b){return !!(b.audio_url||b.audioUrl||b.fileName||b.source||b.hasAudio);}
+  function hasLyrics(b){return !!String(b.lyrics||'').replace(/<[^>]+>/g,'').trim();}
+  function collectionCover(mode){return getCollection(mode)?.cover||'';}
+  function coverForBeat(b,mode){return b?.cover||collectionCover(mode)||'';}
+  function matchFilter(b,filter,mode){
+    if(filter==='fav')return !!b.favorite;
+    if(filter==='todo')return Number(b.done||0)<100;
+    if(filter==='done')return Number(b.done||0)>=100;
+    if(filter==='noaudio')return !hasAudio(b);
+    if(filter==='lyrics')return hasLyrics(b);
+    return true;
+  }
+  function getVisibleBeatsFor(mode){
+    const col=getCollection(mode); const ids=col?.beatIds||[]; const q=getSearch().toLowerCase().trim(); const f=getFilter();
+    return ids.map(getBeat).filter(Boolean).filter(b=>matchFilter(b,f,mode)).filter(b=>!q||String(b.name||'').toLowerCase().includes(q)||String(b.lyrics||'').toLowerCase().includes(q));
+  }
+  function installTools(mode){
+    const detail=document.getElementById(mode==='mixtape'?'mixtapeDetailView':'albumDetailView'); if(!detail||detail.classList.contains('hidden'))return;
+    const list=document.getElementById(mode==='mixtape'?'mixtapeBeatList':'albumBeatList'); if(!list)return;
+    const drop=document.getElementById(mode==='mixtape'?'mixtapeDrop':'albumDrop');
+    let tools=detail.querySelector('.collection-tools');
+    if(!tools){
+      tools=document.createElement('div');tools.className='collection-tools';
+      tools.innerHTML=`<input class="collection-search" placeholder="Søk i sanger eller tekst..." value="${safe(getSearch())}" oninput="advancedTrackSearch(this.value)">
+        <button class="collection-filter" data-filter="all" onclick="advancedTrackFilter('all')">Alle</button>
+        <button class="collection-filter" data-filter="fav" onclick="advancedTrackFilter('fav')">★ Favoritter</button>
+        <button class="collection-filter" data-filter="todo" onclick="advancedTrackFilter('todo')">Uferdige</button>
+        <button class="collection-filter" data-filter="done" onclick="advancedTrackFilter('done')">Ferdige</button>
+        <button class="collection-filter" data-filter="noaudio" onclick="advancedTrackFilter('noaudio')">Mangler lyd</button>
+        <button class="collection-filter" data-filter="lyrics" onclick="advancedTrackFilter('lyrics')">Har tekst</button>
+        <span class="collection-count" data-count></span>`;
+      (drop||list).insertAdjacentElement(drop?'afterend':'beforebegin',tools);
+    }
+    tools.querySelector('.collection-search').value=getSearch();
+    tools.querySelectorAll('.collection-filter').forEach(b=>b.classList.toggle('active',b.dataset.filter===getFilter()));
+  }
+  function installStudioToggle(){
+    document.querySelectorAll('.track-view-toggle').forEach(t=>{
+      if(t.querySelector('[data-track-view="studio"]'))return;
+      t.insertAdjacentHTML('beforeend',`<button type="button" data-track-view="studio" onclick="advancedSetTrackViewMode('studio')">▤ Studio</button>`);
+    });
+    updateToggleButtons();
+  }
+  function updateToggleButtons(){document.querySelectorAll('[data-track-view]').forEach(btn=>btn.classList.toggle('active',btn.dataset.trackView===currentView()));}
+  window.advancedSetTrackViewMode=function(mode){
+    localStorage.setItem(KEY,['cards','list','studio'].includes(mode)?mode:'cards');
+    if(typeof window.setTrackViewMode==='function'&&mode!=='studio')window.setTrackViewMode(mode); else rerenderActive();
+    updateToggleButtons();
+  };
+  const oldSet=window.setTrackViewMode;
+  window.setTrackViewMode=function(mode){
+    if(mode==='studio')return window.advancedSetTrackViewMode('studio');
+    localStorage.setItem(KEY,mode==='list'?'list':'cards');
+    if(typeof oldSet==='function')oldSet(mode);
+    updateToggleButtons();
+  };
+  window.advancedTrackFilter=function(filter){localStorage.setItem(FILTER_KEY,filter||'all');rerenderActive();};
+  window.advancedTrackSearch=function(q){localStorage.setItem(SEARCH_KEY,q||'');applyCurrentFiltersOnly();};
+  function rerenderActive(){
+    if(!document.getElementById('mixtapeDetailView')?.classList.contains('hidden')&&typeof renderMixtapeDetail==='function')renderMixtapeDetail();
+    else if(typeof renderAlbumDetail==='function')renderAlbumDetail();
+  }
+  function applyCurrentFiltersOnly(){
+    ['mixtape','album'].forEach(mode=>{
+      const el=document.getElementById(mode==='mixtape'?'mixtapeBeatList':'albumBeatList'); if(!el)return;
+      if(currentView()==='studio'){renderStudioBoard(el,mode);return;}
+      const visible=new Set(getVisibleBeatsFor(mode).map(b=>b.id)); let shown=0;
+      el.querySelectorAll('.album-beat-card').forEach(card=>{const show=visible.has(card.dataset.beatId);card.style.display=show?'':'none';if(show)shown++;});
+      updateCount(mode,shown);
+    });
+  }
+  function updateCount(mode,shown){
+    const detail=document.getElementById(mode==='mixtape'?'mixtapeDetailView':'albumDetailView'); const c=detail?.querySelector('[data-count]'); if(!c)return;
+    const total=(getCollection(mode)?.beatIds||[]).length; c.textContent=`${shown ?? getVisibleBeatsFor(mode).length}/${total} vises`;
+    detail.querySelectorAll('.collection-filter').forEach(b=>b.classList.toggle('active',b.dataset.filter===getFilter()));
+  }
+  function enhanceEmpty(el,mode){
+    const empty=el?.querySelector('.empty'); if(!empty)return;
+    empty.classList.add('upgraded-empty');
+    empty.innerHTML=`<strong>Ingen sanger her ennå</strong><span>Slipp lydfiler i feltet over, eller bruk «Legg til eksisterende» for å bygge tracklisten.</span>`;
+  }
+  function enhanceCards(el,mode){
+    if(!el)return;
+    enhanceEmpty(el,mode);
+    const colCover=collectionCover(mode);
+    el.querySelectorAll('.album-beat-card').forEach(card=>{
+      const b=getBeat(card.dataset.beatId); if(!b)return;
+      const cover=coverForBeat(b,mode);
+      const wrap=card.querySelector('.ab-cover-wrap');
+      if(cover && !card.querySelector('.ab-cover')){
+        const ph=card.querySelector('.ab-cover-ph'); if(ph)ph.outerHTML=`<img class="ab-cover" src="${safe(cover)}" alt="${safe(b.name)}">`;
+      }
+      if(!card.querySelector('.quick-play-btn')){
+        const titleRow=card.querySelector('.ab-body > div:first-child');
+        const btn=document.createElement('button');btn.type='button';btn.className='quick-play-btn';btn.textContent='▶';btn.title='Spill sang';
+        btn.onclick=(e)=>{e.stopPropagation();playSingleBeat(b.id);};
+        titleRow?.appendChild(btn);
+      }
+      if(!card.querySelector('.beat-chip-row')){
+        const body=card.querySelector('.ab-body');
+        const chips=document.createElement('div');chips.className='beat-chip-row';
+        const status=Number(b.done||0)>=100?'Ferdig':(Number(b.done||0)>0?'Pågår':'Idé');
+        chips.innerHTML=`<span class="pill">${status}</span>${hasAudio(b)?'<span class="pill">Lyd</span>':'<span class="pill">Mangler lyd</span>'}${hasLyrics(b)?'<span class="pill">Tekst</span>':''}`;
+        body?.appendChild(chips);
+      }
+    });
+    markPlayingCard();
+  }
+  function studioColumnFor(b){const d=Number(b.done||0); if(d>=100)return 'Ferdig'; if(d>=70)return 'Miks/Master'; if(d>=30)return 'Spilt inn'; return 'Idé/Skriver';}
+  function renderStudioBoard(el,mode){
+    const beats=getVisibleBeatsFor(mode); const cols=['Idé/Skriver','Spilt inn','Miks/Master','Ferdig'];
+    el.classList.remove('album-beat-grid','album-beat-listmode'); el.classList.add('album-beat-grid');
+    const by=Object.fromEntries(cols.map(c=>[c,[]])); beats.forEach(b=>by[studioColumnFor(b)].push(b));
+    el.innerHTML=`<div class="studio-board">${cols.map(c=>`<div class="studio-col"><div class="studio-col-head"><span>${c}</span><span>${by[c].length}</span></div>${by[c].map(b=>studioTrack(b,mode)).join('')||'<div class="studio-empty">Ingen sanger</div>'}</div>`).join('')}</div>`;
+    updateCount(mode,beats.length); markPlayingCard();
+  }
+  function studioTrack(b,mode){const cov=coverForBeat(b,mode);return `<div class="studio-track" data-beat-id="${safe(b.id)}" onclick="toggleAlbumBeat('${safe(b.id)}')"><div>${cov?`<img class="studio-thumb" src="${safe(cov)}" alt="">`:'<div class="studio-thumb"></div>'}</div><div style="min-width:0"><div class="studio-title">${safe(b.name)}</div><div class="studio-sub">${b.favorite?'★ ':''}${b.done||0}% ferdig · ${hasAudio(b)?'har lyd':'mangler lyd'}</div></div><div class="studio-actions"><button onclick="event.stopPropagation();playSingleBeat('${safe(b.id)}')">▶</button><button onclick="event.stopPropagation();toggleFav('${safe(b.id)}',this)">★</button></div></div>`;}
+  function applyAdvanced(el,mode){
+    installTools(mode); installStudioToggle(); updateToggleButtons();
+    if(currentView()==='studio'){renderStudioBoard(el,mode);return;}
+    enhanceCards(el,mode); applyCurrentFiltersOnly();
+  }
+  function markPlayingCard(){
+    const id=window.bottomPlayer?.queue?.[window.bottomPlayer.index]?.id;
+    const playing=id&&!window.bottomPlayer.audio.paused;
+    document.querySelectorAll('.quick-play-btn.playing').forEach(b=>b.classList.remove('playing'));
+    if(playing)document.querySelectorAll(`#abi-${CSS.escape(id)} .quick-play-btn`).forEach(b=>{b.classList.add('playing');b.textContent='⏸';});
+  }
+  const oldRender=window.renderAlbumBeats;
+  if(typeof oldRender==='function'){
+    window.renderAlbumBeats=function(beats,mode,customEl){
+      oldRender(beats,mode,customEl);
+      const m=mode||getModeForEl(customEl)||'album'; const el=customEl||document.getElementById(m==='mixtape'?'mixtapeBeatList':'albumBeatList');
+      requestAnimationFrame(()=>applyAdvanced(el,m));
+    };
+  }
+  const oldUpdate=window.updateBottomUI;
+  if(typeof oldUpdate==='function'){
+    window.updateBottomUI=function(){oldUpdate(); const b=bottomPlayer.queue?.[bottomPlayer.index]; const cov=b?coverForBeat(b,bottomPlayer.context?.type):''; const cover=document.getElementById('bpCover'); if(cover&&cov&&!b.cover)cover.innerHTML=`<img src="${safe(cov)}" alt="">`; markPlayingCard();};
+  }
+  function addOpenCurrentButton(){
+    const actions=document.querySelector('.bottom-player .bp-actions'); if(!actions||actions.querySelector('.bp-open-current'))return;
+    actions.insertAdjacentHTML('afterbegin',`<button class="bp-btn bp-open-current" onclick="advancedOpenCurrentTrack()" title="Åpne sangkort">Åpne</button>`);
+  }
+  window.advancedOpenCurrentTrack=function(){const b=bottomPlayer.queue?.[bottomPlayer.index]; if(!b)return; const card=document.getElementById(`abi-${b.id}`); if(card){card.scrollIntoView({behavior:'smooth',block:'center'}); if(!card.classList.contains('expanded'))toggleAlbumBeat(b.id);}else showToast('Åpne albumet eller mixtapen for å se sangkortet');};
+  function boot(){addOpenCurrentButton(); ['mixtape','album'].forEach(mode=>{const el=document.getElementById(mode==='mixtape'?'mixtapeBeatList':'albumBeatList'); if(el)applyAdvanced(el,mode);});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot); else boot();
 })();
 </script>
 
