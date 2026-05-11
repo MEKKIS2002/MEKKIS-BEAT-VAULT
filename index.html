@@ -8588,3 +8588,127 @@ Do not re-add full duplicate archive renderers below this point; prefer CSS-only
   window.applyMarcusFastMixtapeSearch=applyNow;
 })();
 </script>
+
+
+<!-- MARCUS COLLECTION COVER INHERITANCE PATCH
+     Purpose:
+     When an album or mixtape/cassette gets a cover image, every song/beat inside
+     that collection which does NOT already have its own cover inherits the
+     collection cover. Existing individual song covers are preserved.
+
+     Data model note for future AI/editors:
+     - The same beat object is shared between albums and mixtapes by beat.id.
+     - Lyrics, rating, favorite, done/progress, audio and cover live on the beat.
+     - This patch only fills empty beat.cover fields; it never creates duplicate beats.
+-->
+<script id="marcus-collection-cover-inheritance-js">
+(function(){
+  'use strict';
+
+  function appState(){
+    try{ if(typeof state !== 'undefined') return state; }catch(e){}
+    return window.state || null;
+  }
+
+  function getCurrentAlbumId(){
+    try{ if(typeof currentAlbumId !== 'undefined') return currentAlbumId; }catch(e){}
+    return window.currentAlbumId;
+  }
+
+  function getCurrentMixtapeId(){
+    try{ if(typeof currentMixtapeId !== 'undefined') return currentMixtapeId; }catch(e){}
+    return window.currentMixtapeId;
+  }
+
+  function beatById(id){
+    const st = appState();
+    return (st && Array.isArray(st.beats)) ? st.beats.find(b => String(b.id) === String(id)) : null;
+  }
+
+  function hasCover(beat){
+    return !!(beat && typeof beat.cover === 'string' && beat.cover.trim());
+  }
+
+  function inheritCoverFromCollection(collection, collectionType){
+    if(!collection || !collection.cover || !Array.isArray(collection.beatIds)) return false;
+    let changed = false;
+    collection.beatIds.forEach(id => {
+      const beat = beatById(id);
+      if(beat && !hasCover(beat)){
+        beat.cover = collection.cover;
+        beat.coverInheritedFrom = collectionType || 'collection';
+        beat.coverInheritedAt = Date.now();
+        changed = true;
+      }
+    });
+    if(changed){
+      try{ if(typeof saveState === 'function') saveState(); else window.saveState && window.saveState(); }
+      catch(e){ console.warn('Cover inheritance save failed', e); }
+    }
+    return changed;
+  }
+
+  function inheritCurrentAlbumCover(){
+    const st = appState();
+    if(!st || !Array.isArray(st.albums)) return false;
+    const albumId = getCurrentAlbumId();
+    const album = st.albums.find(a => String(a.id) === String(albumId));
+    return inheritCoverFromCollection(album, 'album');
+  }
+
+  function inheritCurrentMixtapeCover(){
+    const st = appState();
+    if(!st || !Array.isArray(st.mixtapes)) return false;
+    const mixtapeId = getCurrentMixtapeId();
+    const mt = st.mixtapes.find(m => String(m.id) === String(mixtapeId));
+    return inheritCoverFromCollection(mt, 'mixtape');
+  }
+
+  function rerenderAlbumSoon(){
+    setTimeout(function(){ try{ if(typeof renderAlbumDetail === 'function') renderAlbumDetail(); }catch(e){} }, 0);
+  }
+
+  function rerenderMixtapeSoon(){
+    setTimeout(function(){ try{ if(typeof renderMixtapeDetail === 'function') renderMixtapeDetail(); }catch(e){} }, 0);
+  }
+
+  // Keep inheritance in sync whenever a collection detail view is rendered.
+  // This also handles adding new beats to a collection that already has a cover.
+  const originalRenderAlbumDetail = window.renderAlbumDetail;
+  if(typeof originalRenderAlbumDetail === 'function'){
+    window.renderAlbumDetail = function(){
+      inheritCurrentAlbumCover();
+      return originalRenderAlbumDetail.apply(this, arguments);
+    };
+  }
+
+  const originalRenderMixtapeDetail = window.renderMixtapeDetail;
+  if(typeof originalRenderMixtapeDetail === 'function'){
+    window.renderMixtapeDetail = function(){
+      inheritCurrentMixtapeCover();
+      return originalRenderMixtapeDetail.apply(this, arguments);
+    };
+  }
+
+  // Extra safety after direct cover upload controls finish their async FileReader work.
+  document.addEventListener('change', function(e){
+    const t = e.target;
+    if(!t || !t.matches) return;
+    if(t.matches('#albumCoverInput, input[onchange^="setAlbumCover"]')){
+      setTimeout(function(){ if(inheritCurrentAlbumCover()) rerenderAlbumSoon(); }, 500);
+    }
+    if(t.matches('#mixtapeCoverInput')){
+      setTimeout(function(){ if(inheritCurrentMixtapeCover()) rerenderMixtapeSoon(); }, 500);
+    }
+  }, true);
+
+  // Public helper for debugging/manual use in console.
+  window.inheritCollectionCoverToEmptySongs = function(type, id){
+    const st = appState();
+    if(!st) return false;
+    if(type === 'album') return inheritCoverFromCollection((st.albums||[]).find(a => String(a.id) === String(id)), 'album');
+    if(type === 'mixtape') return inheritCoverFromCollection((st.mixtapes||[]).find(m => String(m.id) === String(id)), 'mixtape');
+    return false;
+  };
+})();
+</script>
