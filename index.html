@@ -7761,3 +7761,830 @@ Size before cleanup: 7.66 MB.
 Size after cleanup: 1.98 MB.
 Do not re-add full duplicate archive renderers below this point; prefer CSS-only overrides unless replacing the active renderer intentionally.
 -->
+
+
+<!-- =========================================================
+  MARCUS NOTE — SHARED SONG CONTEXT FIX
+  Why this exists:
+  - A beat/song can belong to both an album and a mixtape.
+  - The app intentionally stores lyrics, cover, rating, favorite status,
+    progress and audio on the shared `state.beats[]` object, so edits are
+    automatically shared across every album/mixtape that references that beat id.
+  - Older code reused DOM ids like `abi-${beatId}` in both album and mixtape
+    detail views. When the same beat existed in both places, `getElementById`
+    could grab the hidden mixtape card while the user clicked the album card.
+  What this patch does:
+  - Keeps data shared by beat id.
+  - Clears stale collection context when opening album vs mixtape.
+  - Makes song-card opening context-aware by using the clicked card first,
+    then the visible album/mixtape list as fallback.
+  - Avoids adding another renderer; this only patches context handling.
+========================================================= -->
+<script id="marcus-shared-song-context-fix-js">
+(function(){
+  'use strict';
+
+  function visible(el){
+    return !!(el && el.offsetParent !== null && getComputedStyle(el).display !== 'none' && !el.classList.contains('hidden'));
+  }
+  function activeList(){
+    const albumList=document.getElementById('albumBeatList');
+    const mixList=document.getElementById('mixtapeBeatList');
+    const albumDetail=document.getElementById('albumDetailView');
+    const mixDetail=document.getElementById('mixtapeDetailView');
+    if(visible(albumDetail) || visible(albumList)) return albumList;
+    if(visible(mixDetail) || visible(mixList)) return mixList;
+    return albumList || mixList || document;
+  }
+  function cssId(id){
+    return (window.CSS && CSS.escape) ? CSS.escape(String(id)) : String(id).replace(/[^a-zA-Z0-9_-]/g,'\\$&');
+  }
+  function clickedCard(id){
+    const ev=window.event;
+    const fromEvent=ev && ev.target && ev.target.closest ? ev.target.closest('.album-beat-card') : null;
+    if(fromEvent && (!id || fromEvent.getAttribute('data-beat-id')===String(id) || fromEvent.id===`abi-${id}`)) return fromEvent;
+    const list=activeList();
+    return list?.querySelector?.(`#abi-${cssId(id)}, .album-beat-card[data-beat-id="${String(id).replace(/"/g,'\\"')}"]`) || document.getElementById(`abi-${id}`);
+  }
+  function clickedMode(){
+    const ev=window.event;
+    const card=ev && ev.target && ev.target.closest ? ev.target.closest('.album-beat-card') : null;
+    const list=card?.closest?.('#albumBeatList,#mixtapeBeatList');
+    if(list?.id==='albumBeatList') return 'album';
+    if(list?.id==='mixtapeBeatList') return 'mixtape';
+    if(visible(document.getElementById('albumDetailView'))) return 'album';
+    if(visible(document.getElementById('mixtapeDetailView'))) return 'mixtape';
+    return (typeof currentMixtapeId!=='undefined' && currentMixtapeId && !(typeof currentAlbumId!=='undefined' && currentAlbumId)) ? 'mixtape' : 'album';
+  }
+  function rerenderMode(mode){
+    if(mode==='mixtape' && typeof renderMixtapeDetail==='function') renderMixtapeDetail();
+    else if(typeof renderAlbumDetail==='function') renderAlbumDetail();
+  }
+
+  const oldOpenAlbum=window.openAlbum;
+  window.openAlbum=function(id){
+    try{ if(typeof currentMixtapeId!=='undefined') currentMixtapeId=null; }catch(e){}
+    if(typeof oldOpenAlbum==='function') return oldOpenAlbum.apply(this,arguments);
+    try{ currentAlbumId=id; }catch(e){}
+    if(typeof renderAlbumDetail==='function') renderAlbumDetail();
+  };
+
+  const oldOpenMixtape=window.openMixtape;
+  window.openMixtape=function(id){
+    try{ if(typeof currentAlbumId!=='undefined') currentAlbumId=null; }catch(e){}
+    if(typeof oldOpenMixtape==='function') return oldOpenMixtape.apply(this,arguments);
+    try{ currentMixtapeId=id; }catch(e){}
+    if(typeof renderMixtapeDetail==='function') renderMixtapeDetail();
+  };
+
+  window.toggleAlbumBeat=function(id){
+    const card=clickedCard(id);
+    if(!card) return;
+    card.classList.toggle('expanded');
+    if(card.classList.contains('expanded') && typeof loadAudioForBeat==='function') loadAudioForBeat(id);
+  };
+
+  const oldSetRating=window.setAlbumBeatRating;
+  window.setAlbumBeatRating=function(id,r){
+    const b=(window.state?.beats||state?.beats||[]).find(x=>x.id===id);
+    if(b){b.rating=r; if(typeof saveState==='function') saveState();}
+    document.querySelectorAll(`#abi-${cssId(id)} .ab-stars button, .album-beat-card[data-beat-id="${String(id).replace(/"/g,'\\"')}"] .ab-stars button`).forEach((s,i)=>s.classList.toggle('on',i<r));
+    if(!b && typeof oldSetRating==='function') return oldSetRating.apply(this,arguments);
+  };
+
+  const oldSetDone=window.setAlbumBeatDone;
+  window.setAlbumBeatDone=function(id,val){
+    const b=(window.state?.beats||state?.beats||[]).find(x=>x.id===id);
+    const done=typeof clamp==='function'?clamp(val):Math.max(0,Math.min(100,Number(val)||0));
+    if(b){b.done=done; if(typeof saveState==='function') saveState();}
+    document.querySelectorAll(`#abibar-${cssId(id)}`).forEach(bar=>bar.style.width=done+'%');
+    document.querySelectorAll(`#abidone-${cssId(id)}`).forEach(lbl=>lbl.textContent=done+'%');
+    if(!b && typeof oldSetDone==='function') return oldSetDone.apply(this,arguments);
+  };
+
+  const oldSetCover=window.setAlbumBeatCover;
+  window.setAlbumBeatCover=function(id,input){
+    const mode=clickedMode();
+    const f=input?.files?.[0];
+    if(!f){ if(typeof oldSetCover==='function') return oldSetCover.apply(this,arguments); return; }
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const sz=600;
+        const canvas=document.createElement('canvas');
+        canvas.width=sz; canvas.height=sz;
+        const ctx=canvas.getContext('2d');
+        const side=Math.min(img.width,img.height);
+        const sx=(img.width-side)/2, sy=(img.height-side)/2;
+        ctx.drawImage(img,sx,sy,side,side,0,0,sz,sz);
+        const b=(window.state?.beats||state?.beats||[]).find(x=>x.id===id);
+        if(!b) return;
+        b.cover=canvas.toDataURL('image/jpeg',.86);
+        if(typeof saveState==='function') saveState();
+        rerenderMode(mode);
+        if(typeof showToast==='function') showToast('✓ Coverbilde oppdatert');
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(f);
+  };
+
+  window.removeFromAlbum=function(beatId){
+    const mode=clickedMode();
+    if(typeof removeFromCollection==='function') return removeFromCollection(beatId,mode);
+  };
+})();
+</script>
+
+
+<!-- MARCUS HOTFIX: Mixtape-only search without breaking mixtape opening
+     Why this replaces the previous mixtape search patch:
+     - The earlier search patch removed/re-rendered global elements too aggressively.
+     - This version hides global search with CSS only and adds a local search bar after
+       a mixtape is already open. It does not override openMixtape/renderMixtapeDetail.
+     - Beat data remains shared: lyrics, rating, cover, done-status, favorite and audio
+       still live on the same beat object, so albums and mixtapes stay in sync. -->
+<style id="marcus-mixtape-search-hotfix-css">
+/* Hide the old global search surface without deleting nodes that other scripts may expect. */
+#globalSearchWrap,
+.global-search-wrap,
+#globalSearch,
+.global-search{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  height:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+
+/* Album pages should not get the local mixtape search. */
+#albumDetailView .marcus-mixtape-local-search{display:none!important;}
+
+/* Local search UI that appears only in an opened mixtape. */
+#mixtapeDetailView .marcus-mixtape-local-search{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  margin:14px 0 14px!important;
+  padding:8px 10px!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018))!important;
+  border-radius:12px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+#mixtapeDetailView .marcus-mixtape-local-search .mixtape-search-icon{
+  color:#d7c6ad!important;
+  opacity:.8!important;
+  font-size:13px!important;
+}
+#mixtapeDetailView .marcus-mixtape-local-search input{
+  flex:1 1 auto!important;
+  min-width:120px!important;
+  height:34px!important;
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  color:#fff8ef!important;
+  font:inherit!important;
+  font-weight:800!important;
+}
+#mixtapeDetailView .marcus-mixtape-local-search input::placeholder{color:rgba(216,200,180,.55)!important;}
+#mixtapeDetailView .marcus-mixtape-local-search .mixtape-search-count{
+  white-space:nowrap!important;
+  color:#bda98f!important;
+  font-size:12px!important;
+  font-weight:850!important;
+}
+#mixtapeDetailView .marcus-mixtape-local-search button{
+  border:0!important;
+  background:transparent!important;
+  color:#d7c6ad!important;
+  font:inherit!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  padding:7px 9px!important;
+  border-radius:999px!important;
+  cursor:pointer!important;
+}
+#mixtapeDetailView .marcus-mixtape-local-search button:hover{
+  background:rgba(245,154,42,.12)!important;
+  color:#ffd49a!important;
+}
+#mixtapeDetailView .marcus-mixtape-search-empty{
+  display:none;
+  grid-column:1/-1!important;
+  padding:22px!important;
+  margin-top:10px!important;
+  border:1px dashed rgba(255,255,255,.13)!important;
+  background:rgba(255,255,255,.025)!important;
+  color:#bfae99!important;
+  text-align:center!important;
+  border-radius:12px!important;
+  font-weight:850!important;
+}
+#mixtapeDetailView .marcus-mixtape-search-empty.show{display:block!important;}
+</style>
+<script id="marcus-mixtape-search-hotfix-js">
+(function(){
+  'use strict';
+  const STORE_PREFIX='mv-mixtape-local-search:';
+  let scheduled=false;
+
+  function qs(sel,root=document){return root.querySelector(sel);}
+  function qsa(sel,root=document){return Array.from(root.querySelectorAll(sel));}
+  function getCurrentMixtapeId(){
+    try{
+      if(typeof currentMixtapeId!=='undefined' && currentMixtapeId) return currentMixtapeId;
+      if(window.currentMixtapeId) return window.currentMixtapeId;
+    }catch(e){}
+    return '';
+  }
+  function getBeat(id){
+    try{
+      const beats=(window.state&&window.state.beats)||(typeof state!=='undefined'&&state.beats)||[];
+      return beats.find(b=>String(b.id)===String(id))||null;
+    }catch(e){return null;}
+  }
+  function isMixtapeOpen(){
+    const detail=qs('#mixtapeDetailView');
+    return !!(detail && !detail.classList.contains('hidden') && detail.offsetParent!==null);
+  }
+  function getCards(){
+    const list=qs('#mixtapeBeatList');
+    if(!list) return [];
+    return qsa('.album-beat-card[data-beat-id], [id^="abi-"][data-beat-id]', list);
+  }
+  function searchTextForCard(card){
+    const id=card.getAttribute('data-beat-id')||String(card.id||'').replace(/^abi-/,'');
+    const b=getBeat(id);
+    return [
+      card.textContent,
+      b&&b.name,
+      b&&b.source,
+      b&&b.lyrics,
+      b&&b.comments,
+      b&&b.structure,
+      b&&b.credits,
+      b&&b.bpm,
+      b&&b.key,
+      b&&b.stage,
+      b&&b.owner
+    ].filter(Boolean).join(' ').toLowerCase();
+  }
+  function applyFilter(){
+    const detail=qs('#mixtapeDetailView');
+    const list=qs('#mixtapeBeatList');
+    const wrap=qs('#marcusMixtapeLocalSearch', detail||document);
+    if(!detail||!list||!wrap) return;
+    const id=getCurrentMixtapeId()||'unknown';
+    const input=qs('input',wrap);
+    const count=qs('.mixtape-search-count',wrap);
+    const q=(input&&input.value||'').trim().toLowerCase();
+    try{sessionStorage.setItem(STORE_PREFIX+id,q);}catch(e){}
+    const tokens=q.split(/\s+/).filter(Boolean);
+    const cards=getCards();
+    let shown=0;
+    cards.forEach(card=>{
+      const ok=!tokens.length || tokens.every(t=>searchTextForCard(card).includes(t));
+      card.style.display=ok?'':'none';
+      if(ok) shown++;
+    });
+    let empty=qs('.marcus-mixtape-search-empty',list);
+    if(!empty){
+      empty=document.createElement('div');
+      empty.className='marcus-mixtape-search-empty';
+      empty.textContent='Ingen spor matcher søket i denne mixtapen.';
+      list.appendChild(empty);
+    }
+    empty.classList.toggle('show', tokens.length>0 && shown===0);
+    if(count) count.textContent=tokens.length?`${shown}/${cards.length} treff`:`${cards.length} spor`;
+  }
+  function ensureSearch(){
+    scheduled=false;
+    if(!isMixtapeOpen()) return;
+    const detail=qs('#mixtapeDetailView');
+    const list=qs('#mixtapeBeatList');
+    if(!detail||!list) return;
+    let wrap=qs('#marcusMixtapeLocalSearch',detail);
+    if(!wrap){
+      wrap=document.createElement('div');
+      wrap.id='marcusMixtapeLocalSearch';
+      wrap.className='marcus-mixtape-local-search';
+      wrap.innerHTML='<span class="mixtape-search-icon">⌕</span><input type="search" autocomplete="off" placeholder="Søk i denne mixtapen…"><span class="mixtape-search-count"></span><button type="button">Nullstill</button>';
+      list.insertAdjacentElement('beforebegin',wrap);
+      qs('input',wrap).addEventListener('input',applyFilter);
+      qs('button',wrap).addEventListener('click',()=>{
+        const input=qs('input',wrap);
+        if(input) input.value='';
+        applyFilter();
+        input&&input.focus();
+      });
+    }
+    const id=getCurrentMixtapeId()||'unknown';
+    const input=qs('input',wrap);
+    if(input && input.dataset.mixtapeId!==String(id)){
+      input.dataset.mixtapeId=String(id);
+      try{input.value=sessionStorage.getItem(STORE_PREFIX+id)||'';}catch(e){input.value='';}
+    }
+    applyFilter();
+  }
+  function schedule(){
+    if(scheduled) return;
+    scheduled=true;
+    setTimeout(ensureSearch,60);
+  }
+
+  document.addEventListener('click',function(e){
+    const target=e.target;
+    if(target && target.closest && target.closest('[data-tab="mixtapes"], .cassette-card, #backToMixtapesBtn, #addBeatsToMixtapeBtn, #confirmAddBeatsBtn')){
+      schedule();
+      setTimeout(schedule,220);
+    }
+  },true);
+  document.addEventListener('DOMContentLoaded',schedule);
+  if(document.readyState!=='loading') schedule();
+  const mo=new MutationObserver(schedule);
+  mo.observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+
+
+<!-- MARCUS MIXTAPE SINGLE SEARCH FIX
+     Purpose:
+     - Keep only one search field in opened mixtapes.
+     - Hide the extra local search bar from the previous hotfix.
+     - Make the remaining mixtape search filter tracks by title or lyrics only.
+     - This patch is intentionally defensive and does not change shared beat data. -->
+<style id="marcus-mixtape-single-search-css">
+/* Remove the duplicate search field added by the earlier hotfix. */
+#mixtapeDetailView #marcusMixtapeLocalSearch,
+#mixtapeDetailView .marcus-mixtape-local-search{
+  display:none!important;
+  visibility:hidden!important;
+  height:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+}
+
+/* Keep the existing collection search as the single mixtape search field. */
+#mixtapeDetailView .collection-tools{
+  margin:14px 0 14px!important;
+}
+#mixtapeDetailView .collection-tools .collection-search{
+  flex:1 1 360px!important;
+}
+#mixtapeDetailView .collection-tools .collection-count[data-count]{
+  white-space:nowrap!important;
+}
+#mixtapeDetailView .marcus-mixtape-search-empty{
+  display:none;
+  grid-column:1/-1!important;
+  padding:22px!important;
+  margin-top:10px!important;
+  border:1px dashed rgba(255,255,255,.13)!important;
+  background:rgba(255,255,255,.025)!important;
+  color:#bfae99!important;
+  text-align:center!important;
+  border-radius:12px!important;
+  font-weight:850!important;
+}
+#mixtapeDetailView .marcus-mixtape-search-empty.show{display:block!important;}
+</style>
+<script id="marcus-mixtape-single-search-js">
+(function(){
+  'use strict';
+  const STORE_KEY='mv-mixtape-active-search';
+  let scheduled=false;
+
+  function qs(s,r=document){return r.querySelector(s);}
+  function qsa(s,r=document){return Array.from(r.querySelectorAll(s));}
+  function isMixtapeOpen(){
+    const d=qs('#mixtapeDetailView');
+    return !!(d && !d.classList.contains('hidden') && d.offsetParent!==null);
+  }
+  function currentId(){
+    try{ if(typeof currentMixtapeId!=='undefined' && currentMixtapeId) return String(currentMixtapeId); }catch(e){}
+    return String(window.currentMixtapeId||'active');
+  }
+  function beats(){
+    try{return (window.state&&window.state.beats)||(typeof state!=='undefined'&&state.beats)||[];}catch(e){return [];}
+  }
+  function beatById(id){return beats().find(b=>String(b.id)===String(id))||null;}
+  function stripHTML(s){
+    const div=document.createElement('div');
+    div.innerHTML=String(s||'');
+    return div.textContent||div.innerText||'';
+  }
+  function cardBeatId(card){
+    return card.getAttribute('data-beat-id') || String(card.id||'').replace(/^abi-/,'');
+  }
+  function matchText(card){
+    const b=beatById(cardBeatId(card));
+    return [b&&b.name, b&&stripHTML(b.lyrics)].filter(Boolean).join(' ').toLowerCase();
+  }
+  function getCards(){
+    const list=qs('#mixtapeBeatList');
+    return list ? qsa('.album-beat-card[data-beat-id], [id^="abi-"][data-beat-id]', list) : [];
+  }
+  function getSearchInput(){
+    const detail=qs('#mixtapeDetailView');
+    return detail ? qs('.collection-tools .collection-search', detail) : null;
+  }
+  function getCount(){
+    const detail=qs('#mixtapeDetailView');
+    return detail ? qs('.collection-tools [data-count], .collection-count[data-count]', detail) : null;
+  }
+  function ensureEmpty(list){
+    let empty=qs('.marcus-mixtape-search-empty', list);
+    if(!empty){
+      empty=document.createElement('div');
+      empty.className='marcus-mixtape-search-empty';
+      empty.textContent='Ingen spor matcher søket i denne mixtapen.';
+      list.appendChild(empty);
+    }
+    return empty;
+  }
+  function applySearch(){
+    if(!isMixtapeOpen()) return;
+    const list=qs('#mixtapeBeatList');
+    const input=getSearchInput();
+    if(!list || !input) return;
+
+    // Disable the old inline advanced search handler on this one field. It used a shared
+    // album/mixtape filter store and could show confusing results.
+    input.oninput=null;
+    input.setAttribute('placeholder','Søk i denne mixtapen');
+
+    const q=String(input.value||'').trim().toLowerCase();
+    try{sessionStorage.setItem(STORE_KEY+':'+currentId(), q);}catch(e){}
+    const terms=q.split(/\s+/).filter(Boolean);
+    const cards=getCards();
+    let shown=0;
+
+    cards.forEach(card=>{
+      const text=matchText(card);
+      const ok=!terms.length || terms.every(t=>text.includes(t));
+      card.style.display=ok?'':'none';
+      if(ok) shown++;
+    });
+
+    const empty=ensureEmpty(list);
+    empty.classList.toggle('show', terms.length>0 && shown===0);
+
+    const count=getCount();
+    if(count) count.textContent=terms.length ? `${shown}/${cards.length} treff` : `${shown}/${cards.length} vises`;
+  }
+  function install(){
+    scheduled=false;
+    if(!isMixtapeOpen()) return;
+    const detail=qs('#mixtapeDetailView');
+    const input=getSearchInput();
+    if(!detail || !input) return;
+
+    // Hide/remove duplicate lower search if it exists.
+    qsa('#marcusMixtapeLocalSearch, .marcus-mixtape-local-search', detail).forEach(el=>el.remove());
+
+    if(!input.dataset.marcusSingleSearchBound){
+      input.dataset.marcusSingleSearchBound='1';
+      input.oninput=null;
+      input.addEventListener('input', function(e){
+        e.stopImmediatePropagation();
+        applySearch();
+      }, true);
+    }
+    if(input.dataset.mixtapeId!==currentId()){
+      input.dataset.mixtapeId=currentId();
+      try{input.value=sessionStorage.getItem(STORE_KEY+':'+currentId())||'';}catch(e){}
+    }
+    applySearch();
+  }
+  function schedule(){
+    if(scheduled) return;
+    scheduled=true;
+    setTimeout(install,80);
+    setTimeout(install,240);
+  }
+
+  document.addEventListener('click',function(e){
+    const t=e.target;
+    if(t && t.closest && t.closest('[data-tab="mixtapes"], .cassette-card, #backToMixtapesBtn, #addBeatsToMixtapeBtn, #confirmAddBeatsBtn, .collection-filter')) schedule();
+  },true);
+  document.addEventListener('DOMContentLoaded',schedule);
+  if(document.readyState!=='loading') schedule();
+  const mo=new MutationObserver(schedule);
+  mo.observe(document.body,{childList:true,subtree:true});
+  window.applyMarcusMixtapeSingleSearch=applySearch;
+})();
+</script>
+
+
+<!-- MARCUS TAB ORDER PATCH
+     Keeps Arkivert before Integrasjoner because Integrasjoner is a more technical/admin section.
+     This is DOM-order only; it does not change tab behavior or data. -->
+<script id="marcus-tab-order-archive-before-integrations">
+(function(){
+  'use strict';
+  function reorderTabs(){
+    const archive = document.querySelector('.tab-btn[data-tab="archive"], [data-tab="archive"]');
+    const integrations = document.querySelector('.tab-btn[data-tab="integrations"], [data-tab="integrations"]');
+    if(!archive || !integrations || !integrations.parentElement) return;
+    const parent = integrations.parentElement;
+    if(archive.parentElement !== parent) return;
+    if(archive.compareDocumentPosition(integrations) & Node.DOCUMENT_POSITION_FOLLOWING) return;
+    parent.insertBefore(archive, integrations);
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    reorderTabs();
+    setTimeout(reorderTabs, 80);
+    setTimeout(reorderTabs, 300);
+    const tabs = document.querySelector('.tabs') || document.body;
+    const mo = new MutationObserver(reorderTabs);
+    mo.observe(tabs, { childList:true, subtree:true });
+  });
+  if(document.readyState !== 'loading') reorderTabs();
+})();
+</script>
+
+
+<!-- MARCUS MIXTAPE SEARCH VISIBILITY FIX
+     Reason: older list-mode CSS uses display:grid!important on track rows, so inline
+     card.style.display='none' could be overridden. This patch hides non-matching
+     mixtape rows with a dedicated class that also uses !important.
+     Scope: mixtape detail only. It does not affect albums or archive. -->
+<style id="marcus-mixtape-search-visibility-css">
+#mixtapeDetailView .album-beat-card.marcus-mixtape-search-hidden,
+#mixtapeDetailView [data-beat-id].marcus-mixtape-search-hidden{
+  display:none!important;
+}
+</style>
+<script id="marcus-mixtape-search-visibility-js">
+(function(){
+  'use strict';
+  const STORE_KEY='mv-mixtape-active-search';
+  let scheduled=false;
+  function qs(s,r=document){return r.querySelector(s)}
+  function qsa(s,r=document){return Array.from(r.querySelectorAll(s))}
+  function isOpen(){
+    const d=qs('#mixtapeDetailView');
+    return !!(d && !d.classList.contains('hidden'));
+  }
+  function id(){try{return String(currentMixtapeId||'active')}catch(e){return String(window.currentMixtapeId||'active')}}
+  function strip(s){const div=document.createElement('div');div.innerHTML=String(s||'');return (div.textContent||div.innerText||'').toLowerCase()}
+  function getBeat(bid){
+    try{return ((window.state&&window.state.beats)||(typeof state!=='undefined'&&state.beats)||[]).find(b=>String(b.id)===String(bid))||null}catch(e){return null}
+  }
+  function cardId(card){return card.getAttribute('data-beat-id') || String(card.id||'').replace(/^abi-/,'')}
+  function cardText(card){
+    const b=getBeat(cardId(card));
+    const domTitle=card.querySelector('.ab-title,strong,.title,.studio-title')?.textContent || card.textContent || '';
+    return [b?.name, strip(b?.lyrics), b?.credits, b?.notes, domTitle].filter(Boolean).join(' ').toLowerCase();
+  }
+  function list(){return qs('#mixtapeBeatList')}
+  function input(){return qs('#mixtapeDetailView .collection-tools .collection-search')}
+  function count(){return qs('#mixtapeDetailView .collection-tools [data-count], #mixtapeDetailView .collection-count[data-count]')}
+  function cards(){const l=list();return l?qsa('.album-beat-card[data-beat-id], [id^="abi-"][data-beat-id]',l):[]}
+  function ensureEmpty(){
+    const l=list(); if(!l)return null;
+    let e=qs('.marcus-mixtape-search-empty',l);
+    if(!e){e=document.createElement('div');e.className='marcus-mixtape-search-empty';e.textContent='Ingen spor matcher søket i denne mixtapen.';l.appendChild(e)}
+    return e;
+  }
+  function apply(){
+    if(!isOpen())return;
+    const inp=input(); if(!inp)return;
+    inp.oninput=null;
+    inp.placeholder='Søk i denne mixtapen';
+    const q=String(inp.value||'').trim().toLowerCase();
+    try{sessionStorage.setItem(STORE_KEY+':'+id(),q)}catch(e){}
+    const terms=q.split(/\s+/).filter(Boolean);
+    const all=cards();
+    let shown=0;
+    all.forEach(card=>{
+      const ok=!terms.length || terms.every(t=>cardText(card).includes(t));
+      card.classList.toggle('marcus-mixtape-search-hidden',!ok);
+      card.setAttribute('aria-hidden', ok?'false':'true');
+      if(ok)shown++;
+    });
+    const e=ensureEmpty(); if(e)e.classList.toggle('show',terms.length>0 && shown===0);
+    const c=count(); if(c)c.textContent=terms.length?`${shown}/${all.length} treff`:`${shown}/${all.length} vises`;
+  }
+  function install(){
+    scheduled=false;
+    if(!isOpen())return;
+    const detail=qs('#mixtapeDetailView');
+    const inp=input();
+    if(!detail||!inp)return;
+    qsa('#marcusMixtapeLocalSearch, .marcus-mixtape-local-search',detail).forEach(el=>el.remove());
+    if(inp.dataset.marcusVisibilitySearchId!==id()){
+      inp.dataset.marcusVisibilitySearchId=id();
+      try{inp.value=sessionStorage.getItem(STORE_KEY+':'+id())||''}catch(e){}
+    }
+    if(!inp.dataset.marcusVisibilityBound){
+      inp.dataset.marcusVisibilityBound='1';
+      inp.addEventListener('input',function(e){
+        e.stopImmediatePropagation();
+        apply();
+      },true);
+      inp.addEventListener('search',apply,true);
+    }
+    apply();
+  }
+  function schedule(){
+    if(scheduled)return;
+    scheduled=true;
+    requestAnimationFrame(install);
+    setTimeout(install,80);
+    setTimeout(install,260);
+  }
+  document.addEventListener('click',function(e){
+    if(e.target?.closest?.('[data-tab="mixtapes"], .cassette-card, #backToMixtapesBtn, #addBeatsToMixtapeBtn, #confirmAddBeatsBtn, .collection-filter'))schedule();
+  },true);
+  document.addEventListener('input',function(e){
+    if(e.target?.matches?.('#mixtapeDetailView .collection-tools .collection-search')){e.stopImmediatePropagation();apply()}
+  },true);
+  document.addEventListener('DOMContentLoaded',schedule);
+  if(document.readyState!=='loading')schedule();
+  const mo=new MutationObserver(schedule);
+  mo.observe(document.body,{childList:true,subtree:true});
+  window.applyMarcusMixtapeSearchVisibility=apply;
+})();
+</script>
+
+
+<!-- MARCUS MIXTAPE SEARCH PERFORMANCE PATCH
+     Replaces the previous immediate-on-every-keystroke search behavior.
+     Why this exists:
+     - Older search patches listened to `.collection-search` and filtered synchronously.
+     - That caused lag because every keypress scanned lyrics and touched every row immediately.
+     What this patch does:
+     - Converts the mixtape search input into `.marcus-fast-mixtape-search` so older listeners ignore it.
+     - Debounces search input.
+     - Caches searchable text per beat for the active mixtape.
+     - Only toggles one CSS class on existing rows, no full re-render. -->
+<style id="marcus-mixtape-search-performance-css">
+#mixtapeDetailView .album-beat-card.marcus-fast-search-hidden,
+#mixtapeDetailView [data-beat-id].marcus-fast-search-hidden{
+  display:none!important;
+}
+#mixtapeDetailView .marcus-fast-mixtape-search{
+  min-width:220px!important;
+  flex:1!important;
+  height:46px!important;
+  background:rgba(255,255,255,.06)!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:14px!important;
+  padding:0 14px!important;
+  color:var(--text)!important;
+  font:inherit!important;
+  font-weight:750!important;
+  outline:none!important;
+}
+#mixtapeDetailView .marcus-fast-mixtape-search:focus{
+  border-color:rgba(255,186,94,.48)!important;
+  box-shadow:0 0 0 3px rgba(255,186,94,.10)!important;
+}
+#mixtapeDetailView .marcus-fast-mixtape-search::placeholder{
+  color:rgba(216,200,180,.58)!important;
+}
+</style>
+<script id="marcus-mixtape-search-performance-js">
+(function(){
+  'use strict';
+  const STORE_KEY='mv-mixtape-active-search';
+  let timer=null;
+  let raf=null;
+  let lastMixtapeId='';
+  let textCache=new Map();
+
+  function qs(s,r=document){return r.querySelector(s)}
+  function qsa(s,r=document){return Array.from(r.querySelectorAll(s))}
+  function isOpen(){const d=qs('#mixtapeDetailView');return !!(d && !d.classList.contains('hidden'))}
+  function mixId(){try{return String(currentMixtapeId||'active')}catch(e){return String(window.currentMixtapeId||'active')}}
+  function beats(){try{return (window.state&&window.state.beats)||(typeof state!=='undefined'&&state.beats)||[]}catch(e){return []}}
+  function beatById(id){return beats().find(b=>String(b.id)===String(id))||null}
+  function strip(html){
+    const raw=String(html||'');
+    if(raw.indexOf('<')===-1)return raw;
+    const div=document.createElement('div');
+    div.innerHTML=raw;
+    return div.textContent||div.innerText||'';
+  }
+  function normalize(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+  function cardId(card){return card.getAttribute('data-beat-id') || String(card.id||'').replace(/^abi-/,'')}
+  function list(){return qs('#mixtapeBeatList')}
+  function cards(){const l=list();return l?qsa('.album-beat-card[data-beat-id], [id^="abi-"][data-beat-id]',l):[]}
+  function input(){return qs('#mixtapeDetailView .marcus-fast-mixtape-search') || qs('#mixtapeDetailView .collection-tools .collection-search')}
+  function count(){return qs('#mixtapeDetailView .collection-tools [data-count], #mixtapeDetailView .collection-count[data-count]')}
+  function ensureEmpty(){
+    const l=list(); if(!l)return null;
+    let e=qs('.marcus-mixtape-search-empty',l);
+    if(!e){e=document.createElement('div');e.className='marcus-mixtape-search-empty';e.textContent='Ingen spor matcher søket i denne mixtapen.';l.appendChild(e)}
+    return e;
+  }
+  function resetCacheIfNeeded(){
+    const id=mixId();
+    const all=cards();
+    const signature=id+':'+all.map(c=>cardId(c)).join('|');
+    if(signature===lastMixtapeId)return;
+    lastMixtapeId=signature;
+    textCache=new Map();
+    all.forEach(card=>{
+      const bid=cardId(card);
+      const b=beatById(bid);
+      const domTitle=card.querySelector('.ab-title,strong,.title,.studio-title')?.textContent || '';
+      const txt=[b?.name, strip(b?.lyrics), b?.credits, b?.notes, domTitle].filter(Boolean).join(' ');
+      textCache.set(String(bid), normalize(txt));
+    });
+  }
+  function applyNow(){
+    if(!isOpen())return;
+    const inp=input(); if(!inp)return;
+    resetCacheIfNeeded();
+    const q=normalize(inp.value).trim();
+    try{sessionStorage.setItem(STORE_KEY+':'+mixId(),q)}catch(e){}
+    const terms=q.split(/\s+/).filter(Boolean);
+    const all=cards();
+    let shown=0;
+    for(const card of all){
+      const txt=textCache.get(String(cardId(card))) || normalize(card.textContent||'');
+      const ok=!terms.length || terms.every(t=>txt.includes(t));
+      card.classList.toggle('marcus-fast-search-hidden',!ok);
+      // Remove older hidden classes controlled by previous patches so they don't fight this faster filter.
+      card.classList.remove('marcus-mixtape-search-hidden');
+      card.setAttribute('aria-hidden', ok?'false':'true');
+      if(ok)shown++;
+    }
+    const e=ensureEmpty(); if(e)e.classList.toggle('show',terms.length>0 && shown===0);
+    const c=count(); if(c)c.textContent=terms.length?`${shown}/${all.length} treff`:`${shown}/${all.length} vises`;
+  }
+  function scheduleApply(immediate=false){
+    if(timer)clearTimeout(timer);
+    if(raf)cancelAnimationFrame(raf);
+    const run=()=>{raf=requestAnimationFrame(applyNow)};
+    if(immediate)run(); else timer=setTimeout(run,110);
+  }
+  function upgradeInput(){
+    const tools=qs('#mixtapeDetailView .collection-tools'); if(!tools)return null;
+    let inp=qs('.marcus-fast-mixtape-search',tools);
+    const old=qs('.collection-search',tools);
+    if(!inp && old){
+      inp=old.cloneNode(false);
+      inp.className='marcus-fast-mixtape-search';
+      inp.removeAttribute('oninput');
+      inp.oninput=null;
+      inp.placeholder='Søk i denne mixtapen';
+      inp.dataset.marcusFastSearch='1';
+      try{inp.value=sessionStorage.getItem(STORE_KEY+':'+mixId())||old.value||''}catch(e){inp.value=old.value||''}
+      old.replaceWith(inp);
+    }
+    if(inp && !inp.dataset.marcusFastBound){
+      inp.dataset.marcusFastBound='1';
+      inp.addEventListener('input',function(e){
+        // Stop older delegated handlers from doing expensive synchronous filtering.
+        e.stopImmediatePropagation();
+        scheduleApply(false);
+      },true);
+      inp.addEventListener('search',()=>scheduleApply(true),true);
+    }
+    return inp;
+  }
+  function install(){
+    if(!isOpen())return;
+    const detail=qs('#mixtapeDetailView');
+    if(detail)qsa('#marcusMixtapeLocalSearch, .marcus-mixtape-local-search',detail).forEach(el=>el.remove());
+    const inp=upgradeInput();
+    if(!inp)return;
+    if(inp.dataset.mixtapeId!==mixId()){
+      inp.dataset.mixtapeId=mixId();
+      try{inp.value=sessionStorage.getItem(STORE_KEY+':'+mixId())||''}catch(e){}
+      lastMixtapeId='';
+    }
+    // Mark as already handled so older install routines do not bind directly to this input if they run later.
+    inp.dataset.marcusSingleSearchBound='1';
+    inp.dataset.marcusVisibilityBound='1';
+    scheduleApply(true);
+  }
+  function scheduleInstall(){setTimeout(install,0);setTimeout(install,120);setTimeout(install,320)}
+  document.addEventListener('click',function(e){
+    if(e.target?.closest?.('[data-tab="mixtapes"], .cassette-card, #backToMixtapesBtn, #addBeatsToMixtapeBtn, #confirmAddBeatsBtn, .collection-filter, [data-track-view]'))scheduleInstall();
+  },true);
+  document.addEventListener('DOMContentLoaded',scheduleInstall);
+  if(document.readyState!=='loading')scheduleInstall();
+  const mo=new MutationObserver(function(muts){
+    for(const m of muts){
+      for(const n of m.addedNodes){
+        if(n.nodeType===1 && (n.matches?.('#mixtapeDetailView, #mixtapeBeatList, .collection-tools, .album-beat-card') || n.querySelector?.('#mixtapeBeatList, .collection-tools, .album-beat-card'))){scheduleInstall();return;}
+      }
+    }
+  });
+  mo.observe(document.body,{childList:true,subtree:true});
+  window.applyMarcusFastMixtapeSearch=applyNow;
+})();
+</script>
